@@ -10,10 +10,10 @@ const Dashboard = () => {
   const sidebarWidth = isExpanded ? "16rem" : "5rem";
 
   return (
-    <div className="flex bg-gray-50">
+    <div className="flex bg-gray-50 min-h-screen">
       {/* Sidebar */}
       <div
-        className={`absolute h-full z-50 transition-all duration-300 ease-in-out`}
+        className="fixed h-full z-50 transition-all duration-300 ease-in-out"
         style={{ width: sidebarWidth }}
       >
         <Sidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
@@ -26,7 +26,7 @@ const Dashboard = () => {
       >
         {/* Header */}
         <Header sidebarWidth={sidebarWidth} />
-        <div className="mt-20 ml-4">
+        <div className="mt-20 ml-2 pb-4">
           <Outlet />
         </div>
       </div>
