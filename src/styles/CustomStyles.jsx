@@ -3,7 +3,6 @@ const CustomStyles = {
     ...base,
     minHeight: "42px",
     background: "white",
-    // borderRadius: "0.5rem",
     borderColor: "#e2e8f0",
     boxShadow: "none",
     "&:hover": {
@@ -25,6 +24,22 @@ const CustomStyles = {
   placeholder: (base) => ({
     ...base,
     color: "#94a3b8",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: "#eff6ff",
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    color: "#1e40af",
+  }),
+  multiValueRemove: (base) => ({
+    ...base,
+    color: "#1e40af",
+    ":hover": {
+      backgroundColor: "#bfdbfe",
+      color: "#1e3a8a",
+    },
   }),
 };
 export default CustomStyles;

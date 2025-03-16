@@ -10,7 +10,7 @@ const Dashboard = () => {
   const sidebarWidth = isExpanded ? "16rem" : "5rem";
 
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="flex bg-gray-100 min-h-screen">
       {/* Sidebar */}
       <div
         className="fixed h-full z-50 transition-all duration-300 ease-in-out"

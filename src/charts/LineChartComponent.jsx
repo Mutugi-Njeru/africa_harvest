@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Download } from "lucide-react"; // Import the Download icon
 
 // Sample data
 const data = [
@@ -38,43 +39,48 @@ const CustomTooltip = ({ active, payload, label }) => {
 // LineChartComponent
 const LineChartComponent = () => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <LineChart
-        data={data}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-        <XAxis
-          dataKey="county"
-          tick={{ fill: "#555" }}
-          axisLine={{ stroke: "#ccc" }}
-        />
-        <YAxis tick={{ fill: "#555" }} axisLine={{ stroke: "#ccc" }} />
-        <RechartsTooltip content={<CustomTooltip />} />
-        <Legend
-          wrapperStyle={{ paddingTop: "10px" }}
-          formatter={(value) => (
-            <span style={{ color: "#555", fontWeight: "500" }}>{value}</span>
-          )}
-        />
-        <Line
-          type="monotone"
-          dataKey="people"
-          stroke="#fbb03b"
-          strokeWidth={2}
-          activeDot={{ r: 8 }}
-          name="People"
-        />
-        <Line
-          type="monotone"
-          dataKey="businesses"
-          stroke="#82ca9d"
-          strokeWidth={2}
-          activeDot={{ r: 8 }}
-          name="Businesses"
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div style={{ width: "100%", height: "400px", padding: 0, margin: 0 }}>
+      {/* Heading and Download Icon */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Farmers Activities</h2>
+        <button className="flex items-center cursor-pointer text-gray-600 hover:text-gray-800">
+          <Download className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Chart Section */}
+      <ResponsiveContainer width="100%" height="90%">
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+          <XAxis
+            dataKey="county"
+            tick={{ fill: "#555" }}
+            axisLine={{ stroke: "#ccc" }}
+          />
+          <YAxis tick={{ fill: "#555" }} axisLine={{ stroke: "#ccc" }} />
+          <RechartsTooltip content={<CustomTooltip />} />
+          <Line
+            type="monotone"
+            dataKey="people"
+            stroke="#008000"
+            strokeWidth={2}
+            activeDot={{ r: 8 }}
+            name="People"
+          />
+          <Line
+            type="monotone"
+            dataKey="businesses"
+            stroke="#fbb03b"
+            strokeWidth={2}
+            activeDot={{ r: 8 }}
+            name="Businesses"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 

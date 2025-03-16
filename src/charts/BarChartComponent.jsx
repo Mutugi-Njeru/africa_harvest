@@ -1,3 +1,4 @@
+import { Download } from "lucide-react";
 import React from "react";
 import {
   BarChart,
@@ -22,25 +23,33 @@ const data = [
 
 const BarChartComponent = () => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="pv" fill="#8A9A5B" />
-        <Bar dataKey="uv" fill="#FFD700" />
-      </BarChart>
-    </ResponsiveContainer>
+    <div style={{ width: "100%", height: "400px", padding: 0, margin: 0 }}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Farmers Distribution</h2>
+        <button className="flex items-center cursor-pointer text-gray-600 hover:text-gray-800">
+          <Download className="w-5 h-5" />
+        </button>
+      </div>
+      <ResponsiveContainer width="100%" height="90%">
+        <BarChart
+          data={data}
+          margin={{
+            top: 0,
+            right: 10,
+            left: 20,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+
+          <Bar dataKey="pv" fill="#16a34a" name="PV" />
+          <Bar dataKey="uv" fill="#fbb03b" name="UV" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 

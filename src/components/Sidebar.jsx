@@ -39,10 +39,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, text: "Overview", path: "/" },
+    { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     { icon: User, text: "S.admin", showOnlyForUserId: 1, path: "/s-admin" },
-    { icon: User, text: "Account", path: "/account" },
-    { icon: Users, text: "Users", hasDropdown: true },
+    { icon: User, text: "Users", path: "/users" },
+    { icon: Users, text: "Reports", hasDropdown: true },
     { icon: ShoppingCart, text: "Products" },
     { icon: FileText, text: "Orders" },
     { icon: BarChart3, text: "Analytics" },
