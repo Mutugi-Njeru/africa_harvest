@@ -19,7 +19,7 @@ import {
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
-  const userId = 1;
+  const superAdmin = localStorage.getItem("superAdmin");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,7 +40,12 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const menuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
-    { icon: User, text: "S.admin", showOnlyForUserId: 1, path: "/s-admin" },
+    {
+      icon: User,
+      text: "S.admin",
+      showOnlyForUserId: "SUPER_ADMIN",
+      path: "/s-admin",
+    },
     { icon: User, text: "Users", path: "/users" },
     { icon: Users, text: "Reports", hasDropdown: true },
     { icon: ShoppingCart, text: "Products" },
@@ -58,7 +63,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   // Filter menu items based on userId
   const filteredMenuItems = menuItems.filter(
-    (item) => !item.showOnlyForUserId || item.showOnlyForUserId === userId
+    (item) => !item.showOnlyForUserId || item.showOnlyForUserId === superAdmin
   );
 
   return (

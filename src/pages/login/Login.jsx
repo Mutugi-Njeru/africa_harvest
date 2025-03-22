@@ -1,157 +1,210 @@
-import { useState } from "react";
-import { Lock, User, ArrowRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import logo from "../../assets/ahlogo.png";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import CubeAnimation from "./CubeAnimation";
+import { hasPermission } from "../../utils/Utils";
+import {
+  accountId,
+  coordinator,
+  firstName,
+  loginUser,
+  logout,
+  permissions,
+  storeSuperAdmin,
+  storeToken,
+} from "../../service/AuthService";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AccountModal from "./AccountModal";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    navigate("/overview");
-  };
-
-  const testimonials = [
+  const carouselItems = [
     {
-      id: 1,
-      text: "Our vision is premised on using tools agricultural science and technological innovations and strategic partnerships with grassroots communities, governments, research institutions, public/private sector and development partners at different levels to create sustainable life-changing impact and developing working models based on crop value chains, which could be shared widely to further scale up the impact",
-      author: "Our Vision",
+      title: "Our History",
+      text: "Africa Harvest's vision of an Africa free of hunger, poverty and malnutrition is being achieved through the use of science and technology, gender-sensitive, appropriate agricultural technologies and innovative institutional approaches to improve the livelihoods of rural communities, particularly smallholder farmers..”.",
     },
     {
-      id: 2,
-      text: "Our mission to disseminate appropriate innovative agricultural technologies and institution approaches through the whole value chain to improve the livelihoods of rural communities",
-      author: "Our Mission",
+      title: "Our Vision",
+      text: "Our mission to disseminate appropriate innovative agricultural technologies and institution approaches through the whole value chain to improve the livelihoods of rural communities..",
     },
     {
-      id: 3,
-      text: "Africa Harvest's vision of an Africa free of hunger, poverty and malnutrition is being achieved through the use of science and technology, gender-sensitive, appropriate agricultural technologies and innovative institutional approaches to improve the livelihoods of rural communities, particularly smallholder farmers.",
-      author: "Africa Harvest",
+      title: "Our Values",
+      text: "Our vision is premised on using tools agricultural science and technological innovations and strategic partnerships with grassroots communities, governments, research institutions, public/private sector and development partners at different levels to create sustainable life-changing impact and developing working models based on crop value chains, which could be shared widely to further scale up the impact..",
     },
   ];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [carouselItems.length]);
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    logout();
+    const auth = btoa(username + ":" + password);
+    setLoading(true);
+
+    try {
+      const response = await loginUser(auth);
+      const token = "Bearer " + response.data.message.token;
+      storeToken(token);
+      firstName(response.data.message.user.firstName);
+      coordinator(response.data.message.user.coordinator);
+      const userPermissions = JSON.stringify(
+        response.data.message.user.permissions
+      );
+      permissions(userPermissions);
+      const user = response.data.message.user.roles[0];
+      if (user === "SUPER_ADMIN") {
+        storeSuperAdmin(user);
+        setShowAccountModal(true);
+      } else {
+        accountId(response.data.message.user.accountId);
+        toast.success("Login successful");
+        navigate("/overview");
+      }
+    } catch (error) {
+      console.log(error);
+      const errorMessage =
+        error.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+      setUsername("");
+      setPassword("");
+    }
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Login Form */}
-      <div className="w-2/5 bg-white flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <div className="text-center space-y-2">
-            <div className="flex justify-center mb-8">
-              <img
-                src={logo}
-                alt="Africa Harvest Logo"
-                className="w-48 h-auto"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome Back!</h1>
-            <p className="text-sm text-gray-500">
-              Sign in to continue to Africa Harvest
-            </p>
-          </div>
-
-          <form onSubmit={handleLogin} className="mt-8 space-y-6">
-            <div className="space-y-4">
-              <div className="relative">
-                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+    <div className="flex h-screen">
+      {/* Right Section - Login Form (1/4 width) */}
+      <div className="flex-[1] flex flex-col items-center justify-center">
+        <img src={logo} alt="Logo" className="h-20 w-auto mb-6" />
+        <div className="p-10 w-full">
+          <form
+            onSubmit={handleLogin}
+            className="flex w-full max-w-md flex-col space-y-5"
+          >
+            <div>
+              <div className="relative mt-2 w-full">
                 <input
                   type="text"
-                  placeholder="Username"
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-yellow-600 focus:outline-none focus:ring-0"
+                  placeholder=" "
                   required
                 />
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
-                  required
-                />
+                <label
+                  htmlFor="username"
+                  className="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-75 transform cursor-text select-none bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-green-600"
+                >
+                  Enter Your Username
+                </label>
               </div>
             </div>
 
+            <div>
+              <div className="relative mt-2 w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-yellow-600 focus:outline-none focus:ring-0"
+                  placeholder=" "
+                  required
+                />
+                <label
+                  htmlFor="password"
+                  className="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-75 transform cursor-text select-none bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-green-600"
+                >
+                  Enter Your Password
+                </label>
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            {/* Login Button */}
             <button
               type="submit"
+              className="rounded-lg bg-green-800 py-3 font-bold text-white flex items-center justify-center"
               disabled={loading}
-              onClick={handleLogin}
-              className="w-full bg-green-800 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             >
               {loading ? (
-                "Signing in..."
-              ) : (
                 <>
-                  Sign In
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                  Logging in...
                 </>
+              ) : (
+                "Login"
               )}
             </button>
-
-            <div className="text-center">
-              <a
-                href="/forgot-password"
-                className="text-sm text-green-600 hover:text-green-700 transition-colors"
-              >
-                Forgot your password?
-              </a>
-            </div>
           </form>
         </div>
       </div>
 
-      {/* Right Side - Background with Testimonials and Bubbles */}
-      <div className="w-3/5 relative bg-green-900 overflow-hidden">
+      {/* Left Section - Image with Yellow-Orange Overlay (3/4 width) */}
+      <div className="flex-[3] relative">
         <img
-          src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-          alt="Farming"
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20"
+          src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop"
+          alt="Background"
+          className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-yellowOrange bg-opacity-90"></div>
 
-        {/* Bubbles */}
-        <div className="absolute top-0 right-0 w-full h-full pointer-events-none">
-          {[...Array(15)].map((_, i) => {
-            const size = `${20 + Math.random() * 60}px`;
-            return (
-              <div
-                key={i}
-                className="absolute bg-green-400 opacity-30 rounded-full animate-bubble-move"
-                style={{
-                  width: size,
-                  height: size,
-                  top: `${Math.random() * 100}%`,
-                  left: `${70 + Math.random() * 30}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${4 + Math.random() * 3}s`,
-                }}
-              />
-            );
-          })}
-        </div>
+        {/* Cubes Animation */}
+        <CubeAnimation />
 
-        {/* Testimonials */}
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="w-full max-w-3xl">
-            {testimonials.map((testimonial) => (
-              <div
-                key={testimonial.id}
-                className="flex items-center justify-center h-full w-full"
-              >
-                <blockquote className="text-center max-w-2xl space-y-6">
-                  <p className="text-white text-xl font-extralight italic leading-relaxed">
-                    "{testimonial.text}"
-                  </p>
-                  <footer className="mt-4">
-                    <div className="text-white">
-                      <cite className="font-bold text-yellow-400 italic">
-                        {testimonial.author}
-                      </cite>
-                    </div>
-                  </footer>
-                </blockquote>
-              </div>
-            ))}
+        {/* Sliding Carousel */}
+        <div className="absolute inset-0 flex items-center justify-center text-white">
+          <div className="overflow-hidden w-[800px]">
+            <div
+              className="flex transition-transform duration-700 ease-in-out"
+              style={{
+                transform: `translateX(-${currentIndex * 800}px)`,
+              }}
+            >
+              {carouselItems.map((item, index) => (
+                <div key={index} className="min-w-[800px]">
+                  <h2 className="text-2xl text-green-800 font-bold">
+                    {item.title}
+                  </h2>
+                  <p className="text-xl font-bold">{item.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Account Selection Modal */}
+      <AccountModal
+        showAccountModal={showAccountModal}
+        setShowAccountModal={setShowAccountModal}
+      />
     </div>
   );
 };

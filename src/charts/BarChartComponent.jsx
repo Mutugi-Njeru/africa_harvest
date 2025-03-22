@@ -45,7 +45,7 @@ const BarChartComponent = () => {
           <YAxis />
           <Tooltip />
 
-          <Bar dataKey="pv" fill="#16a34a" name="PV" />
+          <Bar dataKey="pv" fill="#4CAF50" name="PV" />
           <Bar dataKey="uv" fill="#fbb03b" name="UV" />
         </BarChart>
       </ResponsiveContainer>

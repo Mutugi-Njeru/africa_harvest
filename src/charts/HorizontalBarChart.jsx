@@ -24,18 +24,18 @@ const data = [
 ];
 
 const COLORS = [
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
+  "#4CAF50",
   "#fbb03b",
-  "#16a34a",
 ];
 
 const HorizontalBarChart = () => {

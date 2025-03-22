@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Smile, ChevronDown } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../service/AuthService";
+import { nav } from "framer-motion/client";
 
 const Header = ({ sidebarWidth }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const firstName = localStorage.getItem("firstName");
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const location = useLocation();
 
   const getPageTitle = () => {
     switch (location.pathname) {
-      case "/":
+      case "/overview":
         return "Overview";
       case "/s-admin":
         return "Super Admin";
@@ -37,8 +41,8 @@ const Header = ({ sidebarWidth }) => {
   };
 
   const handleLogout = () => {
-    // Handle logout logic here
-    console.log("User logged out");
+    logout();
+    navigate("/");
   };
 
   const handleProfile = () => {
@@ -66,7 +70,7 @@ const Header = ({ sidebarWidth }) => {
 
   return (
     <div
-      className="fixed top-0 shadow-sm bg-white border-b p-3"
+      className="fixed top-0 shadow-sm bg-white border-b p-3 z-40"
       style={{
         left: sidebarWidth,
         right: 0,
@@ -87,7 +91,7 @@ const Header = ({ sidebarWidth }) => {
                 size={30}
                 className="rounded-full mr-2 text-white bg-yellowOrange"
               />
-              <p className="mr-2">ADMIN</p>
+              <p className="mr-2">{firstName}</p>
               <ChevronDown size={16} className="text-gray-500" />{" "}
             </div>
             {isDropdownOpen && (

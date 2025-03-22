@@ -12,7 +12,7 @@ const PieChart = () => {
     datasets: [
       {
         data: [60, 40], // Example data values
-        backgroundColor: ["#16a34a", "#fbb03b"], // Colors for the pie chart
+        backgroundColor: ["#4CAF50", "#fbb03b"], // Colors for the pie chart
         hoverBackgroundColor: ["#4CAF50", "#fbb03b"], // Hover colors
       },
     ],
