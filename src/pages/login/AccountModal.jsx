@@ -17,7 +17,6 @@ const AccountModal = ({ showAccountModal, setShowAccountModal }) => {
           const response = await axios.get(
             BASE_REST_API_URL + "accounts/v1/all"
           );
-          console.log("API Response:", response.data);
           setAccounts(response.data.message);
         } catch (error) {
           console.error("Error fetching accounts:", error);

@@ -94,6 +94,8 @@ const Login = () => {
       {/* Right Section - Login Form (1/4 width) */}
       <div className="flex-[1] flex flex-col items-center justify-center">
         <img src={logo} alt="Logo" className="h-20 w-auto mb-6" />
+        <h1 className="text-3xl font-bold text-gray-600 mb-2">Welcome Back!</h1>
+        <p className="font-bold text-gray-400">Please Log in to continue.</p>
         <div className="p-10 w-full">
           <form
             onSubmit={handleLogin}

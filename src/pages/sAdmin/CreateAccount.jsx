@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 
-const CreateAccount = ({ isModalOpen, closeModal }) => {
+const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
   const [formData, setFormData] = useState({
     accountName: "",
     email: "",
@@ -30,7 +30,7 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
     });
   };
 
-  const handleLogin = async (e) => {
+  const createAccount = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -39,18 +39,15 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
       );
       if (response.status === 200 || response.status === 201) {
         toast.success("Account created successfully");
-        resetForm(); // Reset the form fields
-        closeModal(); // Close the modal
+        resetForm();
+        closeModal();
+        onAccountCreated();
       }
     } catch (error) {
       if (error.response) {
-        const errorViolations = error.response.data.message;
-        const errorMessage =
-          errorViolations && errorViolations.length > 0
-            ? errorViolations[0].message
-            : "An error occurred";
-
-        toast.error(errorMessage);
+        const errorViolations =
+          error.response.data.errors[0] || "Account creation failed";
+        toast.error(errorViolations);
       }
     }
   };
@@ -59,9 +56,9 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
     <div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+          <div className="bg-white p-6 shadow-lg w-1/3">
             <h2 className="text-lg font-semibold mb-4">Create Account</h2>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={createAccount}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Account Name
@@ -71,7 +68,7 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
                   name="accountName"
                   value={formData.accountName}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                   placeholder="Enter Account name"
                   required
                 />
@@ -85,7 +82,7 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                   placeholder="Enter account email"
                   required
                 />
@@ -99,7 +96,7 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
                   name="msisdn"
                   value={formData.msisdn}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                   placeholder="Enter phone number"
                   required
                 />
@@ -113,7 +110,7 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                   placeholder="Enter address"
                   required
                 />
@@ -126,17 +123,17 @@ const CreateAccount = ({ isModalOpen, closeModal }) => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                   placeholder="Enter description"
                   rows="4"
                   required
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end mt-4">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="w-1/2 bg-gray-500 text-white p-3 hover:bg-gray-600"
+                  className="w-1/2 bg-gray-400 text-white p-3 hover:bg-gray-600"
                 >
                   Cancel
                 </button>
