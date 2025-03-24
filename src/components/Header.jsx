@@ -7,34 +7,9 @@ import { nav } from "framer-motion/client";
 const Header = ({ sidebarWidth }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const firstName = localStorage.getItem("firstName");
+  const accountName = localStorage.getItem("accountName");
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
-  const location = useLocation();
-
-  const getPageTitle = () => {
-    switch (location.pathname) {
-      case "/overview":
-        return "Overview";
-      case "/s-admin":
-        return "Super Admin";
-      case "/account":
-        return "Account";
-      case "/users":
-        return "Users";
-      case "/products":
-        return "Products";
-      case "/orders":
-        return "Orders";
-      case "/analytics":
-        return "Analytics";
-      case "/notifications":
-        return "Notifications";
-      case "/settings":
-        return "Settings";
-      default:
-        return "ADMIN"; // Fallback title
-    }
-  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -57,7 +32,6 @@ const Header = ({ sidebarWidth }) => {
   };
 
   useEffect(() => {
-    // Add event listener when the dropdown is open
     if (isDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -79,7 +53,9 @@ const Header = ({ sidebarWidth }) => {
     >
       <div className="flex flex-row items-center justify-between">
         <div className="text-center pl-2">
-          <h1 className="font-semibold">{getPageTitle()}</h1>{" "}
+          <h1 className="font-semibold text-2xl text-gray-800">
+            {accountName}
+          </h1>{" "}
         </div>
         <div className="items-center">
           <div className="relative" ref={dropdownRef}>

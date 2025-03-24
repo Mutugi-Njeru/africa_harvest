@@ -3,12 +3,16 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Select from "react-select";
 import { accountId, BASE_REST_API_URL } from "../../service/AuthService";
+import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const CreateUser = ({ isOpen, onClose, accountId }) => {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -58,6 +62,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const updatedFormData = {
         ...formData,
@@ -86,6 +91,8 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("Failed to create user");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,7 +130,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="First Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -137,7 +144,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -154,7 +161,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -163,14 +170,21 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-gray-800"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
@@ -185,7 +199,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -199,7 +213,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.msisdn}
                 onChange={handleChange}
                 placeholder="254712345678"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -218,6 +232,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 className="basic-multi-select"
                 classNamePrefix="select"
                 onChange={handleRolesChange}
+                styles={CustomFiltersStyles}
               />
             </div>
             <div className="flex-1">
@@ -231,6 +246,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 className="basic-multi-select"
                 classNamePrefix="select"
                 onChange={handlePermissionsChange}
+                styles={CustomFiltersStyles}
               />
             </div>
           </div>
@@ -244,7 +260,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
               rows="3"
               required
             />
@@ -255,15 +271,16 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-gray-400 hover:bg-gray-600"
+              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600 text-white"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
+              className="w-1/2 px-4 py-2.5 bg-green-500 text-white hover:bg-green-600"
+              disabled={isLoading}
             >
-              Create User
+              {isLoading ? "Creating..." : "Create"}{" "}
             </button>
           </div>
         </form>

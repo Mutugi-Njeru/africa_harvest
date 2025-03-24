@@ -13,7 +13,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route element={<Dashboard />}>
           <Route path="/overview" element={<Overview />} />
-          <Route path="/s-admin" element={<SAdmin />} />
+          <Route path="/accounts" element={<SAdmin />} />
           <Route path="/users" element={<Users />} />
         </Route>
       </Routes>

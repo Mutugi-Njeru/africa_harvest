@@ -3,13 +3,15 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Select from "react-select";
 import { BASE_REST_API_URL } from "../../service/AuthService";
+import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 
-const CreateUser = ({ isOpen, onClose }) => {
+const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const accountId = localStorage.getItem("accountId");
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -59,6 +61,7 @@ const CreateUser = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const updatedFormData = {
         ...formData,
@@ -84,9 +87,12 @@ const CreateUser = ({ isOpen, onClose }) => {
       setSelectedRoles([]);
       setSelectedPermissions([]);
       onClose();
+      onUserCreated();
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("Failed to create user");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -124,7 +130,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="First Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -138,7 +144,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -155,7 +161,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -169,7 +175,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -186,7 +192,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -200,7 +206,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 value={formData.msisdn}
                 onChange={handleChange}
                 placeholder="254712345678"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
@@ -219,6 +225,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 className="basic-multi-select"
                 classNamePrefix="select"
                 onChange={handleRolesChange}
+                styles={CustomFiltersStyles}
               />
             </div>
             <div className="flex-1">
@@ -232,6 +239,7 @@ const CreateUser = ({ isOpen, onClose }) => {
                 className="basic-multi-select"
                 classNamePrefix="select"
                 onChange={handlePermissionsChange}
+                styles={CustomFiltersStyles}
               />
             </div>
           </div>
@@ -245,7 +253,7 @@ const CreateUser = ({ isOpen, onClose }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
               rows="3"
               required
             />
@@ -256,15 +264,16 @@ const CreateUser = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-gray-400 hover:bg-gray-600"
+              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600"
             >
               Cancel
             </button>
             <button
               type="submit"
               className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
+              disabled={isLoading}
             >
-              Create User
+              {isLoading ? "Creating..." : "Create"}{" "}
             </button>
           </div>
         </form>

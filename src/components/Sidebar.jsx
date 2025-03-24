@@ -42,9 +42,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
       icon: User,
-      text: "S.admin",
+      text: "Accounts",
       showOnlyForUserId: "SUPER_ADMIN",
-      path: "/s-admin",
+      path: "/accounts",
     },
     { icon: User, text: "Users", path: "/users" },
     { icon: Users, text: "Reports", hasDropdown: true },

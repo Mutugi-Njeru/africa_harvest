@@ -13,9 +13,9 @@ const Overview = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div>
-      <div className="flex justify-end items-center">
-        {/* filter and download button */}
+    <div className="">
+      <div className="flex justify-between items-center">
+        <div className="ml-4 text-xl font-bold text-gray-600">Overview</div>
         <div className="flex justify-end items-center mr-5">
           <button
             className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-green-700 text-white"

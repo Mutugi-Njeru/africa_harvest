@@ -6,6 +6,7 @@ import CubeAnimation from "./CubeAnimation";
 import { hasPermission } from "../../utils/Utils";
 import {
   accountId,
+  accountName,
   coordinator,
   firstName,
   loginUser,
@@ -70,6 +71,7 @@ const Login = () => {
         setShowAccountModal(true);
       } else {
         accountId(response.data.message.user.accountId);
+        accountName(response.data.message.user.account);
         toast.success("Login successful");
         navigate("/overview");
       }

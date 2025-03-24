@@ -12,6 +12,8 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
     description: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -32,6 +34,8 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
 
   const createAccount = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading state to true
+
     try {
       const response = await axios.post(
         BASE_REST_API_URL + "accounts/v1/create",
@@ -49,6 +53,8 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
           error.response.data.errors[0] || "Account creation failed";
         toast.error(errorViolations);
       }
+    } finally {
+      setIsLoading(false); // Reset loading state
     }
   };
 
@@ -68,7 +74,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   name="accountName"
                   value={formData.accountName}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                   placeholder="Enter Account name"
                   required
                 />
@@ -82,7 +88,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                   placeholder="Enter account email"
                   required
                 />
@@ -96,7 +102,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   name="msisdn"
                   value={formData.msisdn}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                   placeholder="Enter phone number"
                   required
                 />
@@ -110,7 +116,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                   placeholder="Enter address"
                   required
                 />
@@ -123,25 +129,26 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                   placeholder="Enter description"
                   rows="4"
                   required
                 />
               </div>
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end mt-6">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="w-1/2 bg-gray-400 text-white p-3 hover:bg-gray-600"
+                  className="w-1/2 bg-red-400 text-white p-3 hover:bg-red-600"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 bg-green-800 text-white p-3 hover:bg-yellowOrange ml-0"
+                  className="w-1/2 bg-green-500 text-white p-3 hover:bg-green-600 ml-0"
+                  disabled={isLoading}
                 >
-                  Create
+                  {isLoading ? "Creating..." : "Create"}{" "}
                 </button>
               </div>
             </form>

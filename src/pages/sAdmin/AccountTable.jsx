@@ -1,11 +1,11 @@
-import { Edit, UserPlus, Search } from "lucide-react";
+import { Edit, UserPlus, Search, Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CreateUser from "./CreateUser"; // Import the new modal component
 
-const AccountTable = ({ refresh }) => {
+const AccountTable = ({ refresh, openModal }) => {
   const [accounts, setAccounts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -96,22 +96,35 @@ const AccountTable = ({ refresh }) => {
   );
 
   return (
-    <div className="relative shadow-md sm:rounded-lg mt-3">
-      <div className="mb-2 relative">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <Search className="w-5 h-5 text-gray-400" />
+    <div className="relative">
+      <div className="ml-2 mt-3 text-xl font-bold text-gray-600">Accounts</div>
+      <div className="flex justify-between items-center mb-2 mt-3">
+        <div className="mb-2 relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search className="w-5 h-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by account name, phone, or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+          />
         </div>
-        <input
-          type="text"
-          placeholder="Search by account name, phone, or email"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
-        />
+        <div className="flex justify-end items-center">
+          <button
+            onClick={openModal}
+            className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange text-white"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="ml-2 mr-2">Create Account</span>
+          </button>
+        </div>
       </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
         </div>
       ) : (
         <table className="w-full text-base text-left rtl:text-right text-gray-500 ">
@@ -135,16 +148,16 @@ const AccountTable = ({ refresh }) => {
               >
                 <th
                   scope="row"
-                  className="px-6 py-4 font-medium text-green-600 whitespace-nowrap "
+                  className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
                 >
                   {index + 1}
                 </th>
-                <td className="px-6 py-4 font-medium">{account.accountName}</td>
-                <td className="px-6 py-4">{account.description}</td>
-                <td className="px-6 py-4">{account.address}</td>
-                <td className="px-6 py-4">{account.msisdn}</td>
-                <td className="px-6 py-4">{account.email}</td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-3">{account.accountName}</td>
+                <td className="px-6 py-3">{account.description}</td>
+                <td className="px-6 py-3">{account.address}</td>
+                <td className="px-6 py-3">{account.msisdn}</td>
+                <td className="px-6 py-3">{account.email}</td>
+                <td className="px-6 py-3">
                   <button
                     onClick={() => handleStatusToggle(account)}
                     className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
@@ -158,7 +171,7 @@ const AccountTable = ({ refresh }) => {
                     ></div>
                   </button>
                 </td>
-                <td className="flex items-center px-6 py-4">
+                <td className="flex items-center px-6 py-3">
                   <a className="font-medium text-green-600 hover:underline flex items-center cursor-pointer">
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
@@ -186,13 +199,13 @@ const AccountTable = ({ refresh }) => {
             <div className="mt-6 flex">
               <button
                 onClick={() => setShowActivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-gray-400"
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmActivation}
-                className="w-1/2 px-4 py-2 bg-green-800 text-white"
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
               >
                 Yes, Activate
               </button>
@@ -210,13 +223,13 @@ const AccountTable = ({ refresh }) => {
             <div className="mt-6 flex">
               <button
                 onClick={() => setShowDeactivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-gray-400"
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDeactivation}
-                className="w-1/2 px-4 py-2 bg-green-800 text-white"
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
               >
                 Yes, Deactivate
               </button>

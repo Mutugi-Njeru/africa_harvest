@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import { accountId, BASE_REST_API_URL } from "../../service/AuthService";
+import {
+  accountId,
+  accountName,
+  BASE_REST_API_URL,
+} from "../../service/AuthService";
 import axios from "axios";
 
 const AccountModal = ({ showAccountModal, setShowAccountModal }) => {
@@ -40,6 +44,7 @@ const AccountModal = ({ showAccountModal, setShowAccountModal }) => {
     setShowAccountModal(false);
     toast.success("Login successful");
     accountId(selectedOption.value);
+    accountName(selectedOption.label);
     navigate("/overview");
   };
 

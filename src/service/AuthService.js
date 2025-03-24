@@ -29,6 +29,7 @@ export const getToken=()=>localStorage.getItem("token")
 // store login items
 export const storeSuperAdmin=(superAdmin)=>localStorage.setItem("superAdmin", superAdmin)
 export const accountId=(accountId)=>localStorage.setItem("accountId", accountId)
+export const accountName=(accountName)=>localStorage.setItem("accountName", accountName)
 export const firstName=(firstName)=>localStorage.setItem("firstName", firstName)
 export const coordinator=(coordinator)=>localStorage.setItem("coordinator", coordinator)
 export const permissions=(permissions)=>localStorage.setItem("permissions", permissions)
