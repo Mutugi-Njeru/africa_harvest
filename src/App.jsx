@@ -5,6 +5,7 @@ import SAdmin from "./pages/sAdmin/SAdmin";
 import Login from "./pages/login/Login";
 import { ToastContainer } from "react-toastify";
 import Users from "./pages/users/Users";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -13,7 +14,14 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route element={<Dashboard />}>
           <Route path="/overview" element={<Overview />} />
-          <Route path="/accounts" element={<SAdmin />} />
+          <Route
+            path="/accounts"
+            element={
+              <ProtectedRoute>
+                <SAdmin />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/users" element={<Users />} />
         </Route>
       </Routes>

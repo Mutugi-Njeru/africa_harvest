@@ -12,6 +12,7 @@ import {
   loginUser,
   logout,
   permissions,
+  storeRoles,
   storeSuperAdmin,
   storeToken,
 } from "../../service/AuthService";
@@ -59,15 +60,12 @@ const Login = () => {
       const response = await loginUser(auth);
       const token = "Bearer " + response.data.message.token;
       storeToken(token);
-      firstName(response.data.message.user.firstName);
-      coordinator(response.data.message.user.coordinator);
-      const userPermissions = JSON.stringify(
-        response.data.message.user.permissions
-      );
-      permissions(userPermissions);
+      firstName(response.data.message.user.firstName); // store user's first name
+      coordinator(response.data.message.user.coordinator); // store user's coordinator status
+      storeRoles(JSON.stringify(response.data.message.user.roles)); // store user's roles
+      permissions(JSON.stringify(response.data.message.user.permissions)); // store user's permissions
       const user = response.data.message.user.roles[0];
       if (user === "SUPER_ADMIN") {
-        storeSuperAdmin(user);
         setShowAccountModal(true);
       } else {
         accountId(response.data.message.user.accountId);
@@ -170,7 +168,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Left Section - Image with Yellow-Orange Overlay (3/4 width) */}
+      {/* Left Section */}
       <div className="flex-[3] relative">
         <img
           src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop"

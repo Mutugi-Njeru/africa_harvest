@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/ahlogo.png";
 import smallLogo from "../assets/smallLogo.png";
 import {
@@ -16,10 +16,12 @@ import {
   ChevronUp,
   User,
 } from "lucide-react";
+import { hasRolePermission } from "../utils/Utils";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
-  const superAdmin = localStorage.getItem("superAdmin");
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  const isSuperAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,8 +45,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     {
       icon: User,
       text: "Accounts",
-      showOnlyForUserId: "SUPER_ADMIN",
       path: "/accounts",
+      showOnlyForSuperAdmin: true, // Changed from showOnlyForUserId to be more descriptive
     },
     { icon: User, text: "Users", path: "/users" },
     { icon: Users, text: "Reports", hasDropdown: true },
@@ -61,9 +63,11 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { text: "User Roles" },
   ];
 
-  // Filter menu items based on userId
+  // Filter menu items - show item if:
+  // 1. It doesn't have showOnlyForSuperAdmin flag, OR
+  // 2. It has showOnlyForSuperAdmin flag AND user is super admin
   const filteredMenuItems = menuItems.filter(
-    (item) => !item.showOnlyForUserId || item.showOnlyForUserId === superAdmin
+    (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
   );
 
   return (

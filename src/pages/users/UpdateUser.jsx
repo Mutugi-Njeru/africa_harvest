@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
-import Select from "react-select";
-import { accountId, BASE_REST_API_URL } from "../../service/AuthService";
-import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const CreateUser = ({ isOpen, onClose, accountId }) => {
-  const [roles, setRoles] = useState([]);
-  const [permissions, setPermissions] = useState([]);
-  const [selectedRoles, setSelectedRoles] = useState([]);
-  const [selectedPermissions, setSelectedPermissions] = useState([]);
+const UpdateUser = ({ isOpen, onClose, userData, onUserUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,36 +15,21 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     msisdn: "",
     password: "",
     description: "",
-    roles: [],
-    permissions: [],
   });
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/roles"
-        );
-        setRoles(response.data.message);
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      }
-    };
-
-    const fetchPermissions = async () => {
-      try {
-        const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/users/1/permissions"
-        );
-        setPermissions(response.data.message);
-      } catch (error) {
-        console.error("Error fetching permissions:", error);
-      }
-    };
-
-    fetchRoles();
-    fetchPermissions();
-  }, []);
+    if (userData) {
+      setFormData({
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        username: userData.username || "",
+        email: userData.email || "",
+        msisdn: userData.msisdn || "",
+        password: "",
+        description: userData.description || "",
+      });
+    }
+  }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,60 +43,26 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const updatedFormData = {
-        ...formData,
-        roles: selectedRoles.map((role) => role.value),
-        permissions: selectedPermissions.map((permission) => permission.value),
-      };
-      const response = await axios.post(
-        BASE_REST_API_URL + `users/v1/create?accountId=${accountId}`,
-        updatedFormData
+      const response = await axios.put(
+        `${BASE_REST_API_URL}/users/v1/${userData.userId}`,
+        formData
       );
       toast.success(response.data.message);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        username: "",
-        email: "",
-        msisdn: "",
-        password: "",
-        description: "",
-        roles: [],
-        permissions: [],
-      });
-      setSelectedRoles([]);
-      setSelectedPermissions([]);
       onClose();
+      onUserUpdated();
     } catch (error) {
-      console.error("Error creating user:", error);
-      toast.error("Failed to create user");
+      console.error("Error updating user:", error);
+      toast.error("Failed to update user");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const roleOptions = roles.map((role) => ({
-    value: role.role,
-    label: role.role,
-  }));
-  const permissionOptions = permissions.map((permission) => ({
-    value: permission.permission,
-    label: permission.permission,
-  }));
-
-  const handleRolesChange = (selectedOptions) => {
-    setSelectedRoles(selectedOptions);
-  };
-  const handlePermissionsChange = (selectedOptions) => {
-    setSelectedPermissions(selectedOptions);
-  };
-
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6  shadow-lg w-[800px]">
-        <h2 className="text-lg font-semibold mb-4">Create User</h2>
+      <div className="bg-white p-6 shadow-lg w-[800px]">
+        <h2 className="text-lg font-semibold mb-4">Update User</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -129,12 +74,10 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                placeholder="First Name"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Last Name
@@ -144,7 +87,6 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                placeholder="Last Name"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
@@ -161,7 +103,6 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Username"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
@@ -175,9 +116,8 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Password"
+                placeholder="leave blank to keep the same password"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
-                required
               />
               <button
                 type="button"
@@ -188,7 +128,6 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
               </button>
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -199,7 +138,6 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="johndoe@gmail.com"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
@@ -213,41 +151,8 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 name="msisdn"
                 value={formData.msisdn}
                 onChange={handleChange}
-                placeholder="254712345678"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
-              />
-            </div>
-          </div>
-
-          {/* Roles and Permissions Dropdowns */}
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Roles
-              </label>
-              <Select
-                isMulti
-                name="roles"
-                options={roleOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={handleRolesChange}
-                styles={CustomFiltersStyles}
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Permissions
-              </label>
-              <Select
-                isMulti
-                name="permissions"
-                options={permissionOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={handlePermissionsChange}
-                styles={CustomFiltersStyles}
               />
             </div>
           </div>
@@ -281,7 +186,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
               className="w-1/2 px-4 py-2.5 bg-green-500 text-white hover:bg-green-600"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Create"}{" "}
+              {isLoading ? "Updating..." : "Update"}{" "}
             </button>
           </div>
         </form>
@@ -290,4 +195,4 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
   );
 };
 
-export default CreateUser;
+export default UpdateUser;

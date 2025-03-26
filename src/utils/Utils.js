@@ -1,6 +1,12 @@
+//checks if user has permission
 export const hasPermission = (permissions, requiredPermission) => {
+  if (Array.isArray(requiredPermission)) {
+    return requiredPermission.some(role => permissions.includes(role));
+  }
     return permissions.includes(requiredPermission);
   };
+
+  //downloads users data
   export const exportToCSV = (users) => {
     const headers = [
       "User ID",
@@ -51,4 +57,12 @@ export const hasPermission = (permissions, requiredPermission) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  //check if user has role permission
+  export const hasRolePermission = (permissions, requiredPermission) => {
+    if (Array.isArray(requiredPermission)) {
+      return requiredPermission.some(role => permissions.includes(role));
+    }
+    return permissions.includes(requiredPermission);
   };

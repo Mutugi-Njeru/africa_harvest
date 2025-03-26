@@ -4,6 +4,7 @@ import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 
 const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     accountName: "",
     email: "",
@@ -11,8 +12,6 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
     address: "",
     description: "",
   });
-
-  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
