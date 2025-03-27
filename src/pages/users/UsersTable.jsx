@@ -10,6 +10,9 @@ import { useState } from "react";
 import UpdateUser from "./UpdateUser";
 import { hasPermission } from "../../utils/Utils";
 import PermissionsModal from "./PermissionsModal";
+import axios from "axios";
+import { BASE_REST_API_URL } from "../../service/AuthService";
+import { toast } from "react-toastify";
 
 const UsersTable = ({
   users,
@@ -26,7 +29,9 @@ const UsersTable = ({
   const userPermissions = JSON.parse(localStorage.getItem("permissions")) || [];
   const canEditUser = hasPermission(userPermissions, "EDIT_USER");
   const canDeleteUser = hasPermission(userPermissions, "DELETE_USER");
-
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showActivateModal, setShowActivateModal] = useState(false);
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setIsUpdateModalOpen(true);
@@ -53,6 +58,72 @@ const UsersTable = ({
       user.email.toLowerCase().includes(searchLower)
     );
   });
+
+  const deactivateUser = async (userId) => {
+    try {
+      const response = await axios.put(
+        BASE_REST_API_URL + `/users/v1/${userId}/deactivate`
+      );
+      toast.success(response.data.message);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+      toast.error("Cannot deactivate user");
+    }
+  };
+  const deleteUser = async (userId) => {
+    try {
+      const response = await axios.delete(
+        BASE_REST_API_URL + `/users/v1/${userId}/delete`
+      );
+      toast.success(response.data.message);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Cannot delete user");
+    }
+  };
+  const activateUser = async (userId) => {
+    try {
+      const response = await axios.put(
+        BASE_REST_API_URL + `/users/v1/${userId}/activate`
+      );
+      toast.success(response.data.message);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error activating user:", error);
+      toast.error("Cannot eactivate user");
+    }
+  };
+  const handleStatusToggle = (user) => {
+    setSelectedUser(user);
+    if (user.isActive) {
+      setShowDeactivateModal(true);
+    } else {
+      setShowActivateModal(true);
+    }
+  };
+  const handleConfirmDeactivation = () => {
+    if (selectedUser) {
+      deactivateUser(selectedUser.userId);
+      setShowDeactivateModal(false);
+      setSelectedUser(null);
+    }
+  };
+  const handleConfirmActivation = () => {
+    if (selectedUser) {
+      activateUser(selectedUser.userId);
+      setShowActivateModal(false);
+      setSelectedUser(null);
+    }
+  };
+  const handleConfirmDeletion = () => {
+    if (selectedUser) {
+      deleteUser(selectedUser.userId);
+      setShowDeleteModal(false);
+      setSelectedUser(null);
+    }
+  };
 
   return (
     <div>
@@ -106,7 +177,9 @@ const UsersTable = ({
                     <th className="px-4 py-4">County</th>
                     <th className="px-4 py-4">Subcounty</th>
                     <th className="px-4 py-4">Ward</th>
-                    <th className="px-4 py-4">Status</th>
+                    {canEditUser || canDeleteUser ? (
+                      <th className="px-4 py-4">Status</th>
+                    ) : null}
                     {canEditUser || canDeleteUser ? (
                       <th className="px-4 py-4">Action</th>
                     ) : null}
@@ -150,19 +223,24 @@ const UsersTable = ({
                       <td className="px-4 py-3">
                         {user.isWardCoordinator ? "Yes" : "No"}
                       </td>
-                      <td className="px-4 py-3">
-                        <button
-                          className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                            user.isActive ? "bg-green-500" : "bg-yellowOrange"
-                          }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                              user.isActive ? "translate-x-4" : "translate-x-0"
+                      {(canEditUser || canDeleteUser) && (
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => handleStatusToggle(user)}
+                            className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
+                              user.isActive ? "bg-green-500" : "bg-yellowOrange"
                             }`}
-                          ></div>
-                        </button>
-                      </td>
+                          >
+                            <div
+                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                user.isActive
+                                  ? "translate-x-4"
+                                  : "translate-x-0"
+                              }`}
+                            ></div>
+                          </button>
+                        </td>
+                      )}
                       {(canEditUser || canDeleteUser) && (
                         <td className="flex items-center px-4 py-3 relative">
                           {canEditUser && (
@@ -187,7 +265,10 @@ const UsersTable = ({
                           )}
                           {canDeleteUser && (
                             <a
-                              href="#"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShowDeleteModal(true);
+                              }}
                               className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
@@ -246,6 +327,72 @@ const UsersTable = ({
           )}
         </div>
       </div>
+      {showDeactivateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
+            <p>Are you sure you want to deactivate this account?</p>
+            <div className="mt-6 flex">
+              <button
+                onClick={() => setShowDeactivateModal(false)}
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDeactivation}
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+              >
+                Yes, Deactivate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showActivateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
+            <p>Are you sure you want to activate this user?</p>
+            <div className="mt-6 flex">
+              <button
+                onClick={() => setShowActivateModal(false)}
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmActivation}
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+              >
+                Yes, Deactivate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this user?</p>
+            <div className="mt-6 flex">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDeletion}
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isUpdateModalOpen && (
         <UpdateUser
           isOpen={isUpdateModalOpen}
@@ -258,6 +405,7 @@ const UsersTable = ({
         <PermissionsModal
           handleCloseModal={handleCloseModal}
           user={selectedUser}
+          onCloseModal={fetchUsers}
         />
       )}
     </div>

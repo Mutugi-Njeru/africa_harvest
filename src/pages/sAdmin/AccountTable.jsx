@@ -4,6 +4,7 @@ import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CreateUser from "./CreateUser"; // Import the new modal component
+import UpdateAccount from "./UpdateAccount";
 
 const AccountTable = ({ refresh, openModal }) => {
   const [accounts, setAccounts] = useState([]);
@@ -13,6 +14,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [showUpdateAccountModal, setShowUpdateAccountModal] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
 
   const fetchAccounts = async () => {
@@ -172,7 +174,13 @@ const AccountTable = ({ refresh, openModal }) => {
                   </button>
                 </td>
                 <td className="flex items-center px-6 py-3">
-                  <a className="font-medium text-green-600 hover:underline flex items-center cursor-pointer">
+                  <a
+                    onClick={() => {
+                      setSelectedAccount(account);
+                      setShowUpdateAccountModal(true);
+                    }}
+                    className="font-medium text-green-600 hover:underline flex items-center cursor-pointer"
+                  >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </a>
@@ -244,6 +252,15 @@ const AccountTable = ({ refresh, openModal }) => {
         onClose={() => setShowCreateUserModal(false)}
         accountId={selectedAccountId}
       />
+      {/* update account modal */}
+      {showUpdateAccountModal && (
+        <UpdateAccount
+          isOpen={showUpdateAccountModal}
+          onClose={() => setShowUpdateAccountModal(false)}
+          account={selectedAccount}
+          onAccountUpdate={fetchAccounts}
+        />
+      )}
     </div>
   );
 };

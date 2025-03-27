@@ -102,7 +102,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
                   value={formData.msisdn}
                   onChange={handleInputChange}
                   className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
-                  placeholder="Enter phone number"
+                  placeholder="254712345678"
                   required
                 />
               </div>
