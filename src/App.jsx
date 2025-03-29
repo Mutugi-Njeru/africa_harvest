@@ -6,6 +6,7 @@ import Login from "./pages/login/Login";
 import { ToastContainer } from "react-toastify";
 import Users from "./pages/users/Users";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserProfile from "./pages/profile/UserProfile";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             }
           />
           <Route path="/users" element={<Users />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Route>
       </Routes>
       <ToastContainer

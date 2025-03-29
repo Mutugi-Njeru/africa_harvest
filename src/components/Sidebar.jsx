@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
   User,
+  Landmark,
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
@@ -43,18 +44,18 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const menuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
-      icon: User,
+      icon: Landmark,
       text: "Accounts",
       path: "/accounts",
       showOnlyForSuperAdmin: true, // Changed from showOnlyForUserId to be more descriptive
     },
-    { icon: User, text: "Users", path: "/users" },
+    { icon: Users, text: "Users", path: "/users" },
     { icon: Users, text: "Reports", hasDropdown: true },
     { icon: ShoppingCart, text: "Products" },
     { icon: FileText, text: "Orders" },
     { icon: BarChart3, text: "Analytics" },
     { icon: Bell, text: "Notifications" },
-    { icon: Settings, text: "Settings" },
+    { icon: Settings, text: "Profile", path: "/profile" },
   ];
 
   const usersDropdownItems = [
