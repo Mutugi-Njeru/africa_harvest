@@ -5,6 +5,13 @@ export const hasPermission = (permissions, requiredPermission) => {
   }
     return permissions.includes(requiredPermission);
   };
+    //check if user has role permission
+    export const hasRolePermission = (permissions, requiredPermission) => {
+      if (Array.isArray(requiredPermission)) {
+        return requiredPermission.some(role => permissions.includes(role));
+      }
+      return permissions.includes(requiredPermission);
+    };
 
   //downloads users data
   export const exportToCSV = (users) => {
@@ -59,10 +66,71 @@ export const hasPermission = (permissions, requiredPermission) => {
     document.body.removeChild(link);
   };
 
-  //check if user has role permission
-  export const hasRolePermission = (permissions, requiredPermission) => {
-    if (Array.isArray(requiredPermission)) {
-      return requiredPermission.some(role => permissions.includes(role));
+  //download regions data
+  export const exportRegionsToCSV = (regions) => {
+    if (regions.length === 0) {
+      alert("No data to export");
+      return;
     }
-    return permissions.includes(requiredPermission);
+    const headers = [
+      "ID",
+      "Region",
+      "Description",
+      "Coordinator(s)",
+      "Counties",
+      "Updated At",
+    ];
+
+    // Prepare CSV data rows
+    const dataRows = regions.map((region, index) => {
+      const coordinators =
+        region.coordinators?.length > 0
+          ? region.coordinators
+              .map((c) => `${c.firstName} ${c.lastName}`)
+              .join(", ")
+          : "No coordinator assigned";
+
+      return [
+        index + 1,
+        region.region || "N/A",
+        region.description || "N/A",
+        coordinators,
+        "7788876", // This seems to be a hardcoded value in your table
+        region.updatedAt || "N/A",
+      ];
+    });
+
+    // Combine headers and data
+    const csvContent = [
+      headers.join(","),
+      ...dataRows.map((row) => row.map(escapeCSVValue).join(",")),
+    ].join("\n");
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `regions_export_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+  // Helper function to escape CSV values
+  const escapeCSVValue = (value) => {
+    if (value === null || value === undefined) return "";
+    const stringValue = String(value);
+    if (
+      stringValue.includes(",") ||
+      stringValue.includes('"') ||
+      stringValue.includes("\n")
+    ) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+  };
+

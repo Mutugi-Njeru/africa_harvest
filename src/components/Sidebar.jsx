@@ -16,6 +16,7 @@ import {
   ChevronUp,
   User,
   Landmark,
+  Globe,
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
@@ -23,6 +24,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const isSuperAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,16 +43,21 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     }
   };
 
+  const handleDropdownItemClick = (path) => {
+    navigate(path);
+    setUsersDropdownOpen(false);
+  };
+
   const menuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
       icon: Landmark,
       text: "Accounts",
       path: "/accounts",
-      showOnlyForSuperAdmin: true, // Changed from showOnlyForUserId to be more descriptive
+      showOnlyForSuperAdmin: true, // only for super admins
     },
     { icon: Users, text: "Users", path: "/users" },
-    { icon: Users, text: "Reports", hasDropdown: true },
+    { icon: Globe, text: "Locations", hasDropdown: true },
     { icon: ShoppingCart, text: "Products" },
     { icon: FileText, text: "Orders" },
     { icon: BarChart3, text: "Analytics" },
@@ -59,16 +66,24 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   ];
 
   const usersDropdownItems = [
-    { text: "User List" },
-    { text: "Add User" },
-    { text: "User Roles" },
+    {
+      text: "Regions",
+      path: "/regions",
+      showOnlyForAdmin: true, // Only show this for admins/super admins
+    },
+    { text: "Counties", path: "/counties" },
+    { text: "Subcounties", path: "/subcounties" },
+    { text: "Wards", path: "/wards" },
   ];
 
-  // Filter menu items - show item if:
-  // 1. It doesn't have showOnlyForSuperAdmin flag, OR
-  // 2. It has showOnlyForSuperAdmin flag AND user is super admin
+  // Filter menu items based on role
   const filteredMenuItems = menuItems.filter(
     (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
+  );
+
+  // Filter dropdown items - only show Regions if admin/super admin
+  const filteredDropdownItems = usersDropdownItems.filter(
+    (item) => !item.showOnlyForAdmin || isAdmin || isSuperAdmin
   );
 
   return (
@@ -142,14 +157,21 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               {item.hasDropdown && isExpanded && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isUsersDropdownOpen ? "max-h-40" : "max-h-0"
+                    isUsersDropdownOpen ? "max-h-[500px]" : "max-h-0"
                   }`}
                 >
                   <div className="ml-8">
-                    {usersDropdownItems.map((dropdownItem, idx) => (
+                    {filteredDropdownItems.map((dropdownItem, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors"
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
                       >
                         <span className="ml-3 font-medium">
                           {dropdownItem.text}

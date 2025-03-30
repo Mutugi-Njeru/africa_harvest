@@ -5,8 +5,15 @@ import SAdmin from "./pages/sAdmin/SAdmin";
 import Login from "./pages/login/Login";
 import { ToastContainer } from "react-toastify";
 import Users from "./pages/users/Users";
-import ProtectedRoute from "./components/ProtectedRoute";
+import {
+  ProtectedRoute,
+  ProtectedAdminRoute,
+} from "./components/ProtectedRoute";
 import UserProfile from "./pages/profile/UserProfile";
+import Regions from "./pages/geographic/regions/Regions";
+import Counties from "./pages/geographic/counties/Counties";
+import Subcounties from "./pages/geographic/subcounties/Subcounties";
+import Wards from "./pages/geographic/wards/Wards";
 
 function App() {
   return (
@@ -18,12 +25,25 @@ function App() {
           <Route
             path="/accounts"
             element={
-              <ProtectedRoute>
-                <SAdmin />
+              <ProtectedRoute allowedRole="SUPER_ADMIN">
+                <SAdmin /> {/* //only super admin */}
               </ProtectedRoute>
             }
           />
           <Route path="/users" element={<Users />} />
+
+          <Route
+            path="/regions"
+            element={
+              <ProtectedAdminRoute>
+                <Regions /> {/*  only admins and super admin */}
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route path="/counties" element={<Counties />} />
+          <Route path="/subcounties" element={<Subcounties />} />
+          <Route path="/wards" element={<Wards />} />
           <Route path="/profile" element={<UserProfile />} />
         </Route>
       </Routes>

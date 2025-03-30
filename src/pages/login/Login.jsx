@@ -7,7 +7,6 @@ import { hasPermission } from "../../utils/Utils";
 import {
   accountId,
   accountName,
-  coordinator,
   firstName,
   loginUser,
   logout,
@@ -61,7 +60,7 @@ const Login = () => {
       const token = "Bearer " + response.data.message.token;
       storeToken(token);
       firstName(response.data.message.user.firstName); // store user's first name
-      coordinator(response.data.message.user.coordinator); // store user's coordinator status
+      // coordinator(response.data.message.user.coordinator); // store user's coordinator status
       storeRoles(JSON.stringify(response.data.message.user.roles)); // store user's roles
       permissions(JSON.stringify(response.data.message.user.permissions)); // store user's permissions
       const user = response.data.message.user.roles[0];
