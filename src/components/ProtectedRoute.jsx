@@ -25,3 +25,18 @@ export const ProtectedAdminRoute = ({ children }) => {
 
   return children;
 };
+export const ProtectedRegionalCoordinatorRoute = ({ children }) => {
+  const location = useLocation();
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  const isRegionalCoordinator = hasRolePermission(
+    userRoles,
+    "REGIONAL_CORDINATOR"
+  );
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
+
+  if (!(isRegionalCoordinator || isAdmin)) {
+    return <Navigate to="/overview" state={{ from: location }} replace />;
+  }
+
+  return children;
+};

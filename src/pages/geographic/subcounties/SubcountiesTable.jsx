@@ -1,13 +1,23 @@
 import {
   ChevronDown,
+  ClipboardEditIcon,
   Edit,
   Ellipsis,
   Lock,
   Search,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
+import SubcountyCoordinatorsModal from "./SubcountyCoordinatorsModal";
 
-const SubcountiesTable = () => {
+const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties }) => {
+  const [isCoordinatorsModalOpen, setIsCoordinatorsModalOpen] = useState(false);
+  const [selectedSubcounty, setSelectedSubcounty] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsCoordinatorsModalOpen(false);
+    setSelectedSubcounty(null);
+  };
   return (
     <div>
       <div className="relative overflow-x-auto shadow-md mt-3">
@@ -23,39 +33,91 @@ const SubcountiesTable = () => {
             />
           </div>
         </div>
-        <div className="relative overflow-x-auto min-h-[400px]">
-          <div>
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
-              <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
-                <tr>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Region</th>
-                  <th className="px-6 py-4">Coordinator</th>
-                  <th className="px-6 py-4">Counties</th>
-                  <th className="px-6 py-4">Updated At</th>
-                  <th className="px-6 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="bg-white border-b  hover:bg-gray-50 ">
-                  <th
-                    scope="row"
-                    className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
-                  >
-                    1
-                  </th>
-                  <td className="px-6 py-3 truncate max-w-[200px]">Admin</td>
-                  <td className="px-6 py-3">Hello</td>
-                  <td className="px-6 py-3">7788876</td>
-
-                  <td className="px-6 py-3 truncate max-w-[150px]">90987777</td>
-                  <td className="px-6 py-3 truncate max-w-[200px]">Active</td>
-                </tr>
-              </tbody>
-            </table>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
           </div>
-        </div>
+        ) : (
+          <div className="relative overflow-x-auto min-h-[400px]">
+            <div>
+              <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
+                <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
+                  <tr>
+                    <th className="px-6 py-4">ID</th>
+                    <th className="px-6 py-4">SubCounty</th>
+                    <th className="px-6 py-4">Subcounty Coordinator(s)</th>
+                    <th className="px-6 py-4">County</th>
+                    <th className="px-6 py-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subCounties.map((subcounty, index) => (
+                    <tr
+                      key={subcounty.subCountyId}
+                      className="bg-white border-b  hover:bg-gray-50 "
+                    >
+                      <th
+                        scope="row"
+                        className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                      >
+                        {index + 1}
+                      </th>
+                      <td className="px-6 py-3 truncate max-w-[200px]">
+                        {subcounty.title}
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                          {subcounty.coordinators &&
+                          subcounty.coordinators.length > 0
+                            ? subcounty.coordinators.map((coordinator, idx) => (
+                                <span
+                                  key={coordinator.userId}
+                                  className="truncate"
+                                >
+                                  {`${coordinator.firstName} ${coordinator.lastName}`}
+                                  {idx < subcounty.coordinators.length - 1
+                                    ? ","
+                                    : ""}
+                                </span>
+                              ))
+                            : "No coordinator assigned"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-3">{subcounty.countyName}</td>
+
+                      <td className="flex items-center px-6 py-3 relative">
+                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </a>
+                        <div className="relative">
+                          <a
+                            onClick={() => {
+                              setSelectedSubcounty(subcounty);
+                              setIsCoordinatorsModalOpen(true);
+                            }}
+                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
+                          >
+                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
+                            Assign
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
+      {isCoordinatorsModalOpen && (
+        <SubcountyCoordinatorsModal
+          handleCloseModal={handleCloseModal}
+          subcounty={selectedSubcounty}
+          onCloseModal={fetchsubCounties}
+        />
+      )}
     </div>
   );
 };

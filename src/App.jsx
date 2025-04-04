@@ -8,12 +8,14 @@ import Users from "./pages/users/Users";
 import {
   ProtectedRoute,
   ProtectedAdminRoute,
+  ProtectedRegionalCoordinatorRoute,
 } from "./components/ProtectedRoute";
 import UserProfile from "./pages/profile/UserProfile";
 import Regions from "./pages/geographic/regions/Regions";
 import Counties from "./pages/geographic/counties/Counties";
 import Subcounties from "./pages/geographic/subcounties/Subcounties";
 import Wards from "./pages/geographic/wards/Wards";
+import Ward from "./pages/geographic/ward/Ward";
 
 function App() {
   return (
@@ -41,9 +43,17 @@ function App() {
             }
           />
 
-          <Route path="/counties" element={<Counties />} />
+          <Route
+            path="/counties" //only regional coordinators and admins
+            element={
+              <ProtectedRegionalCoordinatorRoute>
+                <Counties />
+              </ProtectedRegionalCoordinatorRoute>
+            }
+          />
           <Route path="/subcounties" element={<Subcounties />} />
           <Route path="/wards" element={<Wards />} />
+          <Route path="/ward" element={<Ward />} />
           <Route path="/profile" element={<UserProfile />} />
         </Route>
       </Routes>

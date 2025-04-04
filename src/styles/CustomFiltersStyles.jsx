@@ -10,7 +10,7 @@ const CustomFiltersStyles = {
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isSelected ? "#4f46e5" : "white", // Selected option background
+    backgroundColor: state.isSelected ? "#fbb03b" : "white", // Selected option background
     color: state.isSelected ? "white" : "#1f2937", // Selected option text color
     "&:hover": {
       backgroundColor: "#fbb03b", // Hover background

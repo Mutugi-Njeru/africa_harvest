@@ -14,6 +14,7 @@ import {
   storeRoles,
   storeSuperAdmin,
   storeToken,
+  storeUserId,
 } from "../../service/AuthService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -63,6 +64,7 @@ const Login = () => {
       // coordinator(response.data.message.user.coordinator); // store user's coordinator status
       storeRoles(JSON.stringify(response.data.message.user.roles)); // store user's roles
       permissions(JSON.stringify(response.data.message.user.permissions)); // store user's permissions
+      storeUserId(response.data.message.user.userId); // store userId
       const user = response.data.message.user.roles[0];
       if (user === "SUPER_ADMIN") {
         setShowAccountModal(true);

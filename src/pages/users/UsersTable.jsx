@@ -202,7 +202,10 @@ const UsersTable = ({
                       </td>
                       <td className="px-4 py-3">{user.email}</td>
                       <td className="px-4 py-3">{user.msisdn}</td>
-                      <td className="px-4 py-3 truncate max-w-[150px]">
+                      <td
+                        className="px-4 py-3 truncate max-w-[150px]"
+                        title={user.roles.join(", ")}
+                      >
                         {user.roles.join(", ")}
                       </td>
                       <td

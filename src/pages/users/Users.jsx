@@ -29,6 +29,7 @@ const Users = () => {
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN"); //check if its super admin to get users
   const canCreateUser = hasPermission(userPermissions, "CREATE_USER");
   const canViewReports = hasPermission(userPermissions, "VIEW_REPORTS");
+  const canDownload = hasPermission(userPermissions, "DOWNLOAD");
   const canCreateRole = hasRolePermission(userRoles, ["SUPER_ADMIN", "ADMIN"]); // only superadmin or admin can create role
 
   useEffect(() => {
@@ -101,7 +102,7 @@ const Users = () => {
               )}
             </>
           )}
-          {canViewReports && (
+          {canDownload && (
             <button
               className="flex items-center cursor-pointer border border-black pl-3 pr-3 p-2 text-black"
               onClick={downloadUsers}

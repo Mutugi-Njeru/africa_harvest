@@ -23,8 +23,21 @@ import { hasRolePermission } from "../utils/Utils";
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+
+  //roles
   const isSuperAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
   const isAdmin = hasRolePermission(userRoles, "ADMIN");
+  const isRegionalCoordinator = hasRolePermission(
+    userRoles,
+    "REGIONAL_CORDINATOR"
+  );
+  const isCountyCoordinator = hasRolePermission(userRoles, "COUNTY_CORDINATOR");
+  const isWardCoordinator = hasRolePermission(userRoles, "WARD_CORDINATOR");
+  const isSubCountyCoordinator = hasRolePermission(
+    userRoles,
+    "SUBCOUNTY_CORDINATOR"
+  );
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -67,13 +80,22 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const usersDropdownItems = [
     {
-      text: "Regions",
+      text: "Admin",
       path: "/regions",
       showOnlyForAdmin: true, // Only show this for admins/super admins
     },
-    { text: "Counties", path: "/counties" },
-    { text: "Subcounties", path: "/subcounties" },
-    { text: "Wards", path: "/wards" },
+    {
+      text: "R Coodinator",
+      path: "/counties",
+      showOnlyForRegionalCoordinator: true, //show only for regional coordinator and admin
+    },
+    {
+      text: "C Coordinator",
+      path: "/subcounties",
+      showOnlyForCountyCoordinator: true, //show only for county coordinator and admin
+    },
+    { text: "SC Coordinator", path: "/wards" },
+    { text: "Ward Coordinator", path: "/ward" },
   ];
 
   // Filter menu items based on role
@@ -82,10 +104,41 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   );
 
   // Filter dropdown items - only show Regions if admin/super admin
-  const filteredDropdownItems = usersDropdownItems.filter(
-    (item) => !item.showOnlyForAdmin || isAdmin || isSuperAdmin
-  );
+  const filteredDropdownItems = usersDropdownItems.filter((item) => {
+    if (isSuperAdmin) return true;
+    if (isAdmin) return true;
 
+    if (isRegionalCoordinator) {
+      return (
+        item.showOnlyForRegionalCoordinator ||
+        (!item.showOnlyForAdmin &&
+          !item.showOnlyForCountyCoordinator &&
+          item.path !== "/subcounties" &&
+          item.path !== "/wards" &&
+          item.path !== "/ward")
+      );
+    }
+    if (isCountyCoordinator) {
+      return (
+        item.showOnlyForCountyCoordinator ||
+        (!item.showOnlyForAdmin &&
+          !item.showOnlyForRegionalCoordinator &&
+          item.path !== "/wards" &&
+          item.path !== "/ward")
+      );
+    }
+    if (isSubCountyCoordinator) {
+      return item.path === "/wards";
+    }
+    if (isWardCoordinator) {
+      return item.path === "/ward";
+    }
+    return (
+      !item.showOnlyForAdmin &&
+      !item.showOnlyForRegionalCoordinator &&
+      !item.showOnlyForCountyCoordinator
+    );
+  });
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
