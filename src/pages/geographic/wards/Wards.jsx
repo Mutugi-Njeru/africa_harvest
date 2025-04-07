@@ -17,7 +17,7 @@ const Wards = () => {
 
   useEffect(() => {
     fetchWards();
-  }, [accountId]);
+  }, [accountId, userId]);
 
   //fetch wards for sub county coordinator
   const fetchWards = async () => {
@@ -30,7 +30,7 @@ const Wards = () => {
         .flatMap((region) => region.counties)
         .flatMap((county) => county.subCounties)
         .filter((subCounty) =>
-          subCounty.coordinators.some((coord) => coord.userId === 6)
+          subCounty.coordinators.some((coord) => coord.userId === userId)
         );
       const wards = subCounties.flatMap((subCounty) =>
         subCounty.wards.map((ward) => ({
@@ -70,7 +70,7 @@ const Wards = () => {
         </div>
       </div>
       {/* table */}
-      <WardsTable wards={wards} />
+      <WardsTable wards={wards} isLoading={isLoading} fetchWards={fetchWards} />
       {isAssignModalOpen && (
         <AssignWardCoordinatorModal
           handleCloseModal={handleCloseModal}

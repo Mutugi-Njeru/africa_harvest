@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import axios, { all } from "axios";
+import axios from "axios";
 import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
 
-const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
+const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
   const accountId = localStorage.getItem("accountId");
-  const [wards, setWards] = useState([]);
-  const [wardCoordinators, setWardCoordinators] = useState([]);
-  const [selectedWard, setSelectedWard] = useState(null);
-  const [selectedCoordinator, setSelectedCoordinator] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [isRemovingCoordinator, setIsRemovingCoordinator] = useState(false);
+  const [selectedCoordinator, setSelectedCoordinator] = useState([]);
+  const [wardCoordinators, setWardCoordinators] = useState([]);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
-  const userId = Number(localStorage.getItem("userId"));
+  const [selectedRemoveCoordinators, setSelectedRemoveCoordinators] = useState(
+    []
+  );
 
   useEffect(() => {
-    fetchWardsBySubcountyCoordinator();
     fetchWardCoordinators();
-  }, [accountId, userId]);
+  }, [accountId]);
 
   // fetch all ward coordinators within that account
   const fetchWardCoordinators = async () => {
@@ -39,58 +39,6 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
     }
   };
 
-  // //fetch all wards by subcounty coordinator
-  const fetchWardsBySubcountyCoordinator = async () => {
-    try {
-      const hierarchyResponse = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-      );
-      const result = hierarchyResponse.data.message
-        .flatMap((region) => region.counties)
-        .flatMap((county) => {
-          const matchingSubCounties = county.subCounties.filter((subCounty) =>
-            subCounty.coordinators.some((coord) => coord.userId === userId)
-          );
-          if (matchingSubCounties.length > 0) {
-            return {
-              countyId: county.countyId,
-              subCountyIds: matchingSubCounties.map((sc) => sc.subCountyId),
-            };
-          }
-          return [];
-        });
-
-      const countyIds = result.map((item) => item.countyId);
-      const subCountyIds = result.flatMap((item) => item.subCountyIds);
-      const wardsData = await Promise.all(
-        countyIds.map(async (countyId) => {
-          try {
-            const response = await axios.get(
-              BASE_REST_API_URL + `/geographic/v1/counties/simple/${countyId}`
-            );
-            return response.data.message;
-          } catch (error) {
-            console.error(
-              `Failed to fetch data for county ${countyId}:`,
-              error
-            );
-            return null;
-          }
-        })
-      );
-      const wards = wardsData
-        .filter((data) => data !== null)
-        .flatMap((county) =>
-          county.subcounties
-            .filter((sub) => subCountyIds.includes(sub.subcountyId))
-            .flatMap((sub) => sub.wards)
-        );
-      setWards(wards);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      return [];
-    }
-  };
   // //assign ward coordinator
   const handleAddCoordinator = async (e) => {
     e.preventDefault();
@@ -98,7 +46,7 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
     try {
       const userIds = selectedCoordinator.map((user) => user.value);
       const response = await axios.post(
-        BASE_REST_API_URL + `geographic/v1/wards/${selectedWard}/coordinators`,
+        BASE_REST_API_URL + `geographic/v1/wards/${ward.wardId}/coordinators`,
         { userIds }
       );
       setSelectedCoordinator([]);
@@ -130,51 +78,77 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
       setIsAdding(false);
     }
   };
+  //remove ward coordinator
+  const handleRemoveCoordinator = async (e) => {
+    e.preventDefault();
+    setIsRemovingCoordinator(true);
+    try {
+      const userIds = selectedRemoveCoordinators.map((user) => user.value);
+      const response = await axios.delete(
+        BASE_REST_API_URL + `/geographic/v1/wards/${ward.wardId}/coordinators`,
+        { data: { userIds } }
+      );
+      setSelectedRemoveCoordinators([]);
+      if (response.data.message && response.data.message.details) {
+        response.data.message.details.forEach((detail) => {
+          toast.success(detail);
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        if (
+          error.response.data.message &&
+          Array.isArray(error.response.data.message.details)
+        ) {
+          error.response.data.message.details.forEach((detail) => {
+            toast.error(detail);
+          });
+        } else if (error.response.data.message) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("removing coordinator(s) failed");
+        }
+      } else {
+        toast.error("Network error or server unavailable");
+      }
+    } finally {
+      setIsRemovingCoordinator(false);
+    }
+  };
 
-  const wardOptions = wards.map((ward) => ({
-    value: ward.wardId,
-    label: ward.title,
-  }));
   const wardCoordinatorOptions = wardCoordinators.map((coordinator) => ({
     value: coordinator.userId,
     label: `${coordinator.firstName} ${coordinator.lastName}`,
   }));
-  const handleWardChange = (selectedOption) => {
-    setSelectedWard(selectedOption ? selectedOption.value : null);
-  };
   const handleCoordinatorChange = (selectedOption) => {
     setSelectedCoordinator(selectedOption);
   };
+
+  const assignedCoordinatorsOptions =
+    ward.coordinators?.length > 0
+      ? ward.coordinators.map((coordinator) => ({
+          value: coordinator.userId,
+          label: `${coordinator.firstName} ${coordinator.lastName}`,
+        }))
+      : [];
+  const handleRemovingCoordinatorsChange = (selectedOptions) => {
+    setSelectedRemoveCoordinators(selectedOptions);
+  };
+
   return (
+    // done by subCounty coordinator
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 w-1/3 ">
+      <div className="bg-white p-6 w-[800px] ">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Assign Ward Coordinators</h3>
+          <h3 className="text-lg font-semibold">
+            Manage ward coordinators for {ward.title}
+          </h3>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Ward
-            </label>
-            <div className="flex gap-2">
-              <Select
-                name="counties"
-                options={wardOptions}
-                value={wardOptions.find(
-                  (option) => option.value === selectedWard
-                )}
-                className="basic-multi-select w-full"
-                classNamePrefix="select"
-                isClearable
-                onChange={handleWardChange}
-                styles={CustomFiltersStyles}
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Coordinator(s)
+              Add Coordinator(s)
             </label>
             <div className="flex gap-2">
               <Select
@@ -187,27 +161,51 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
                 onChange={handleCoordinatorChange}
                 styles={CustomFiltersStyles}
               />
+              <button
+                onClick={handleAddCoordinator}
+                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                disabled={isAdding}
+              >
+                {isAdding ? "Adding..." : "Add"}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Remove Coordinator(s)
+            </label>
+            <div className="flex gap-2">
+              <Select
+                isMulti
+                name="coordinators"
+                options={assignedCoordinatorsOptions}
+                value={selectedRemoveCoordinators}
+                className="basic-multi-select w-full"
+                classNamePrefix="select"
+                onChange={handleRemovingCoordinatorsChange}
+                styles={CustomFiltersStyles}
+              />
+              <button
+                onClick={handleRemoveCoordinator}
+                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                disabled={isRemovingCoordinator}
+              >
+                {isRemovingCoordinator ? "Removing..." : "Remove"}
+              </button>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={() => {
               handleCloseModal();
+              onCloseModal();
             }}
-            className="w-1/2 bg-red-400 text-white p-3 hover:bg-red-600"
+            className="w-1/2 px-4 py-2 bg-green-600 text-white hover:bg-green-700"
           >
-            Cancel
-          </button>
-          <button
-            onClick={(e) => {
-              handleAddCoordinator(e);
-            }}
-            className="w-1/2 bg-green-500 text-white p-3 hover:bg-green-600"
-            disabled={isAdding}
-          >
-            {isAdding ? "Assigning..." : "Assign"}
+            Close
           </button>
         </div>
       </div>
@@ -215,4 +213,4 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
   );
 };
 
-export default AssignWardCoordinatorModal;
+export default WardCoordinatorsModal;

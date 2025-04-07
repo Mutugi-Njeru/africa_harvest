@@ -1,12 +1,4 @@
-import {
-  ChevronDown,
-  ClipboardEditIcon,
-  Edit,
-  Ellipsis,
-  Lock,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { ClipboardEditIcon, Edit, Search } from "lucide-react";
 import { useState } from "react";
 import SubcountyCoordinatorsModal from "./SubcountyCoordinatorsModal";
 

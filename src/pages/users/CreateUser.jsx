@@ -41,7 +41,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
     const fetchPermissions = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/users/1/permissions"
+          BASE_REST_API_URL + "security/v1/permissions"
         );
         setPermissions(response.data.message);
       } catch (error) {
@@ -91,8 +91,11 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
       onClose();
       onUserCreated();
     } catch (error) {
-      console.error("Error creating user:", error);
-      toast.error("Failed to create user");
+      if (error.response) {
+        const errorViolations =
+          error.response.data.message || "User creation failed";
+        toast.error(errorViolations);
+      }
     } finally {
       setIsLoading(false);
     }
