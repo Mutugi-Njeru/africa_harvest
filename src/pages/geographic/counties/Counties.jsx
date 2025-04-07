@@ -4,6 +4,7 @@ import CountiesTable from "./CountiesTable";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import axios from "axios";
 import AssignCoordinatorModal from "./AssignCoordinatorModal";
+import { hasRolePermission } from "../../../utils/Utils";
 
 const Counties = () => {
   const accountId = localStorage.getItem("accountId");
@@ -11,6 +12,9 @@ const Counties = () => {
   const [counties, setCounties] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const userId = Number(localStorage.getItem("userId"));
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  //roles
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
 
   const handleCloseModal = () => {
     setIsAssignModalOpen(false);
@@ -20,24 +24,41 @@ const Counties = () => {
     fetchCounties();
   }, [accountId]);
 
-  //fetch assigned counties by regional coordinator
+  //fetch assigned counties by regional coordinator or admin
   const fetchCounties = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-      );
-      const regions = response.data.message.filter((region) =>
-        region.coordinators.some((coord) => coord.userId === userId)
-      );
-      const countiesWithRegions = regions.flatMap((region) =>
-        region.counties.map((county) => ({
-          ...county,
-          regionName: region.region,
-          updatedAt: region.updatedAt,
-          description: region.description,
-        }))
-      );
+      let countiesWithRegions;
+
+      if (isAdmin) {
+        const response = await axios.get(
+          BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+        );
+        countiesWithRegions = response.data.message.flatMap((region) =>
+          region.counties.map((county) => ({
+            ...county,
+            regionName: region.region,
+            updatedAt: region.updatedAt,
+            description: region.description,
+          }))
+        );
+      } else {
+        const response = await axios.get(
+          BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+        );
+        const regions = response.data.message.filter((region) =>
+          region.coordinators.some((coord) => coord.userId === userId)
+        );
+        countiesWithRegions = regions.flatMap((region) =>
+          region.counties.map((county) => ({
+            ...county,
+            regionName: region.region,
+            updatedAt: region.updatedAt,
+            description: region.description,
+          }))
+        );
+      }
+
       setCounties(countiesWithRegions);
     } catch (error) {
       console.error("Failed to fetch regions:", error);

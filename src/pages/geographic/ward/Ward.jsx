@@ -10,12 +10,14 @@ const Ward = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState([]);
   const accountId = localStorage.getItem("accountId");
+  const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
     fetchWardsMembers();
-  }, [accountId]); //add userId
+  }, [accountId, userId]);
 
   const fetchWardsMembers = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
@@ -25,7 +27,7 @@ const Ward = () => {
           county.subCounties.flatMap((subCounty) =>
             subCounty.wards.filter((ward) =>
               ward.coordinators.some(
-                (coordinator) => coordinator.userId === 8 //change to userId
+                (coordinator) => coordinator.userId === userId
               )
             )
           )
@@ -34,7 +36,6 @@ const Ward = () => {
       const wardIdsString = wards.map((ward) => ward.wardId).join(",");
       let url = BASE_REST_API_URL + `/members/v1/all?wardIds=${wardIdsString}`;
       const membersResponse = await axios.get(url);
-      console.log(membersResponse.data.message);
       setMembers(membersResponse.data.message);
     } catch (error) {
       console.error("Error:", error);
@@ -69,11 +70,15 @@ const Ward = () => {
         </div>
       </div>
       {/* table */}
-      <MembersTable members={members} />
+      <MembersTable
+        members={members}
+        isLoading={isLoading}
+        fetchMembers={fetchWardsMembers}
+      />
       {isCreateMemberModalOpen && (
         <CreateMember
           handleCloseModal={handleCloseModal}
-          // onCloseModal={fetchWards}
+          refreshMembers={fetchWardsMembers}
         />
       )}
     </div>

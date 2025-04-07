@@ -15,6 +15,7 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
   const [isAdding, setIsAdding] = useState(false);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
   const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
@@ -39,18 +40,23 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
     }
   };
 
-  // //fetch all wards by subcounty coordinator
+  // //fetch all wards by subcounty coordinator or admin
   const fetchWardsBySubcountyCoordinator = async () => {
     try {
       const hierarchyResponse = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
       );
+
       const result = hierarchyResponse.data.message
         .flatMap((region) => region.counties)
         .flatMap((county) => {
-          const matchingSubCounties = county.subCounties.filter((subCounty) =>
-            subCounty.coordinators.some((coord) => coord.userId === userId)
-          );
+          // If user is admin, get all subcounties without filtering by userId
+          const matchingSubCounties = isAdmin
+            ? county.subCounties
+            : county.subCounties.filter((subCounty) =>
+                subCounty.coordinators.some((coord) => coord.userId === userId)
+              );
+
           if (matchingSubCounties.length > 0) {
             return {
               countyId: county.countyId,
@@ -62,6 +68,7 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
 
       const countyIds = result.map((item) => item.countyId);
       const subCountyIds = result.flatMap((item) => item.subCountyIds);
+
       const wardsData = await Promise.all(
         countyIds.map(async (countyId) => {
           try {
@@ -78,6 +85,7 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
           }
         })
       );
+
       const wards = wardsData
         .filter((data) => data !== null)
         .flatMap((county) =>
@@ -85,6 +93,7 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
             .filter((sub) => subCountyIds.includes(sub.subcountyId))
             .flatMap((sub) => sub.wards)
         );
+
       setWards(wards);
     } catch (error) {
       console.error("Failed to fetch data:", error);

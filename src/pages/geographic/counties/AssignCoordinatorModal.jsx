@@ -14,6 +14,7 @@ const AssignCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
   const [selectedCoordinator, setSelectedCoordinator] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
   const userId = Number(localStorage.getItem("userId"));
 
@@ -39,16 +40,24 @@ const AssignCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
     }
   };
 
-  //fetch all counties by regional coordinator
+  //fetch all counties by regional coordinator or admin
   const fetchCounties = async () => {
     try {
       const response = await axios.get(
         BASE_REST_API_URL + `/geographic/v1/account-regions/${accountId}`
       );
-      const regions = response.data.message.filter((region) =>
-        region.coordinators.some((coord) => coord.userId === userId)
-      );
-      const counties = regions.flatMap((region) => region.counties || []);
+      let counties;
+      if (isAdmin) {
+        counties = response.data.message.flatMap(
+          (region) => region.counties || []
+        );
+      } else {
+        const regions = response.data.message.filter((region) =>
+          region.coordinators.some((coord) => coord.userId === userId)
+        );
+        counties = regions.flatMap((region) => region.counties || []);
+      }
+
       setCounties(counties);
     } catch (error) {
       console.error("Failed to fetch regions:", error);

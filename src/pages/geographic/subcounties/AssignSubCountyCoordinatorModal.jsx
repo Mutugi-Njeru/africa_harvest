@@ -11,7 +11,6 @@ const AssignSubCountyCoordinatorModal = ({
   onCloseModal,
 }) => {
   const accountId = localStorage.getItem("accountId");
-  const [counties, setCounties] = useState([]);
   const [subcounties, setSubcounties] = useState([]);
   const [subCountyCoordinators, setSubCountyCoordinators] = useState([]);
   const [selectedSubcounty, setSelectedSubcounty] = useState(null);
@@ -19,6 +18,7 @@ const AssignSubCountyCoordinatorModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
   const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
@@ -43,18 +43,25 @@ const AssignSubCountyCoordinatorModal = ({
     }
   };
 
-  //fetch all subcounties by county coordinator
+  //fetch all subcounties by county coordinator or admin
   const fetchCountiesAndSubcounties = async () => {
     try {
       const hierarchyResponse = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
       );
-      const counties = hierarchyResponse.data.message
-        .flatMap((region) => region.counties)
-        .filter((county) =>
-          county.coordinators.some((coord) => coord.userId === userId)
-        )
-        .map((county) => county.countyId);
+      let counties;
+      if (isAdmin) {
+        counties = hierarchyResponse.data.message
+          .flatMap((region) => region.counties)
+          .map((county) => county.countyId);
+      } else {
+        counties = hierarchyResponse.data.message
+          .flatMap((region) => region.counties)
+          .filter((county) =>
+            county.coordinators.some((coord) => coord.userId === userId)
+          )
+          .map((county) => county.countyId);
+      }
       const subcountiesData = await Promise.all(
         counties.map(async (countyId) => {
           try {
@@ -71,6 +78,7 @@ const AssignSubCountyCoordinatorModal = ({
           }
         })
       );
+
       const validData = subcountiesData.filter((data) => data !== null);
       const allSubcounties = validData.flatMap((county) => county.subcounties);
       setSubcounties(allSubcounties);

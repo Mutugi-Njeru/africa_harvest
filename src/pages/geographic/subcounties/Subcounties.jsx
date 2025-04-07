@@ -4,6 +4,7 @@ import axios from "axios";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import AssignSubCountyCoordinatorModal from "./AssignSubCountyCoordinatorModal";
 import SubcountiesTable from "./SubcountiesTable";
+import { hasRolePermission } from "../../../utils/Utils";
 
 const Subcounties = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +12,9 @@ const Subcounties = () => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const accountId = localStorage.getItem("accountId");
   const userId = Number(localStorage.getItem("userId"));
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  //roles
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
 
   const handleCloseModal = () => {
     setIsAssignModalOpen(false);
@@ -27,20 +31,33 @@ const Subcounties = () => {
       const response = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
       );
-      const counties = response.data.message
-        .flatMap((region) => region.counties)
-        .filter((county) =>
-          county.coordinators.some((coord) => coord.userId === userId)
+      let subCounties;
+      if (isAdmin) {
+        subCounties = response.data.message
+          .flatMap((region) => region.counties)
+          .flatMap((county) =>
+            county.subCounties.map((subCounty) => ({
+              ...subCounty,
+              countyName: county.title,
+            }))
+          );
+      } else {
+        const counties = response.data.message
+          .flatMap((region) => region.counties)
+          .filter((county) =>
+            county.coordinators.some((coord) => coord.userId === userId)
+          );
+        subCounties = counties.flatMap((county) =>
+          county.subCounties.map((subCounty) => ({
+            ...subCounty,
+            countyName: county.title,
+          }))
         );
-      const subCounties = counties.flatMap((county) =>
-        county.subCounties.map((subCounty) => ({
-          ...subCounty,
-          countyName: county.title,
-        }))
-      );
+      }
+
       setSubCounties(subCounties);
     } catch (error) {
-      console.error("Failed to fetch regions:", error);
+      console.error("Failed to fetch subcounties:", error);
     } finally {
       setIsLoading(false);
     }

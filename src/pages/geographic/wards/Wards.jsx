@@ -4,6 +4,7 @@ import WardsTable from "./WardsTable";
 import AssignWardCoordinatorModal from "./AssignWardCoordinatorModal";
 import axios from "axios";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
+import { hasRolePermission } from "../../../utils/Utils";
 
 const Wards = () => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -11,6 +12,10 @@ const Wards = () => {
   const [isLoading, setIsLoading] = useState(false);
   const accountId = localStorage.getItem("accountId");
   const userId = Number(localStorage.getItem("userId"));
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  //roles
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
+
   const handleCloseModal = () => {
     setIsAssignModalOpen(false);
   };
@@ -26,27 +31,40 @@ const Wards = () => {
       const response = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
       );
-      const subCounties = response.data.message
-        .flatMap((region) => region.counties)
-        .flatMap((county) => county.subCounties)
-        .filter((subCounty) =>
-          subCounty.coordinators.some((coord) => coord.userId === userId)
+      if (isAdmin) {
+        const wards = response.data.message
+          .flatMap((region) => region.counties)
+          .flatMap((county) => county.subCounties)
+          .flatMap((subCounty) =>
+            subCounty.wards.map((ward) => ({
+              ...ward,
+              subCountyName: subCounty.title,
+              countyName: subCounty.county.title,
+            }))
+          );
+        setWards(wards);
+      } else {
+        const subCounties = response.data.message
+          .flatMap((region) => region.counties)
+          .flatMap((county) => county.subCounties)
+          .filter((subCounty) =>
+            subCounty.coordinators.some((coord) => coord.userId === userId)
+          );
+        const wards = subCounties.flatMap((subCounty) =>
+          subCounty.wards.map((ward) => ({
+            ...ward,
+            subCountyName: subCounty.title,
+            countyName: subCounty.county.title,
+          }))
         );
-      const wards = subCounties.flatMap((subCounty) =>
-        subCounty.wards.map((ward) => ({
-          ...ward,
-          subCountyName: subCounty.title,
-          countyName: subCounty.county.title,
-        }))
-      );
-      setWards(wards);
+        setWards(wards);
+      }
     } catch (error) {
       console.error("Failed to fetch wards:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     //done by subcounty coordinator
     <div className="pr-4 pl-3 relative">

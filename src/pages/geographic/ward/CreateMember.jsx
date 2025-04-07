@@ -5,6 +5,7 @@ import Select from "react-select";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
+import { hasRolePermission } from "../../../utils/Utils";
 
 const CreateMember = ({ handleCloseModal, refreshMembers }) => {
   const [wards, setWards] = useState([]);
@@ -12,7 +13,10 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
   const [selectedWard, setSelectedWard] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isPwd, setIsPwd] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [pwdDescription, setPwdDescription] = useState(null);
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  const isAdmin = hasRolePermission(userRoles, "ADMIN");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,7 +34,7 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
     fetchGroups();
   }, [accountId]);
 
-  //get all wards for ward coordinator
+  //get all wards for ward coordinator or admin
   const fetchWards = async () => {
     try {
       const response = await axios.get(
@@ -39,11 +43,13 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
       const wards = response.data.message.flatMap((region) =>
         region.counties.flatMap((county) =>
           county.subCounties.flatMap((subCounty) =>
-            subCounty.wards.filter((ward) =>
-              ward.coordinators.some(
-                (coordinator) => coordinator.userId === 8 //change to userId
-              )
-            )
+            isAdmin
+              ? subCounty.wards // Return all wards if admin
+              : subCounty.wards.filter((ward) =>
+                  ward.coordinators.some(
+                    (coordinator) => coordinator.userId === userId
+                  )
+                )
           )
         )
       );
@@ -95,11 +101,11 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsCreating(true);
     if (!selectedWard || !selectedGroup) {
       toast.error("Please select both ward and group");
       return;
     }
-
     try {
       const payload = {
         ...formData,
@@ -108,18 +114,19 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
         isPwd: isPwd,
         pwdDescription: isPwd ? pwdDescription : null,
       };
-
       const response = await axios.post(
         BASE_REST_API_URL + "members/v1/create",
         payload
       );
 
       toast.success("Member created successfully!");
-      // refreshMembers(); // Refresh the member list in parent component
+      refreshMembers();
       handleCloseModal();
     } catch (error) {
       console.error("Error creating member:", error);
       toast.error(error.response?.data?.message || "Failed to create member");
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -312,8 +319,9 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
             <button
               type="submit"
               className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
+              disabled={isCreating}
             >
-              Create
+              {isCreating ? "Creating" : "Create"}
             </button>
           </div>
         </form>
