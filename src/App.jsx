@@ -16,6 +16,7 @@ import Counties from "./pages/geographic/counties/Counties";
 import Subcounties from "./pages/geographic/subcounties/Subcounties";
 import Wards from "./pages/geographic/wards/Wards";
 import Ward from "./pages/geographic/ward/Ward";
+import Groups from "./pages/groups/Groups";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             }
           />
           <Route path="/users" element={<Users />} />
+          <Route path="/groups" element={<Groups />} />
 
           <Route
             path="/regions"

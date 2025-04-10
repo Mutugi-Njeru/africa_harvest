@@ -92,7 +92,7 @@ const UsersTable = ({
       fetchUsers();
     } catch (error) {
       console.error("Error activating user:", error);
-      toast.error("Cannot eactivate user");
+      toast.error("Cannot activate user");
     }
   };
   const handleStatusToggle = (user) => {

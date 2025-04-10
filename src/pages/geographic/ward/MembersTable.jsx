@@ -3,10 +3,14 @@ import { ClipboardEditIcon, Edit, Search, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { useState } from "react";
+import UpdateMember from "./UpdateMember";
+import AssignMemberSubActivity from "./AssignMemberSubActivity";
 
 const MembersTable = ({ members, isLoading, fetchMembers }) => {
   const [selectedMember, setSelectedMember] = useState(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const toggleMemberStatus = async (memberId, currentStatus) => {
     try {
       const endpoint = currentStatus ? "deactivate" : "activate";
@@ -40,6 +44,19 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
       setSelectedMember(null);
     }
   };
+  const handleEditClick = (member) => {
+    setSelectedMember(member);
+    setIsUpdateModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsUpdateModalOpen(false);
+    setSelectedMember(null);
+  };
+  const handleAssignCloseModal = () => {
+    setIsAssignModalOpen(false);
+    setSelectedMember(null);
+  };
+
   return (
     <div>
       <div className="relative overflow-x-auto shadow-md mt-3">
@@ -140,12 +157,21 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
                         </button>
                       </td>
                       <td className="flex items-center px-3 py-3 relative">
-                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
+                        <a
+                          onClick={() => handleEditClick(member)}
+                          className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                        >
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </a>
                         <div className="relative">
-                          <a className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3">
+                          <a
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setIsAssignModalOpen(true);
+                            }}
+                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
+                          >
                             <ClipboardEditIcon className="h-4 w-4 mr-1" />
                             Assign
                           </a>
@@ -192,6 +218,21 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
             </div>
           </div>
         </div>
+      )}
+      {isUpdateModalOpen && (
+        <UpdateMember
+          isOpen={isUpdateModalOpen}
+          onClose={handleCloseModal}
+          memberData={selectedMember}
+          onMemberUpdated={fetchMembers}
+        />
+      )}
+      {isAssignModalOpen && (
+        <AssignMemberSubActivity
+          handleCloseModal={handleAssignCloseModal}
+          member={selectedMember}
+          onCloseModal={fetchMembers}
+        />
       )}
     </div>
   );
