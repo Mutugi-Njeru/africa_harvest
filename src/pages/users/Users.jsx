@@ -72,7 +72,11 @@ const Users = () => {
   return (
     <div className="pr-4 pl-3 relative">
       <div className="flex justify-between items-center mt-3 mb-5">
-        <div className="text-xl font-bold text-gray-600">Users</div>
+        {showUsers ? (
+          <div className="text-xl font-bold text-gray-600">Users</div>
+        ) : (
+          <div className="text-xl font-bold text-gray-600">Roles</div>
+        )}
         <div className="flex justify-end items-center">
           {canCreateUser && (
             <>

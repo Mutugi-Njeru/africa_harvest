@@ -27,7 +27,7 @@ const AssignMemberSubActivity = ({
       );
       if (response.data.isSuccess && response.data.message) {
         const allSubActivities = response.data.message.flatMap(
-          (activity) => activity.subActivities
+          (activity) => activity.subActivities || []
         );
         setSubactivities(allSubActivities);
       }

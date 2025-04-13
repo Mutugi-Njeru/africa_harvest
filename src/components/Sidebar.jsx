@@ -73,7 +73,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { icon: Users, text: "Users", path: "/users" },
     { icon: Globe, text: "Locations", hasDropdown: true },
     { icon: Network, text: "Groups", path: "/groups" },
-    { icon: FileText, text: "Activities" },
+    { icon: FileText, text: "Activities", path: "/activity" },
     { icon: BarChart3, text: "Analytics" },
     { icon: Bell, text: "Notifications" },
     { icon: Settings, text: "Profile", path: "/profile" },

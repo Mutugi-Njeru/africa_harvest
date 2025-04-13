@@ -63,7 +63,9 @@ const CreateMember = ({ handleCloseModal, refreshMembers }) => {
   //fetch groups
   const fetchGroups = async () => {
     try {
-      const response = await axios.get(BASE_REST_API_URL + "groups/v1/all");
+      const response = await axios.get(
+        BASE_REST_API_URL + `groups/v1/all/${accountId}`
+      );
       const groups = response.data.message;
       setGroups(groups);
     } catch (error) {
