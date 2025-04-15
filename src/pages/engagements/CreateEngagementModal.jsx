@@ -1,7 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
+import Select from "react-select";
+import { BASE_REST_API_URL } from "../../service/AuthService";
+import axios from "axios";
+import { hasRolePermission } from "../../utils/Utils";
 
 const CreateEngagementModal = ({ handleCloseModal }) => {
+  const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
+  const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
+  const accountId = localStorage.getItem("accountId");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState([]);
+  //get all categories
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      let url = `${BASE_REST_API_URL}/users/v1/all`;
+      if (superAdmin) {
+        url += `?accountId=${accountId}`;
+      }
+      const response = await axios.get(url);
+      setUsers(response.data.message);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
+  };
+  const userOptions = users.map((user) => ({
+    value: user.userId,
+    label: user.username,
+  }));
+
+  const handleUserChange = (selectedUser) => {
+    setSelectedUser(selectedUser);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 shadow-lg w-[800px]">
@@ -10,43 +45,57 @@ const CreateEngagementModal = ({ handleCloseModal }) => {
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Group Name
+                Resource
               </label>
               <input
                 type="text"
-                name="groupName"
+                name="resource"
                 // value={formData.groupName}
                 // onChange={handleInputChange}
-                placeholder="Group Name"
+                placeholder="resource"
                 className=" block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
                 required
               />
             </div>
-
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Quantity
+              </label>
+              <input
+                type="text"
+                name="resource"
+                // value={formData.groupName}
+                // onChange={handleInputChange}
+                placeholder="e.g 100"
+                className=" block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                required
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="">
               <label className="block text-sm font-medium text-gray-700">
-                Ward
+                Manager
               </label>
               <Select
-                name="wardId"
-                // options={wardOptions}
-                // onChange={handleWardChange}
+                name="userId"
+                options={userOptions}
+                onChange={handleUserChange}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 styles={CustomFiltersStyles}
                 required
               />
             </div>
-          </div>
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
+
+            <div className="">
               <label className="block text-sm font-medium text-gray-700">
-                Group Manager
+                Category
               </label>
               <Select
                 name="wardId"
-                // options={wardCoordinatorOptions}
-                // onChange={handleCoordinatorChange}
+                // options={wardOptions}
+                // onChange={handleWardChange}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 styles={CustomFiltersStyles}

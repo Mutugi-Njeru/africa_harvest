@@ -2,9 +2,7 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 
 const EngagementsModal = ({ isOpen, onClose, engagements }) => {
-  useEffect(() => {
-    console.log(engagements);
-  }, [engagements]);
+  useEffect(() => {}, [engagements]);
   if (!isOpen) return null;
   const firstName = engagements?.[0]?.firstName || "this member";
 

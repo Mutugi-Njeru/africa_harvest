@@ -18,6 +18,7 @@ import {
   Landmark,
   Globe,
   Network,
+  Share2,
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
@@ -74,7 +75,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { icon: Globe, text: "Locations", hasDropdown: true },
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Activities", path: "/activity" },
-    { icon: BarChart3, text: "Engagements", path: "/engagements" },
+    { icon: Share2, text: "Engagements", path: "/engagements" },
     { icon: Bell, text: "Notifications" },
     { icon: Settings, text: "Profile", path: "/profile" },
   ];

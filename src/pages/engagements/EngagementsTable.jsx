@@ -1,7 +1,71 @@
-import { Clipboard, Edit, Search, Trash2 } from "lucide-react";
-import React from "react";
+import { Clipboard, Edit, Eye, Search, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import AssignBeneficiaryModal from "./AssignBeneficiaryModal";
+import { BASE_REST_API_URL } from "../../service/AuthService";
+import axios from "axios";
+import { toast } from "react-toastify";
+import BeneficiariesModal from "./BeneficiariesModal";
 
-const EngagementsTable = ({ engagements, isLoading }) => {
+const EngagementsTable = ({ engagements, isLoading, fetchEngagements }) => {
+  const [isBeneficiariesModalOpen, setIsBeneficiariesModalOpen] =
+    useState(false);
+  const [selectedEngagement, setSelectedEngagement] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [viewBeneficiaries, setViewBeneficiaries] = useState(false);
+  const [beneficiaries, setBeneficiaries] = useState([]);
+
+  const handleCloseModal = () => {
+    setIsBeneficiariesModalOpen(false);
+    setSelectedEngagement(null);
+  };
+  const deleteEngagement = async (engagementId) => {
+    try {
+      const response = await axios.delete(
+        BASE_REST_API_URL + `/engagements/v1/${engagementId}`
+      );
+      toast.success(response.data.message);
+      fetchEngagements();
+    } catch (error) {
+      console.error("Error deleting engagement:", error);
+      toast.error(error.response?.data?.message || "Cannot delete engagement");
+    }
+  };
+  const handleViewBeneficiaries = async (engagementId) => {
+    try {
+      const response = await axios.get(
+        BASE_REST_API_URL + `/engagements/v1/beneficiaries/${engagementId}`
+      );
+      const beneficiariesData = {
+        category: response.data.message.category,
+        resource: response.data.message.resource,
+        members: response.data.message.beneficiaries.map((beneficiary) => ({
+          ...beneficiary.member,
+          engagementBeneficiaryId: beneficiary.engagementBeneficiaryId,
+          groupName: beneficiary.member.groupName,
+          subActivities: beneficiary.member.subActivities,
+          isPwd: beneficiary.member.isPwd,
+          dateOfBirth: beneficiary.member.dob,
+          idNumber: beneficiary.member.idNumber,
+          firstName: beneficiary.member.firstName,
+          lastName: beneficiary.member.lastName,
+          gender: beneficiary.member.gender,
+        })),
+      };
+
+      setBeneficiaries(beneficiariesData);
+      setViewBeneficiaries(true);
+    } catch (error) {
+      console.error("Error fetching engagements:", error);
+      toast.error("Failed to fetch engagements");
+    }
+  };
+  const handleConfirmDeletion = () => {
+    if (selectedEngagement) {
+      deleteEngagement(selectedEngagement.engagementId);
+      setShowDeleteModal(false);
+      setSelectedEngagement(null);
+    }
+  };
   return (
     <div>
       <div className="relative overflow-x-auto shadow-md mt-3">
@@ -33,7 +97,7 @@ const EngagementsTable = ({ engagements, isLoading }) => {
                     <th className="px-6 py-4">Resource</th>
                     <th className="px-6 py-4">Quantity</th>
                     <th className="px-6 py-4">Description</th>
-                    <th className="px-6 py-4">Fulllname</th>
+                    <th className="px-6 py-4">Manager</th>
                     <th className="px-6 py-4">Actions</th>
                   </tr>
                 </thead>
@@ -59,12 +123,33 @@ const EngagementsTable = ({ engagements, isLoading }) => {
                         {engagement.user.firstName} {engagement.user.lastName}
                       </td>
                       <td className="flex items-center px-6 py-3 relative">
-                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
+                        <a
+                          onClick={() =>
+                            handleViewBeneficiaries(engagement.engagementId)
+                          }
+                          className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View Beneficiaries
+                        </a>
+                        <a
+                          onClick={() => {
+                            setIsBeneficiariesModalOpen(true);
+                            setSelectedEngagement(engagement);
+                          }}
+                          className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                        >
                           <Clipboard className="h-4 w-4 mr-1" />
-                          Assign
+                          Assign Beneficiaries
                         </a>
                         <div className="relative">
-                          <a className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3">
+                          <a
+                            onClick={() => {
+                              setSelectedEngagement(engagement);
+                              setShowDeleteModal(true);
+                            }}
+                            className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
+                          >
                             <Trash2 className="h-4 w-4 mr-1" />
                             Delete
                           </a>
@@ -78,6 +163,41 @@ const EngagementsTable = ({ engagements, isLoading }) => {
           )}
         </div>
       </div>
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this Engagement?</p>
+            <div className="mt-6 flex">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDeletion}
+                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {viewBeneficiaries && (
+        <BeneficiariesModal
+          isOpen={viewBeneficiaries}
+          onClose={() => setViewBeneficiaries(false)}
+          beneficiaries={beneficiaries}
+        />
+      )}
+      {isBeneficiariesModalOpen && (
+        <AssignBeneficiaryModal
+          handleCloseModal={handleCloseModal}
+          engagement={selectedEngagement}
+        />
+      )}
     </div>
   );
 };
