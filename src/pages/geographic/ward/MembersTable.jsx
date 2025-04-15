@@ -1,16 +1,20 @@
 import axios from "axios";
-import { ClipboardEditIcon, Edit, Search, Trash2 } from "lucide-react";
+import { ClipboardEditIcon, Edit, Eye, Search, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { useState } from "react";
 import UpdateMember from "./UpdateMember";
 import AssignMemberSubActivity from "./AssignMemberSubActivity";
+import EngagementsModal from "./EngagementsModal";
 
 const MembersTable = ({ members, isLoading, fetchMembers }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isEngagementsModalOpen, setIsEngagementsModalOpen] = useState(false);
+  const [engagements, setEngagements] = useState([]);
+
   const toggleMemberStatus = async (memberId, currentStatus) => {
     try {
       const endpoint = currentStatus ? "deactivate" : "activate";
@@ -35,6 +39,26 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
     } catch (error) {
       console.error("Error deleting member:", error);
       toast.error("Cannot delete member");
+    }
+  };
+  const handleViewEngagements = async (memberId) => {
+    try {
+      const response = await axios.get(
+        BASE_REST_API_URL + `/engagements/v1/member/${memberId}`
+      );
+      const engagements = response.data.message.engagements.map(
+        (engagement) => ({
+          ...engagement,
+          firstName: response.data.message.firstName,
+          lastName: response.data.message.lastName,
+        })
+      );
+
+      setEngagements(engagements);
+      setIsEngagementsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching engagements:", error);
+      toast.error("Failed to fetch engagements");
     }
   };
   const handleConfirmDeletion = () => {
@@ -90,8 +114,9 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
                     <th className="px-3 py-4">Group</th>
                     <th className="px-3 py-3">Ward</th>
                     <th className="px-3 py-3">Sub Activity</th>
+                    <th className="px-3 py-3">Engagements</th>
                     <th className="px-2 py-3">Status</th>
-                    <th className="px-3 py-3">Actions</th>
+                    <th className="px-3 py-3 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,6 +162,15 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
                             "No subActivity assigned"
                           )}
                         </div>
+                      </td>
+                      <td className="px-3 py-3 ">
+                        <a
+                          onClick={() => handleViewEngagements(member.memberId)}
+                          className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </a>
                       </td>
                       <td className="px-2 py-3">
                         <button
@@ -232,6 +266,13 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
           handleCloseModal={handleAssignCloseModal}
           member={selectedMember}
           onCloseModal={fetchMembers}
+        />
+      )}
+      {isEngagementsModalOpen && (
+        <EngagementsModal
+          isOpen={isEngagementsModalOpen}
+          onClose={() => setIsEngagementsModalOpen(false)}
+          engagements={engagements}
         />
       )}
     </div>
