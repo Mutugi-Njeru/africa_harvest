@@ -21,8 +21,7 @@ const Header = ({ sidebarWidth }) => {
   };
 
   const handleProfile = () => {
-    // Handle profile logic here
-    console.log("Profile clicked");
+    navigate("/profile");
   };
 
   const handleClickOutside = (event) => {

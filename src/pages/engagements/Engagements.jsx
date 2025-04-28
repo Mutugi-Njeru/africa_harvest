@@ -60,7 +60,10 @@ const Engagements = () => {
         fetchEngagements={fetchEngagements}
       />
       {isCreateModalOpen && (
-        <CreateEngagementModal handleCloseModal={handleCloseModal} />
+        <CreateEngagementModal
+          handleCloseModal={handleCloseModal}
+          fetchEngagements={fetchEngagements}
+        />
       )}
     </div>
   );
