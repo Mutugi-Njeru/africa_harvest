@@ -5,10 +5,51 @@ import { useState } from "react";
 const WardsTable = ({ wards, isLoading, fetchWards }) => {
   const [isCoordinatorsModalOpen, setIsCoordinatorsModalOpen] = useState(false);
   const [selectedWard, setSelectedWard] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const handleCloseModal = () => {
     setIsCoordinatorsModalOpen(false);
     setSelectedWard(null);
   };
+
+  const filterWards = () => {
+    if (!searchTerm) return wards;
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return wards.filter((ward) => {
+      // Check ward title
+      if (ward.title.toLowerCase().includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check subcounty name
+      if (ward.subCountyName.toLowerCase().includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check county name
+      if (ward.countyName.toLowerCase().includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check coordinators
+      if (ward.coordinators && ward.coordinators.length > 0) {
+        const hasMatchingCoordinator = ward.coordinators.some((coordinator) => {
+          const fullName =
+            `${coordinator.firstName} ${coordinator.lastName}`.toLowerCase();
+          return fullName.includes(lowerCaseSearchTerm);
+        });
+
+        if (hasMatchingCoordinator) return true;
+      }
+
+      return false;
+    });
+  };
+
+  const filteredWards = filterWards();
+
   return (
     <div>
       <div className="relative overflow-x-auto shadow-md mt-3">
@@ -19,8 +60,10 @@ const WardsTable = ({ wards, isLoading, fetchWards }) => {
             </div>
             <input
               type="text"
-              placeholder="Search by name, phone, email or roles"
+              placeholder="Search by ward, coordinator or subcounty"
               className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -43,59 +86,65 @@ const WardsTable = ({ wards, isLoading, fetchWards }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {wards.map((ward, index) => (
-                    <tr
-                      key={ward.wardId}
-                      className="bg-white border-b  hover:bg-gray-50 "
-                    >
-                      <th
-                        scope="row"
-                        className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                  {filteredWards.length > 0 ? (
+                    filteredWards.map((ward, index) => (
+                      <tr
+                        key={ward.wardId}
+                        className="bg-white border-b  hover:bg-gray-50 "
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-6 py-3 truncate max-w-[200px]">
-                        {ward.title}
-                      </td>
-                      <td className="px-6 py-3">
-                        {" "}
-                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                          {ward.coordinators && ward.coordinators.length > 0
-                            ? ward.coordinators.map((coordinator, idx) => (
-                                <span
-                                  key={coordinator.userId}
-                                  className="truncate"
-                                >
-                                  {`${coordinator.firstName} ${coordinator.lastName}`}
-                                  {idx < ward.coordinators.length - 1
-                                    ? ","
-                                    : ""}
-                                </span>
-                              ))
-                            : "No coordinator assigned"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">{ward.subCountyName}</td>
-
-                      <td className="px-6 py-3 truncate max-w-[150px]">
-                        {ward.countyName}
-                      </td>
-                      <td className="flex items-center px-6 py-3 relative">
-                        <div className="relative">
-                          <a
-                            onClick={() => {
-                              setSelectedWard(ward);
-                              setIsCoordinatorsModalOpen(true);
-                            }}
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
-                          >
-                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
-                            Assign
-                          </a>
-                        </div>
+                        <th
+                          scope="row"
+                          className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                        >
+                          {index + 1}
+                        </th>
+                        <td className="px-6 py-3 truncate max-w-[200px]">
+                          {ward.title}
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                            {ward.coordinators && ward.coordinators.length > 0
+                              ? ward.coordinators.map((coordinator, idx) => (
+                                  <span
+                                    key={coordinator.userId}
+                                    className="truncate"
+                                  >
+                                    {`${coordinator.firstName} ${coordinator.lastName}`}
+                                    {idx < ward.coordinators.length - 1
+                                      ? ","
+                                      : ""}
+                                  </span>
+                                ))
+                              : "No coordinator assigned"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-3">{ward.subCountyName}</td>
+                        <td className="px-6 py-3 truncate max-w-[150px]">
+                          {ward.countyName}
+                        </td>
+                        <td className="flex items-center px-6 py-3 relative">
+                          <div className="relative">
+                            <a
+                              onClick={() => {
+                                setSelectedWard(ward);
+                                setIsCoordinatorsModalOpen(true);
+                              }}
+                              className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                            >
+                              <ClipboardEditIcon className="h-4 w-4 mr-1" />
+                              Assign
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="bg-white border-b hover:bg-gray-50">
+                      <td colSpan="6" className="px-6 py-4 text-center">
+                        No wards found matching your search
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

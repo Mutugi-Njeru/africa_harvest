@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import logo from "../../assets/ahlogo.png";
+import logo from "../../assets/1.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import CubeAnimation from "./CubeAnimation";
@@ -109,7 +109,7 @@ const Login = () => {
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-yellow-600 focus:outline-none focus:ring-0"
+                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-liftonGreen focus:outline-none focus:ring-0"
                   placeholder=" "
                   required
                 />
@@ -129,7 +129,7 @@ const Login = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-yellow-600 focus:outline-none focus:ring-0"
+                  className="border-1 peer block w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-liftonGreen focus:outline-none focus:ring-0"
                   placeholder=" "
                   required
                 />
@@ -153,7 +153,7 @@ const Login = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="rounded-lg bg-green-800 py-3 font-bold text-white flex items-center justify-center"
+              className="rounded-lg bg-liftonBlue py-3 font-bold text-white flex items-center justify-center"
               disabled={loading}
             >
               {loading ? (
@@ -170,6 +170,7 @@ const Login = () => {
       </div>
 
       {/* Left Section */}
+
       <div className="flex-[3] relative">
         <img
           src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop"

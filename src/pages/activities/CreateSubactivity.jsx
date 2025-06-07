@@ -56,6 +56,7 @@ const CreateSubactivity = ({ isOpen, onClose, onSubactivityCreated }) => {
       const response = await axios.get(
         BASE_REST_API_URL + `activities/v1/all/${accountId}`
       );
+      console.log(response.data.message);
       setActivities(response.data.message);
     } catch (error) {
       console.error("Failed to fetch activities:", error);

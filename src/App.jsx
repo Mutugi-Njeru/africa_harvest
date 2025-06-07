@@ -19,12 +19,14 @@ import Ward from "./pages/geographic/ward/Ward";
 import Groups from "./pages/groups/Groups";
 import Activities from "./pages/activities/Activities";
 import Engagements from "./pages/engagements/Engagements";
+import LoginExample from "./pages/login/LoginExample";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<LoginExample />} />
         <Route element={<Dashboard />}>
           <Route path="/overview" element={<Overview />} />
           <Route

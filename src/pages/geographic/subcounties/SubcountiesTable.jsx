@@ -5,11 +5,48 @@ import SubcountyCoordinatorsModal from "./SubcountyCoordinatorsModal";
 const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties }) => {
   const [isCoordinatorsModalOpen, setIsCoordinatorsModalOpen] = useState(false);
   const [selectedSubcounty, setSelectedSubcounty] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCloseModal = () => {
     setIsCoordinatorsModalOpen(false);
     setSelectedSubcounty(null);
   };
+
+  const filterSubcounties = () => {
+    if (!searchTerm) return subCounties;
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return subCounties.filter((subcounty) => {
+      // Check subcounty title
+      if (subcounty.title.toLowerCase().includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check county name
+      if (subcounty.countyName.toLowerCase().includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check coordinators
+      if (subcounty.coordinators && subcounty.coordinators.length > 0) {
+        const hasMatchingCoordinator = subcounty.coordinators.some(
+          (coordinator) => {
+            const fullName =
+              `${coordinator.firstName} ${coordinator.lastName}`.toLowerCase();
+            return fullName.includes(lowerCaseSearchTerm);
+          }
+        );
+
+        if (hasMatchingCoordinator) return true;
+      }
+
+      return false;
+    });
+  };
+
+  const filteredSubcounties = filterSubcounties();
+
   return (
     <div>
       <div className="relative overflow-x-auto shadow-md mt-3">
@@ -20,8 +57,10 @@ const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties }) => {
             </div>
             <input
               type="text"
-              placeholder="Search by name, phone, email or roles"
+              placeholder="Search by subcounty, coordinator or county"
               className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -43,60 +82,64 @@ const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {subCounties.map((subcounty, index) => (
-                    <tr
-                      key={subcounty.subCountyId}
-                      className="bg-white border-b  hover:bg-gray-50 "
-                    >
-                      <th
-                        scope="row"
-                        className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                  {filteredSubcounties.length > 0 ? (
+                    filteredSubcounties.map((subcounty, index) => (
+                      <tr
+                        key={subcounty.subCountyId}
+                        className="bg-white border-b  hover:bg-gray-50 "
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-6 py-3 truncate max-w-[200px]">
-                        {subcounty.title}
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                          {subcounty.coordinators &&
-                          subcounty.coordinators.length > 0
-                            ? subcounty.coordinators.map((coordinator, idx) => (
-                                <span
-                                  key={coordinator.userId}
-                                  className="truncate"
-                                >
-                                  {`${coordinator.firstName} ${coordinator.lastName}`}
-                                  {idx < subcounty.coordinators.length - 1
-                                    ? ","
-                                    : ""}
-                                </span>
-                              ))
-                            : "No coordinator assigned"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">{subcounty.countyName}</td>
+                        <th
+                          scope="row"
+                          className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                        >
+                          {index + 1}
+                        </th>
+                        <td className="px-6 py-3 truncate max-w-[200px]">
+                          {subcounty.title}
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                            {subcounty.coordinators &&
+                            subcounty.coordinators.length > 0
+                              ? subcounty.coordinators.map(
+                                  (coordinator, idx) => (
+                                    <span
+                                      key={coordinator.userId}
+                                      className="truncate"
+                                    >
+                                      {`${coordinator.firstName} ${coordinator.lastName}`}
+                                      {idx < subcounty.coordinators.length - 1
+                                        ? ","
+                                        : ""}
+                                    </span>
+                                  )
+                                )
+                              : "No coordinator assigned"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-3">{subcounty.countyName}</td>
 
-                      <td className="flex items-center px-6 py-3 relative">
-                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </a>
-                        <div className="relative">
+                        <td className="flex items-center px-6 py-3">
                           <a
                             onClick={() => {
                               setSelectedSubcounty(subcounty);
                               setIsCoordinatorsModalOpen(true);
                             }}
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
+                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
                           >
                             <ClipboardEditIcon className="h-4 w-4 mr-1" />
                             Assign
                           </a>
-                        </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="bg-white border-b hover:bg-gray-50">
+                      <td colSpan="5" className="px-6 py-4 text-center">
+                        No subcounties found matching your search
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

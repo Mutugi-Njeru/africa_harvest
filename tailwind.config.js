@@ -8,6 +8,8 @@ export default {
     extend: {
       colors: {
         yellowOrange: "#fbb03b",
+        liftonBlue: "#0071BD",
+        liftonGreen: "#88C720",
       },
     },
   },

@@ -134,23 +134,17 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions }) => {
                         <td className="px-6 py-3">
                           {region.updatedAt || "N/A"}
                         </td>
-                        <td className="flex items-center px-6 py-3 relative">
-                          <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
+                        <td className=" px-6 py-3">
+                          <a
+                            onClick={() => {
+                              setSelectedRegion(region);
+                              setIsCoordinatorsModalOpen(true);
+                            }}
+                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                          >
+                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
+                            Assign
                           </a>
-                          <div className="relative">
-                            <a
-                              onClick={() => {
-                                setSelectedRegion(region);
-                                setIsCoordinatorsModalOpen(true);
-                              }}
-                              className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
-                            >
-                              <ClipboardEditIcon className="h-4 w-4 mr-1" />
-                              Assign
-                            </a>
-                          </div>
                         </td>
                       </tr>
                     ))

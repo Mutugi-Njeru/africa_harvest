@@ -13,11 +13,39 @@ import CountyCoordinatorsModal from "./CountyCoordinatorsModal";
 const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
   const [isCoordinatorsModalOpen, setIsCoordinatorsModalOpen] = useState(false);
   const [selectedCounty, setSelectedCounty] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCloseModal = () => {
     setIsCoordinatorsModalOpen(false);
     setSelectedCounty(null);
   };
+
+  const filterCounties = () => {
+    if (!searchTerm) return counties;
+
+    const term = searchTerm.toLowerCase();
+    return counties.filter((county) => {
+      // Check county title
+      if (county.title.toLowerCase().includes(term)) return true;
+
+      // Check region name
+      if (county.regionName?.toLowerCase().includes(term)) return true;
+
+      // Check coordinators
+      if (
+        county.coordinators?.some((coordinator) =>
+          `${coordinator.firstName} ${coordinator.lastName}`
+            .toLowerCase()
+            .includes(term)
+        )
+      )
+        return true;
+
+      return false;
+    });
+  };
+
+  const filteredCounties = filterCounties();
 
   return (
     <div>
@@ -29,8 +57,10 @@ const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
             </div>
             <input
               type="text"
-              placeholder="Search by county, phone, email or roles"
+              placeholder="Search by county, coordinator, or region"
               className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -47,7 +77,6 @@ const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">County</th>
                     <th className="px-6 py-4">County Coordinator(s)</th>
-
                     <th className="px-6 py-4">Region Name</th>
                     <th className="px-6 py-4">Region Description</th>
                     <th className="px-6 py-4">UpdatedAt</th>
@@ -55,67 +84,71 @@ const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {counties.map((county, index) => (
-                    <tr
-                      key={county.countyId}
-                      className="bg-white border-b  hover:bg-gray-50 "
-                    >
-                      <th
-                        scope="row"
-                        className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                  {filteredCounties.length > 0 ? (
+                    filteredCounties.map((county, index) => (
+                      <tr
+                        key={county.countyId}
+                        className="bg-white border-b  hover:bg-gray-50 "
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-6 py-3 truncate max-w-[200px]">
-                        {county.title}
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                          {county.coordinators && county.coordinators.length > 0
-                            ? county.coordinators.map((coordinator, idx) => (
-                                <span
-                                  key={coordinator.userId}
-                                  className="truncate"
-                                >
-                                  {`${coordinator.firstName} ${coordinator.lastName}`}
-                                  {idx < county.coordinators.length - 1
-                                    ? ","
-                                    : ""}
-                                </span>
-                              ))
-                            : "No coordinator assigned"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">{county.regionName}</td>
-                      <td className="px-6 py-3">
-                        {county.description
-                          ? county.description
-                          : "no description added"}
-                      </td>
-
-                      <td className="px-6 py-3 truncate max-w-[150px]">
-                        {county.updatedAt}
-                      </td>
-                      <td className="flex items-center px-6 py-3 relative">
-                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center">
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </a>
-                        <div className="relative">
-                          <a
-                            onClick={() => {
-                              setSelectedCounty(county);
-                              setIsCoordinatorsModalOpen(true);
-                            }}
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
-                          >
-                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
-                            Assign
-                          </a>
-                        </div>
+                        <th
+                          scope="row"
+                          className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                        >
+                          {index + 1}
+                        </th>
+                        <td className="px-6 py-3 truncate max-w-[200px]">
+                          {county.title}
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                            {county.coordinators &&
+                            county.coordinators.length > 0
+                              ? county.coordinators.map((coordinator, idx) => (
+                                  <span
+                                    key={coordinator.userId}
+                                    className="truncate"
+                                  >
+                                    {`${coordinator.firstName} ${coordinator.lastName}`}
+                                    {idx < county.coordinators.length - 1
+                                      ? ","
+                                      : ""}
+                                  </span>
+                                ))
+                              : "No coordinator assigned"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-3">{county.regionName}</td>
+                        <td className="px-6 py-3">
+                          {county.description
+                            ? county.description
+                            : "no description added"}
+                        </td>
+                        <td className="px-6 py-3 truncate max-w-[150px]">
+                          {county.updatedAt}
+                        </td>
+                        <td className="flex items-center px-6 py-3 relative">
+                          <div className="relative">
+                            <a
+                              onClick={() => {
+                                setSelectedCounty(county);
+                                setIsCoordinatorsModalOpen(true);
+                              }}
+                              className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                            >
+                              <ClipboardEditIcon className="h-4 w-4 mr-1" />
+                              Assign
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-4 text-center">
+                        No counties found matching your search criteria
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

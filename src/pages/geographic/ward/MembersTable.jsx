@@ -14,6 +14,7 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isEngagementsModalOpen, setIsEngagementsModalOpen] = useState(false);
   const [engagements, setEngagements] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const toggleMemberStatus = async (memberId, currentStatus) => {
     try {
@@ -41,6 +42,7 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
       toast.error("Cannot delete member");
     }
   };
+
   const handleViewEngagements = async (memberId) => {
     try {
       const response = await axios.get(
@@ -61,6 +63,7 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
       toast.error("Failed to fetch engagements");
     }
   };
+
   const handleConfirmDeletion = () => {
     if (selectedMember) {
       deleteUser(selectedMember.memberId);
@@ -68,18 +71,71 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
       setSelectedMember(null);
     }
   };
+
   const handleEditClick = (member) => {
     setSelectedMember(member);
     setIsUpdateModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setIsUpdateModalOpen(false);
     setSelectedMember(null);
   };
+
   const handleAssignCloseModal = () => {
     setIsAssignModalOpen(false);
     setSelectedMember(null);
   };
+
+  const filterMembers = () => {
+    if (!searchTerm) return members;
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return members.filter((member) => {
+      // Check name
+      const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
+      if (fullName.includes(lowerCaseSearchTerm)) {
+        return true;
+      }
+
+      // Check ID number
+      if (
+        member.idNumber &&
+        member.idNumber.toLowerCase().includes(lowerCaseSearchTerm)
+      ) {
+        return true;
+      }
+
+      // Check phone number
+      if (
+        member.msisdn &&
+        member.msisdn.toLowerCase().includes(lowerCaseSearchTerm)
+      ) {
+        return true;
+      }
+
+      // Check group name
+      if (
+        member.groupName &&
+        member.groupName.toLowerCase().includes(lowerCaseSearchTerm)
+      ) {
+        return true;
+      }
+
+      // Check ward title
+      if (
+        member.wardTitle &&
+        member.wardTitle.toLowerCase().includes(lowerCaseSearchTerm)
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+  };
+
+  const filteredMembers = filterMembers();
 
   return (
     <div>
@@ -91,8 +147,10 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
             </div>
             <input
               type="text"
-              placeholder="Search by name, phone, email or roles"
+              placeholder="Search by name, id Number or phone"
               className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -120,111 +178,128 @@ const MembersTable = ({ members, isLoading, fetchMembers }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {members.map((member, index) => (
-                    <tr
-                      key={member.memberId}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <th
-                        scope="row"
-                        className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
+                  {filteredMembers.length > 0 ? (
+                    filteredMembers.map((member, index) => (
+                      <tr
+                        key={member.memberId}
+                        className="bg-white border-b hover:bg-gray-50"
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-3 py-3 truncate max-w-[200px]">
-                        {member.firstName} {member.lastName}
-                      </td>
-                      <td className="px-3 py-3">{member.idNumber}</td>
-                      <td className="px-3 py-3">{member.msisdn}</td>
-                      <td className="px-2 py-3">{member.gender}</td>
-                      <td className="px-3 py-3">{member.groupName}</td>
-                      <td className="px-3 py-3">{member.wardTitle}</td>
-                      <td className="px-3 py-3">
-                        <div className="flex items-center max-w-[400px] overflow-hidden">
-                          {member.subActivities &&
-                          member.subActivities.length > 0 ? (
-                            <span
-                              className="truncate"
-                              title={member.subActivities
-                                .map((sa) => sa.subActivity)
-                                .join(", ")}
-                            >
-                              {member.subActivities.map((subActivity, idx) => (
-                                <span key={subActivity.subActivityId}>
-                                  {subActivity.subActivity}
-                                  {idx < member.subActivities.length - 1
-                                    ? ", "
-                                    : ""}
-                                </span>
-                              ))}
-                            </span>
-                          ) : (
-                            "No subActivity assigned"
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 ">
-                        <a
-                          onClick={() => handleViewEngagements(member.memberId)}
-                          className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                        <th
+                          scope="row"
+                          className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
                         >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </a>
-                      </td>
-                      <td className="px-2 py-3">
-                        <button
-                          onClick={() =>
-                            toggleMemberStatus(member.memberId, member.isActive)
-                          }
-                          className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                            member.isActive ? "bg-green-500" : "bg-yellowOrange"
-                          }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                          {index + 1}
+                        </th>
+                        <td className="px-3 py-3 truncate max-w-[200px]">
+                          {member.firstName} {member.lastName}
+                        </td>
+                        <td className="px-3 py-3">{member.idNumber}</td>
+                        <td className="px-3 py-3">{member.msisdn}</td>
+                        <td className="px-2 py-3">{member.gender}</td>
+                        <td className="px-3 py-3">{member.groupName}</td>
+                        <td className="px-3 py-3">{member.wardTitle}</td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center max-w-[400px] overflow-hidden">
+                            {member.subActivities &&
+                            member.subActivities.length > 0 ? (
+                              <span
+                                className="truncate"
+                                title={member.subActivities
+                                  .map((sa) => sa.subActivity)
+                                  .join(", ")}
+                              >
+                                {member.subActivities.map(
+                                  (subActivity, idx) => (
+                                    <span key={subActivity.subActivityId}>
+                                      {subActivity.subActivity}
+                                      {idx < member.subActivities.length - 1
+                                        ? ", "
+                                        : ""}
+                                    </span>
+                                  )
+                                )}
+                              </span>
+                            ) : (
+                              "No subActivity assigned"
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-3 py-3 ">
+                          <a
+                            onClick={() =>
+                              handleViewEngagements(member.memberId)
+                            }
+                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </a>
+                        </td>
+                        <td className="px-2 py-3">
+                          <button
+                            onClick={() =>
+                              toggleMemberStatus(
+                                member.memberId,
+                                member.isActive
+                              )
+                            }
+                            className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
                               member.isActive
-                                ? "translate-x-4"
-                                : "translate-x-0"
+                                ? "bg-green-500"
+                                : "bg-yellowOrange"
                             }`}
-                          ></div>
-                        </button>
-                      </td>
-                      <td className="flex items-center px-3 py-3 relative">
-                        <a
-                          onClick={() => handleEditClick(member)}
-                          className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
-                        </a>
-                        <div className="relative">
-                          <a
-                            onClick={() => {
-                              setSelectedMember(member);
-                              setIsAssignModalOpen(true);
-                            }}
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
                           >
-                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
-                            Assign
-                          </a>
-                        </div>
-                        <div className="relative">
+                            <div
+                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                member.isActive
+                                  ? "translate-x-4"
+                                  : "translate-x-0"
+                              }`}
+                            ></div>
+                          </button>
+                        </td>
+                        <td className="flex items-center px-3 py-3 relative">
                           <a
-                            onClick={() => {
-                              setSelectedMember(member);
-                              setShowDeleteModal(true);
-                            }}
-                            className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
+                            onClick={() => handleEditClick(member)}
+                            className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
                           >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
                           </a>
-                        </div>
+                          <div className="relative">
+                            <a
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setIsAssignModalOpen(true);
+                              }}
+                              className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
+                            >
+                              <ClipboardEditIcon className="h-4 w-4 mr-1" />
+                              Assign
+                            </a>
+                          </div>
+                          <div className="relative">
+                            <a
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setShowDeleteModal(true);
+                              }}
+                              className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="bg-white border-b hover:bg-gray-50">
+                      <td colSpan="11" className="px-6 py-4 text-center">
+                        No members found matching your search
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
