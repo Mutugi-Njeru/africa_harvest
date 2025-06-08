@@ -10,9 +10,15 @@ const CubeAnimation = () => {
       const size = Math.random() * 40 + 10;
       const position = Math.random() * 100;
 
+      // Array of the three colors
+      const colors = ["#0071BD", "#FFFFFF", "#88C720"];
+      // Randomly select one color
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
       cube.style.width = `${size}px`;
       cube.style.height = `${size}px`;
       cube.style.left = `${position}%`;
+      cube.style.backgroundColor = randomColor;
       cube.style.animationDuration = `${Math.random() * 2 + 2}s`;
       cube.style.animationDelay = `${Math.random() * 1}s`;
       cube.addEventListener("animationend", () => {

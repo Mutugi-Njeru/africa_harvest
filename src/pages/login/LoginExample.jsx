@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/1.png";
+import Farm from "../../assets/farm2.jpg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import CubeAnimation from "./CubeAnimation";
@@ -94,16 +95,15 @@ const LoginExample = () => {
     <div className="flex h-screen">
       {/* Left Section - Background Image with Carousel (50% width) */}
       <div className="w-1/2 relative">
-        {/* Background Image from Online */}
+        {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center rounded-tr-3xl rounded-bl-3xl m-2"
           style={{
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80)",
+            backgroundImage: `url(${Farm})`,
           }}
         >
           {/* Overlay with blue tint */}
-          <div className="absolute inset-0 bg-liftonBlue bg-opacity-80 rounded-tr-3xl rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
+          <div className="absolute inset-0 bg-liftonBlue bg-opacity-90 rounded-tr-3xl rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
 
           {/* Cubes Animation */}
           <CubeAnimation />
@@ -123,10 +123,24 @@ const LoginExample = () => {
                     <h2 className="text-3xl text-lime-500 font-bold">
                       {item.title}
                     </h2>
-                    <p className="text-xl font-light break-words whitespace-normal max-w-[750px]">
+                    <p className="text-xl font-semibold break-words whitespace-normal max-w-[750px]">
                       {item.text}
                     </p>
                   </div>
+                ))}
+              </div>
+
+              {/* Navigation Icons */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {carouselItems.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      currentIndex === index ? "bg-white" : "bg-gray-500"
+                    }`}
+                    aria-label={`Go to item ${index + 1}`}
+                  />
                 ))}
               </div>
             </div>

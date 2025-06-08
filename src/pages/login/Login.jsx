@@ -177,7 +177,7 @@ const Login = () => {
           alt="Background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-yellowOrange bg-opacity-90"></div>
+        <div className="absolute inset-0 bg-liftonBlue bg-opacity-90"></div>
 
         {/* Cubes Animation */}
         <CubeAnimation />
