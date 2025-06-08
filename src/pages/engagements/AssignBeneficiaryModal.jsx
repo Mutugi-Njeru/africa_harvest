@@ -16,10 +16,9 @@ const AssignBeneficiaryModal = ({ handleCloseModal, engagement }) => {
   const accountId = localStorage.getItem("accountId");
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const isAdmin = hasRolePermission(userRoles, "ADMIN");
-  const userId = localStorage.getItem("userId");
+  const userId = Number(localStorage.getItem("userId"));
 
   useEffect(() => {
-    console.log("Fetching members...");
     fetchMembers();
     getEngagementBeneficiaries();
   }, [accountId, engagement.engagementId]);
