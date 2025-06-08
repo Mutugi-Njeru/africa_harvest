@@ -4,15 +4,14 @@ import AssignBeneficiaryModal from "./AssignBeneficiaryModal";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
-import BeneficiariesModal from "./BeneficiariesModal";
+import { useNavigate } from "react-router-dom";
 
 const EngagementsTable = ({ engagements, isLoading, fetchEngagements }) => {
   const [isBeneficiariesModalOpen, setIsBeneficiariesModalOpen] =
     useState(false);
   const [selectedEngagement, setSelectedEngagement] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [viewBeneficiaries, setViewBeneficiaries] = useState(false);
-  const [beneficiaries, setBeneficiaries] = useState([]);
+  const navigate = useNavigate();
 
   const handleCloseModal = () => {
     setIsBeneficiariesModalOpen(false);
@@ -30,35 +29,16 @@ const EngagementsTable = ({ engagements, isLoading, fetchEngagements }) => {
       toast.error(error.response?.data?.message || "Cannot delete engagement");
     }
   };
-  const handleViewBeneficiaries = async (engagementId) => {
-    try {
-      const response = await axios.get(
-        BASE_REST_API_URL + `/engagements/v1/beneficiaries/${engagementId}`
-      );
-      const beneficiariesData = {
-        category: response.data.message.category,
-        resource: response.data.message.resource,
-        members: response.data.message.beneficiaries.map((beneficiary) => ({
-          ...beneficiary.member,
-          engagementBeneficiaryId: beneficiary.engagementBeneficiaryId,
-          groupName: beneficiary.member.groupName,
-          subActivities: beneficiary.member.subActivities,
-          isPwd: beneficiary.member.isPwd,
-          dateOfBirth: beneficiary.member.dob,
-          idNumber: beneficiary.member.idNumber,
-          firstName: beneficiary.member.firstName,
-          lastName: beneficiary.member.lastName,
-          gender: beneficiary.member.gender,
-        })),
-      };
 
-      setBeneficiaries(beneficiariesData);
-      setViewBeneficiaries(true);
+  const handleShowBeneficiaries = async (engagementId) => {
+    try {
+      navigate(`/engagements/${engagementId}/beneficiaries`);
     } catch (error) {
-      console.error("Error fetching engagements:", error);
-      toast.error("Failed to fetch engagements");
+      console.error("Error navigating to beneficiaries:", error);
+      toast.error("Failed to view beneficiaries");
     }
   };
+
   const handleConfirmDeletion = () => {
     if (selectedEngagement) {
       deleteEngagement(selectedEngagement.engagementId);
@@ -125,7 +105,7 @@ const EngagementsTable = ({ engagements, isLoading, fetchEngagements }) => {
                       <td className="flex items-center px-6 py-3 relative">
                         <a
                           onClick={() =>
-                            handleViewBeneficiaries(engagement.engagementId)
+                            handleShowBeneficiaries(engagement.engagementId)
                           }
                           className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
                         >
@@ -184,13 +164,6 @@ const EngagementsTable = ({ engagements, isLoading, fetchEngagements }) => {
             </div>
           </div>
         </div>
-      )}
-      {viewBeneficiaries && (
-        <BeneficiariesModal
-          isOpen={viewBeneficiaries}
-          onClose={() => setViewBeneficiaries(false)}
-          beneficiaries={beneficiaries}
-        />
       )}
       {isBeneficiariesModalOpen && (
         <AssignBeneficiaryModal

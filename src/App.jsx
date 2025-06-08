@@ -20,6 +20,7 @@ import Groups from "./pages/groups/Groups";
 import Activities from "./pages/activities/Activities";
 import Engagements from "./pages/engagements/Engagements";
 import LoginExample from "./pages/login/LoginExample";
+import BeneficiariesPage from "./pages/engagements/BeneficiariesPage ";
 
 function App() {
   return (
@@ -41,6 +42,10 @@ function App() {
           <Route path="/groups" element={<Groups />} />
           <Route path="/activity" element={<Activities />} />
           <Route path="/engagements" element={<Engagements />} />
+          <Route
+            path="/engagements/:engagementId/beneficiaries"
+            element={<BeneficiariesPage />}
+          />
 
           <Route
             path="/regions"
@@ -62,6 +67,7 @@ function App() {
           <Route path="/subcounties" element={<Subcounties />} />
           <Route path="/wards" element={<Wards />} />
           <Route path="/ward" element={<Ward />} />
+
           <Route path="/profile" element={<UserProfile />} />
         </Route>
       </Routes>
