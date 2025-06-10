@@ -11,7 +11,7 @@ const CubeAnimation = () => {
       const position = Math.random() * 100;
 
       // Array of the three colors
-      const colors = ["#0071BD", "#FFFFFF", "#88C720"];
+      const colors = ["#083582", "#FFFFFF", "#88C720"];
       // Randomly select one color
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
