@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const BASE_REST_API_URL='http://161.97.130.81:8195/api/';
+// export const BASE_REST_API_URL='http://161.97.130.81:8195/api/';
+export const BASE_REST_API_URL='https://luminous-backend-dev.cosha.co.ke/api/';
 
 axios.interceptors.request.use(
   function (config) {
