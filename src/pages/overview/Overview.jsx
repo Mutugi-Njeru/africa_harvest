@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from "react";
 import TopCards from "../../components/TopCards";
-import Filters from "../../components/Filters";
-import { Download, SlidersHorizontal } from "lucide-react";
 import LineChartComponent from "../../charts/LineChartComponent";
 import BarChartComponent from "../../charts/BarChartComponent";
 import HorizontalBarChart from "../../charts/HorizontalBarChart";
@@ -10,61 +7,59 @@ import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 
 const Overview = () => {
-  const [showFilters, setShowFilters] = useState(false);
-
   return (
-    <div className="">
-      <div className="flex justify-between items-center">
-        <div className="ml-4 text-xl font-bold text-gray-600">Overview</div>
-        <div className="flex justify-end items-center mr-5">
-          <button
-            className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-green-700 text-white"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            <span className="ml-2 mr-2">
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </span>
-          </button>
+    <div className="p-3 sm:p-4 md:p-5">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-4 sm:mb-6 px-0">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-600">
+          Overview
         </div>
       </div>
-      <Filters showFilters={showFilters} />
-      <TopCards />
 
-      <div className="ml-4 mr-4 grid grid-cols-1 lg:grid-cols-3">
+      {/* Top Cards Section - Now with zero horizontal padding to align with charts */}
+      <div className="w-full mb-4 sm:mb-6 px-0">
+        <TopCards />
+      </div>
+
+      {/* First Row - Line Chart and Farmers Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6 px-0">
         {/* Line Chart */}
-        <div
-          className="lg:col-span-2 bg-white rounded-lg shadow-md pt-4 pr-2 pl-2 mr-4"
-          style={{ minHeight: "40vh" }}
-        >
-          <LineChartComponent />
+        <div className="lg:col-span-2 w-full">
+          <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+            <div className="w-full" style={{ minHeight: "300px", height: "40vh", maxHeight: "400px" }}>
+              <LineChartComponent />
+            </div>
+          </div>
         </div>
 
-        {/* Farmers Distribution chart */}
-        <div
-          className="lg:col-span-1 bg-white rounded-lg shadow-md pl-0 pr-2  pb-0 flex items-center justify-center"
-          style={{ minHeight: "40vh" }} // Match the height
-        >
-          <HorizontalBarChart />
+        {/* Farmers Distribution */}
+        <div className="lg:col-span-1 w-full">
+          <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 h-full">
+            <div className="w-full h-full" style={{ minHeight: "300px", height: "40vh", maxHeight: "400px" }}>
+              <HorizontalBarChart />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Market Price Charts Section */}
-      <div className="mt-6 ml-4 mr-4 grid grid-cols-1 lg:grid-cols-3">
+      {/* Second Row - Bar Chart and Pie Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 px-0">
         {/* Bar Chart */}
-        <div
-          className="lg:col-span-2 bg-white rounded-lg shadow-md mr-4 pt-4 pr-2 pl-2"
-          style={{ minHeight: "40vh" }} // Set the same height as the LineChart
-        >
-          <BarChartComponent />
+        <div className="lg:col-span-2 w-full">
+          <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+            <div className="w-full" style={{ minHeight: "300px", height: "40vh", maxHeight: "400px" }}>
+              <BarChartComponent />
+            </div>
+          </div>
         </div>
 
         {/* Pie Chart */}
-        <div
-          className="lg:col-span-1 bg-white rounded-lg shadow-md  flex items-center justify-center"
-          style={{ minHeight: "40vh" }} // Match the height
-        >
-          <PieChart />
+        <div className="lg:col-span-1 w-full">
+          <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 h-full">
+            <div className="w-full h-full" style={{ minHeight: "300px", height: "40vh", maxHeight: "400px" }}>
+              <PieChart />
+            </div>
+          </div>
         </div>
       </div>
     </div>

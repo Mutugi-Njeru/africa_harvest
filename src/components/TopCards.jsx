@@ -1,119 +1,46 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaGlobe } from "react-icons/fa";
+import { FaGlobe, FaUsers, FaSeedling, FaDollarSign, FaChartLine } from "react-icons/fa";
 
 const TopCards = () => {
+  const cardData = [
+    { icon: FaGlobe, title: "Total Regions", value: "56", color: "text-green-600", delay: 0 },
+    { icon: FaUsers, title: "Total Farmers", value: "2,345", color: "text-blue-600", delay: 1 },
+    { icon: FaSeedling, title: "Active Crops", value: "128", color: "text-yellow-600", delay: 2 },
+    { icon: FaDollarSign, title: "Revenue", value: "$45.6K", color: "text-purple-600", delay: 3 },
+    { icon: FaChartLine, title: "Growth Rate", value: "+12.5%", color: "text-red-600", delay: 4 },
+  ];
+
   return (
-    <div className="flex justify-between gap-4 p-5">
-      {/* Card 1 */}
-      <motion.div
-        className="flex-1 rounded-lg shadow-lg p-8 text-center bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0 * 0.1 }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <FaGlobe size={48} className="text-green-600" />
-          <div className="flex flex-col items-end">
-            <h3 className="text-sm text-gray-600 font-medium uppercase tracking-wider mb-1">
-              Total Regions
-            </h3>
-            <p className="text-yellowOrange font-bold text-4xl">56</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card 2 */}
-      <motion.div
-        className="flex-1 rounded-lg shadow-lg p-8 text-center bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 1 * 0.1 }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <FaGlobe size={48} className="text-green-600" />
-          <div className="flex flex-col items-end">
-            <h3 className="text-sm text-gray-600 font-medium uppercase tracking-wider mb-1">
-              Total Regions
-            </h3>
-            <p className="text-yellowOrange font-bold text-4xl">56</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card 3 */}
-      <motion.div
-        className="flex-1 rounded-lg shadow-lg p-8 text-center bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 2 * 0.1 }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <FaGlobe size={48} className="text-green-600" />
-          <div className="flex flex-col items-end">
-            <h3 className="text-sm text-gray-600 font-medium uppercase tracking-wider mb-1">
-              Total Regions
-            </h3>
-            <p className="text-yellowOrange font-bold text-4xl">56</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card 4 */}
-      <motion.div
-        className="flex-1 rounded-lg shadow-lg p-8 text-center bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 3 * 0.1 }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <FaGlobe size={48} className="text-green-600" />
-          <div className="flex flex-col items-end">
-            <h3 className="text-sm text-gray-600 font-medium uppercase tracking-wider mb-1">
-              Total Regions
-            </h3>
-            <p className="text-yellowOrange font-bold text-4xl">56</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card 5 */}
-      <motion.div
-        className="flex-1 rounded-lg shadow-lg p-8 text-center bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 4 * 0.1 }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <FaGlobe size={48} className="text-green-600" />
-          <div className="flex flex-col items-end">
-            <h3 className="text-sm text-gray-600 font-medium uppercase tracking-wider mb-1">
-              Total Regions
-            </h3>
-            <p className="text-yellowOrange font-bold text-4xl">56</p>
-          </div>
-        </div>
-      </motion.div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 w-full">
+      {cardData.map((card, index) => {
+        const IconComponent = card.icon;
+        
+        return (
+          <motion.div
+            key={index}
+            className="bg-white rounded-lg shadow-md p-3 sm:p-4 hover:shadow-lg transition-all duration-300 border border-gray-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: card.delay * 0.1 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="flex items-center justify-between">
+              <div className={`p-2 rounded-lg ${card.color.replace('text', 'bg')} bg-opacity-10`}>
+                <IconComponent size={24} className={`sm:w-7 sm:h-7 ${card.color}`} />
+              </div>
+              <div className="text-right">
+                <h3 className="text-xs sm:text-sm text-gray-500 font-medium">
+                  {card.title}
+                </h3>
+                <p className={`font-bold text-base sm:text-lg md:text-xl ${card.color}`}>
+                  {card.value}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 };
