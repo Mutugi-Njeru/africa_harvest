@@ -29,7 +29,7 @@ const AssignBeneficiaryModal = ({ handleCloseModal, engagement }) => {
         const membersResponse = await axios.get(
           `${BASE_REST_API_URL}/members/v1/all`
         );
-        setMembers(membersResponse.data.message);
+        setMembers(membersResponse.data.message.members);
       } else {
         const response = await axios.get(
           `${BASE_REST_API_URL}/coordinatorsx/v1/hierarchy/${accountId}`
