@@ -210,14 +210,14 @@ const AccountTable = ({ refresh, openModal }) => {
           <table className="w-full text-base text-left rtl:text-right text-gray-500 ">
             <thead className="text-xs text-gray-700 uppercase border-b bg-white">
               <tr>
-                <th className="px-6 py-4">ID</th>
-                <th className="px-6 py-4">Account Name</th>
-                <th className="px-6 py-4">Description</th>
-                <th className="px-6 py-4">Address</th>
-                <th className="px-6 py-4">Phone Number</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Action</th>
+                <th className="px-4 py-4">ID</th>
+                <th className="px-4 py-4">Account Name</th>
+                <th className="px-4 py-4">Description</th>
+                <th className="px-4 py-4">Address</th>
+                <th className="px-4 py-4">Phone Number</th>
+                <th className="px-4 py-4">Email</th>
+                <th className="px-4 py-4">Status</th>
+                <th className="px-4 py-4">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -229,16 +229,16 @@ const AccountTable = ({ refresh, openModal }) => {
                   >
                     <th
                       scope="row"
-                      className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                      className="px-4 py-3 font-medium text-green-600 whitespace-nowrap "
                     >
                       {indexOfFirstItem + index + 1}
                     </th>
-                    <td className="px-6 py-3">{account.accountName}</td>
-                    <td className="px-6 py-3">{account.description}</td>
-                    <td className="px-6 py-3">{account.address}</td>
-                    <td className="px-6 py-3">{account.msisdn}</td>
-                    <td className="px-6 py-3">{account.email}</td>
-                    <td className="px-6 py-3">
+                    <td className="px-3 py-3 max-w-[200px] truncate">{account.accountName}</td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">{account.description}</td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">{account.address}</td>
+                    <td className="px-3 py-3">{account.msisdn}</td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">{account.email}</td>
+                    <td className="px-3 py-3">
                       <button
                         onClick={() => handleStatusToggle(account)}
                         className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
@@ -252,7 +252,7 @@ const AccountTable = ({ refresh, openModal }) => {
                         ></div>
                       </button>
                     </td>
-                    <td className="flex items-center px-6 py-3">
+                    <td className="flex items-center px-3 py-3">
                       <a
                         onClick={() => {
                           setSelectedAccount(account);
@@ -267,8 +267,8 @@ const AccountTable = ({ refresh, openModal }) => {
                         onClick={() => handleCreateUser(account.accountId)}
                         className="font-medium text-yellowOrange hover:underline ms-3 flex items-center cursor-pointer"
                       >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Create User
+                        <UserPlus className="w-3 h-3 mr-2" />
+                        Create
                       </a>
                     </td>
                   </tr>
