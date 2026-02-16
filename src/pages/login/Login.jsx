@@ -44,6 +44,7 @@ const Login = () => {
     },
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselItems.length);
@@ -61,11 +62,10 @@ const Login = () => {
       const response = await loginUser(auth);
       const token = "Bearer " + response.data.message.token;
       storeToken(token);
-      firstName(response.data.message.user.firstName); // store user's first name
-      // coordinator(response.data.message.user.coordinator); // store user's coordinator status
-      storeRoles(JSON.stringify(response.data.message.user.roles)); // store user's roles
-      permissions(JSON.stringify(response.data.message.user.permissions)); // store user's permissions
-      storeUserId(response.data.message.user.userId); // store userId
+      firstName(response.data.message.user.firstName);
+      storeRoles(JSON.stringify(response.data.message.user.roles));
+      permissions(JSON.stringify(response.data.message.user.permissions));
+      storeUserId(response.data.message.user.userId);
       const user = response.data.message.user.roles[0];
       if (user === "SUPER_ADMIN") {
         setShowAccountModal(true);
@@ -92,16 +92,16 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Right Section - Login Form (1/4 width) */}
-      <div className="flex-[1] flex flex-col items-center justify-center">
-        <img src={logo1} alt="Logo" className="h-20 w-auto mb-6" />
-        <h1 className="text-3xl font-bold text-gray-600 mb-2">Welcome Back!</h1>
-        <p className="font-bold text-gray-400">Please Log in to continue.</p>
-        <div className="p-10 w-full">
+    <div className="flex flex-col-reverse lg:flex-row h-screen">
+      {/* Right Section - Login Form (1/4 width on large screens) */}
+      <div className="lg:flex-[1] flex flex-col items-center justify-center p-4 lg:p-0">
+        <img src={logo1} alt="Logo" className="h-16 lg:h-20 w-auto mb-4 lg:mb-6" />
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-600 mb-2">Welcome Back!</h1>
+        <p className="font-bold text-gray-400 text-sm lg:text-base">Please Log in to continue.</p>
+        <div className="p-4 lg:p-10 w-full max-w-md lg:max-w-none">
           <form
             onSubmit={handleLogin}
-            className="flex w-full max-w-md flex-col space-y-5"
+            className="flex w-full flex-col space-y-4 lg:space-y-5"
           >
             <div>
               <div className="relative mt-2 w-full">
@@ -170,9 +170,8 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Left Section */}
-
-      <div className="flex-[3] relative">
+      {/* Left Section - Sliders (on bottom for mobile) */}
+      <div className="lg:flex-[3] relative h-[40vh] lg:h-full">
         <img
           src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop"
           alt="Background"
@@ -184,20 +183,20 @@ const Login = () => {
         <CubeAnimation />
 
         {/* Sliding Carousel */}
-        <div className="absolute inset-0 flex items-center justify-center text-white">
-          <div className="overflow-hidden w-[800px]">
+        <div className="absolute inset-0 flex items-center justify-center text-white px-4 lg:px-0">
+          <div className="overflow-hidden w-full max-w-[800px]">
             <div
               className="flex transition-transform duration-700 ease-in-out"
               style={{
-                transform: `translateX(-${currentIndex * 800}px)`,
+                transform: `translateX(-${currentIndex * 100}%)`,
               }}
             >
               {carouselItems.map((item, index) => (
-                <div key={index} className="min-w-[800px]">
-                  <h2 className="text-2xl text-green-800 font-bold">
+                <div key={index} className="min-w-full lg:min-w-[800px] px-4 lg:px-0">
+                  <h2 className="text-xl lg:text-2xl text-green-800 font-bold mb-2 lg:mb-4">
                     {item.title}
                   </h2>
-                  <p className="text-xl font-bold">{item.text}</p>
+                  <p className="text-base lg:text-xl font-bold">{item.text}</p>
                 </div>
               ))}
             </div>
