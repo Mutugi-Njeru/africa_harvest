@@ -5,6 +5,8 @@ import {
   Lock,
   Search,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
 import UpdateUser from "./UpdateUser";
@@ -32,6 +34,11 @@ const UsersTable = ({
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showActivateModal, setShowActivateModal] = useState(false);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setIsUpdateModalOpen(true);
@@ -42,6 +49,7 @@ const UsersTable = ({
     setIsRolesModalOpen(false);
     setSelectedUser(null);
   };
+  
   const handleRolesClick = (user) => {
     setSelectedUser(user);
     setIsRolesModalOpen(true);
@@ -59,6 +67,72 @@ const UsersTable = ({
     );
   });
 
+  // Reset to first page when search term changes
+  useState(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
   const deactivateUser = async (userId) => {
     try {
       const response = await axios.put(
@@ -71,6 +145,7 @@ const UsersTable = ({
       toast.error("Cannot deactivate user");
     }
   };
+  
   const deleteUser = async (userId) => {
     try {
       const response = await axios.delete(
@@ -83,6 +158,7 @@ const UsersTable = ({
       toast.error("Cannot delete user");
     }
   };
+  
   const activateUser = async (userId) => {
     try {
       const response = await axios.put(
@@ -95,6 +171,7 @@ const UsersTable = ({
       toast.error("Cannot activate user");
     }
   };
+  
   const handleStatusToggle = (user) => {
     setSelectedUser(user);
     if (user.isActive) {
@@ -103,6 +180,7 @@ const UsersTable = ({
       setShowActivateModal(true);
     }
   };
+  
   const handleConfirmDeactivation = () => {
     if (selectedUser) {
       deactivateUser(selectedUser.userId);
@@ -110,6 +188,7 @@ const UsersTable = ({
       setSelectedUser(null);
     }
   };
+  
   const handleConfirmActivation = () => {
     if (selectedUser) {
       activateUser(selectedUser.userId);
@@ -117,6 +196,7 @@ const UsersTable = ({
       setSelectedUser(null);
     }
   };
+  
   const handleConfirmDeletion = () => {
     if (selectedUser) {
       deleteUser(selectedUser.userId);
@@ -164,6 +244,11 @@ const UsersTable = ({
         <div className="relative overflow-x-auto min-h-[400px]">
           {showUsers ? (
             <div>
+              {/* Results count */}
+              <div className="text-sm text-gray-600 mb-2">
+                Showing {filteredUsers.length > 0 ? indexOfFirstItem + 1 : 0} to {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} entries
+              </div>
+              
               <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
                 <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
                   <tr>
@@ -186,104 +271,197 @@ const UsersTable = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user, index) => (
-                    <tr
-                      key={user.userId}
-                      className="bg-white border-b  hover:bg-gray-50 "
-                    >
-                      <th
-                        scope="row"
-                        className="px-4 py-3 font-medium text-green-600 whitespace-nowrap "
+                  {currentUsers.length > 0 ? (
+                    currentUsers.map((user, index) => (
+                      <tr
+                        key={user.userId}
+                        className="bg-white border-b  hover:bg-gray-50 "
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {user.firstName} {user.lastName}
-                      </td>
-                      <td className="px-4 py-3">{user.email}</td>
-                      <td className="px-4 py-3">{user.msisdn}</td>
-                      <td
-                        className="px-4 py-3 truncate max-w-[150px]"
-                        title={user.roles.join(", ")}
-                      >
-                        {user.roles.join(", ")}
-                      </td>
-                      <td
-                        className="px-4 py-3 truncate max-w-[200px]"
-                        title={user.permissions?.join(", ") || ""}
-                      >
-                        {user.permissions?.join(", ") || "No permissions"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.isRegionalCoordinator ? "Yes" : "No"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.isCountyCoordinator ? "Yes" : "No"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.isSubcountyCoordinator ? "Yes" : "No"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.isWardCoordinator ? "Yes" : "No"}
-                      </td>
-                      {(canEditUser || canDeleteUser) && (
+                        <th
+                          scope="row"
+                          className="px-4 py-3 font-medium text-green-600 whitespace-nowrap "
+                        >
+                          {indexOfFirstItem + index + 1}
+                        </th>
+                        <td className="px-4 py-3 truncate max-w-[200px]">
+                          {user.firstName} {user.lastName}
+                        </td>
+                        <td className="px-4 py-3">{user.email}</td>
+                        <td className="px-4 py-3">{user.msisdn}</td>
+                        <td
+                          className="px-4 py-3 truncate max-w-[150px]"
+                          title={user.roles.join(", ")}
+                        >
+                          {user.roles.join(", ")}
+                        </td>
+                        <td
+                          className="px-4 py-3 truncate max-w-[200px]"
+                          title={user.permissions?.join(", ") || ""}
+                        >
+                          {user.permissions?.join(", ") || "No permissions"}
+                        </td>
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() => handleStatusToggle(user)}
-                            className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                              user.isActive ? "bg-green-500" : "bg-yellowOrange"
-                            }`}
-                          >
-                            <div
-                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                                user.isActive
-                                  ? "translate-x-4"
-                                  : "translate-x-0"
+                          {user.isRegionalCoordinator ? "Yes" : "No"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.isCountyCoordinator ? "Yes" : "No"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.isSubcountyCoordinator ? "Yes" : "No"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.isWardCoordinator ? "Yes" : "No"}
+                        </td>
+                        {(canEditUser || canDeleteUser) && (
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => handleStatusToggle(user)}
+                              className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
+                                user.isActive ? "bg-green-500" : "bg-yellowOrange"
                               }`}
-                            ></div>
-                          </button>
-                        </td>
-                      )}
-                      {(canEditUser || canDeleteUser) && (
-                        <td className="flex items-center px-4 py-3 relative">
-                          {canEditUser && (
-                            <>
-                              <a
-                                onClick={() => handleEditClick(user)}
-                                className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
-                              >
-                                <Edit className="h-4 w-4 mr-1" />
-                                Edit
-                              </a>
-                              <div className="relative">
-                                <a
-                                  className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
-                                  onClick={() => handleRolesClick(user)}
-                                >
-                                  <Lock className="h-4 w-4 mr-1" />
-                                  Roles
-                                </a>
-                              </div>
-                            </>
-                          )}
-                          {canDeleteUser && (
-                            <a
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setShowDeleteModal(true);
-                              }}
-                              className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
                             >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Delete
-                            </a>
-                          )}
-                        </td>
-                      )}
+                              <div
+                                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                  user.isActive
+                                    ? "translate-x-4"
+                                    : "translate-x-0"
+                                }`}
+                              ></div>
+                            </button>
+                          </td>
+                        )}
+                        {(canEditUser || canDeleteUser) && (
+                          <td className="flex items-center px-4 py-3 relative">
+                            {canEditUser && (
+                              <>
+                                <a
+                                  onClick={() => handleEditClick(user)}
+                                  className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                                >
+                                  <Edit className="h-4 w-4 mr-1" />
+                                  Edit
+                                </a>
+                                <div className="relative">
+                                  <a
+                                    className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center ml-3"
+                                    onClick={() => handleRolesClick(user)}
+                                  >
+                                    <Lock className="h-4 w-4 mr-1" />
+                                    Roles
+                                  </a>
+                                </div>
+                              </>
+                            )}
+                            {canDeleteUser && (
+                              <a
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setShowDeleteModal(true);
+                                }}
+                                className="font-medium text-red-600 cursor-pointer hover:underline flex items-center ml-3"
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Delete
+                              </a>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="12" className="text-center py-8 text-gray-500">
+                        No users found
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
+
+              {/* Pagination Controls */}
+              {filteredUsers.length > 0 && (
+                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                  <div className="flex flex-1 justify-between sm:hidden">
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1}
+                      className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                        currentPage === 1
+                          ? 'text-gray-300 cursor-not-allowed'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                        currentPage === totalPages
+                          ? 'text-gray-300 cursor-not-allowed'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Page <span className="font-medium">{currentPage}</span> of{' '}
+                        <span className="font-medium">{totalPages}</span>
+                      </p>
+                    </div>
+                    <div>
+                      <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                        <button
+                          onClick={handlePreviousPage}
+                          disabled={currentPage === 1}
+                          className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                            currentPage === 1
+                              ? 'cursor-not-allowed bg-gray-50'
+                              : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          }`}
+                        >
+                          <span className="sr-only">Previous</span>
+                          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                        
+                        {getPageNumbers().map((pageNumber, index) => (
+                          <button
+                            key={index}
+                            onClick={() => pageNumber !== '...' && handlePageChange(pageNumber)}
+                            disabled={pageNumber === '...'}
+                            aria-current="page"
+                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                              pageNumber === currentPage
+                                ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
+                                : pageNumber === '...'
+                                ? 'text-gray-700 cursor-default'
+                                : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                            }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        ))}
+                        
+                        <button
+                          onClick={handleNextPage}
+                          disabled={currentPage === totalPages}
+                          className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                            currentPage === totalPages
+                              ? 'cursor-not-allowed bg-gray-50'
+                              : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          }`}
+                        >
+                          <span className="sr-only">Next</span>
+                          <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div>
@@ -330,11 +508,13 @@ const UsersTable = ({
           )}
         </div>
       </div>
+      
+      {/* Modals */}
       {showDeactivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
-            <p>Are you sure you want to deactivate this account?</p>
+            <p>Are you sure you want to deactivate this user?</p>
             <div className="mt-6 flex">
               <button
                 onClick={() => setShowDeactivateModal(false)}
@@ -355,7 +535,7 @@ const UsersTable = ({
       {showActivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
+            <h2 className="text-lg font-semibold mb-4">Confirm Activation</h2>
             <p>Are you sure you want to activate this user?</p>
             <div className="mt-6 flex">
               <button
@@ -368,7 +548,7 @@ const UsersTable = ({
                 onClick={handleConfirmActivation}
                 className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
               >
-                Yes, Deactivate
+                Yes, Activate
               </button>
             </div>
           </div>
