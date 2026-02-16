@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/1.png";
+import logo1 from "../../assets/ahlogo.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import CubeAnimation from "./CubeAnimation";
@@ -94,7 +95,7 @@ const Login = () => {
     <div className="flex h-screen">
       {/* Right Section - Login Form (1/4 width) */}
       <div className="flex-[1] flex flex-col items-center justify-center">
-        <img src={logo} alt="Logo" className="h-20 w-auto mb-6" />
+        <img src={logo1} alt="Logo" className="h-20 w-auto mb-6" />
         <h1 className="text-3xl font-bold text-gray-600 mb-2">Welcome Back!</h1>
         <p className="font-bold text-gray-400">Please Log in to continue.</p>
         <div className="p-10 w-full">
@@ -153,7 +154,7 @@ const Login = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="rounded-lg bg-liftonBlue py-3 font-bold text-white flex items-center justify-center"
+              className="rounded-lg bg-yellowOrange py-3 font-bold text-white flex items-center justify-center"
               disabled={loading}
             >
               {loading ? (
@@ -177,7 +178,7 @@ const Login = () => {
           alt="Background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-liftonBlue bg-opacity-90"></div>
+        <div className="absolute inset-0 bg-yellowOrange bg-opacity-90"></div>
 
         {/* Cubes Animation */}
         <CubeAnimation />
