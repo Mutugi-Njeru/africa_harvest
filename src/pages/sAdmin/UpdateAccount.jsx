@@ -34,7 +34,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
     } catch (error) {
       if (error.response) {
         const errorViolations =
-          error.response.data.errors[0] || "Update Account failed";
+          error.response.data.message || "Update Account failed";
         toast.error(errorViolations);
       }
     } finally {
@@ -49,7 +49,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
       {" "}
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 shadow-lg w-1/3">
-          <h2 className="text-lg font-semibold mb-4">Create Account</h2>
+          <h2 className="text-lg font-semibold mb-4">Edit Account</h2>
           <form onSubmit={updateAccount}>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
