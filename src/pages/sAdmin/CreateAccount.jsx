@@ -62,7 +62,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           {/* Overlay with higher z-index */}
-          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity z-50"></div>
+          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
           
           {/* Modal container - positioned to account for fixed header */}
           <div className="flex items-start justify-center min-h-screen pt-20 px-4 pb-20 text-center sm:block sm:p-0 z-50">
