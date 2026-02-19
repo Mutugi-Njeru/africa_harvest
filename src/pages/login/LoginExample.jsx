@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/1.png";
+import logo1 from "../../assets/ahlogo.png";
 import Farm from "../../assets/farm2.jpg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import {
   loginUser,
   logout,
   permissions,
+  saveLoggedinUser,
   storeRoles,
   storeSuperAdmin,
   storeToken,
@@ -31,16 +33,16 @@ const LoginExample = () => {
 
   const carouselItems = [
     {
-      title: "Our Mission",
-      text: "To be the leading provider of Research and Training Services related to economic growth and development in all sectors.",
+      title: "Our History",
+      text: "Africa Harvest's vision of an Africa free of hunger, poverty and malnutrition is being achieved through the use of science and technology, gender-sensitive, appropriate agricultural technologies and innovative institutional approaches to improve the livelihoods of rural communities, particularly smallholder farmers..",
     },
     {
       title: "Our Vision",
-      text: "To improve on data quality through capacity building of other organization, evidence based research and trainings.",
+      text: "Our mission to disseminate appropriate innovative agricultural technologies and institution approaches through the whole value chain to improve the livelihoods of rural communities..",
     },
     {
       title: "Our Values",
-      text: "We are a Partner driven organization. We exist interdependently with organizations that we serve across Africa.",
+      text: "Our vision is premised on using tools agricultural science and technological innovations and strategic partnerships with grassroots communities, governments, research institutions, public/private sector and development partners at different levels to create sustainable life-changing impact and developing working models based on crop value chains, which could be shared widely to further scale up the impact..",
     },
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -62,6 +64,7 @@ const LoginExample = () => {
       const response = await loginUser(auth);
       const token = "Bearer " + response.data.message.token;
       storeToken(token);
+       saveLoggedinUser(auth);
       firstName(response.data.message.user.firstName);
       storeRoles(JSON.stringify(response.data.message.user.roles));
       permissions(JSON.stringify(response.data.message.user.permissions));
@@ -103,7 +106,7 @@ const LoginExample = () => {
           }}
         >
           {/* Overlay with blue tint */}
-          <div className="absolute inset-0 bg-liftonBlue bg-opacity-90 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
+          <div className="absolute inset-0 bg-yellowOrange bg-opacity-90 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
 
           {/* Cubes Animation - hidden on mobile if too heavy, optional */}
           <div className="hidden md:block">
@@ -121,7 +124,7 @@ const LoginExample = () => {
               >
                 {carouselItems.map((item, index) => (
                   <div key={index} className="min-w-full px-4">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl text-lime-500 font-bold text-center md:text-left">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl text-green-800 font-bold text-center md:text-left">
                       {item.title}
                     </h2>
                     <p className="text-sm sm:text-base md:text-xl font-semibold break-words whitespace-normal text-center md:text-left">
@@ -138,7 +141,7 @@ const LoginExample = () => {
                     key={index}
                     onClick={() => setCurrentIndex(index)}
                     className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors ${
-                      currentIndex === index ? "bg-white" : "bg-gray-500"
+                      currentIndex === index ? "bg-white" : "bg-green-800"
                     }`}
                     aria-label={`Go to item ${index + 1}`}
                   />
@@ -152,7 +155,7 @@ const LoginExample = () => {
       {/* Right Section - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 order-1 md:order-2">
         <img 
-          src={logo} 
+          src={logo1} 
           alt="Logo" 
           className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto mb-4 md:mb-6" 
         />
@@ -219,7 +222,7 @@ const LoginExample = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="rounded-lg bg-liftonBlue py-2.5 sm:py-3 px-4 font-bold text-white flex items-center justify-center text-sm sm:text-base"
+              className="rounded-lg bg-yellowOrange py-2.5 sm:py-3 px-4 font-bold text-white flex items-center justify-center text-sm sm:text-base"
               disabled={loading}
             >
               {loading ? (

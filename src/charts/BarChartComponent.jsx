@@ -19,7 +19,6 @@ const data = [
   { name: "May", uv: 1890, pv: 4800, amt: 2181 },
   { name: "Jun", uv: 2390, pv: 3800, amt: 2500 },
   { name: "Jul", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Jul", uv: 3490, pv: 4300, amt: 2100 },
 ];
 
 const BarChartComponent = () => {

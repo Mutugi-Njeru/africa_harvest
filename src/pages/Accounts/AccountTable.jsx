@@ -1,4 +1,11 @@
-import { Edit, UserPlus, Search, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Edit,
+  UserPlus,
+  Search,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
@@ -16,7 +23,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
   const [showUpdateAccountModal, setShowUpdateAccountModal] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -42,7 +49,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const activateAccount = async (userId) => {
     try {
       const response = await axios.put(
-        BASE_REST_API_URL + "/accounts/v1/activate/" + userId
+        BASE_REST_API_URL + "/accounts/v1/activate/" + userId,
       );
       toast.success(response.data.message);
       fetchAccounts();
@@ -55,7 +62,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const deactivateAccount = async (userId) => {
     try {
       const response = await axios.put(
-        BASE_REST_API_URL + "/accounts/v1/deactivate/" + userId
+        BASE_REST_API_URL + "/accounts/v1/deactivate/" + userId,
       );
       toast.success(response.data.message);
       fetchAccounts();
@@ -99,7 +106,7 @@ const AccountTable = ({ refresh, openModal }) => {
     (account) =>
       account.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       account.msisdn.includes(searchTerm) ||
-      account.email.toLowerCase().includes(searchTerm.toLowerCase())
+      account.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Reset to first page when search term changes
@@ -110,26 +117,29 @@ const AccountTable = ({ refresh, openModal }) => {
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredAccounts.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredAccounts.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
   const totalPages = Math.ceil(filteredAccounts.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     // Scroll to top of table when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -137,7 +147,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalPages <= maxPagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -147,25 +157,25 @@ const AccountTable = ({ refresh, openModal }) => {
         for (let i = 1; i <= 4; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pageNumbers.push(i);
         }
       } else {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       }
     }
-    
+
     return pageNumbers;
   };
 
@@ -182,9 +192,10 @@ const AccountTable = ({ refresh, openModal }) => {
             placeholder="Search by account name, phone, or email"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-transparent"
           />
         </div>
+
         <div className="flex justify-end items-center">
           <button
             onClick={openModal}
@@ -194,11 +205,6 @@ const AccountTable = ({ refresh, openModal }) => {
             <span className="ml-2 mr-2">Create Account</span>
           </button>
         </div>
-      </div>
-
-      {/* Results count */}
-      <div className="text-sm text-gray-600 mb-2">
-        Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredAccounts.length)} of {filteredAccounts.length} entries
       </div>
 
       {loading ? (
@@ -233,11 +239,19 @@ const AccountTable = ({ refresh, openModal }) => {
                     >
                       {indexOfFirstItem + index + 1}
                     </th>
-                    <td className="px-3 py-3 max-w-[200px] truncate">{account.accountName}</td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">{account.description}</td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">{account.address}</td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">
+                      {account.accountName}
+                    </td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">
+                      {account.description}
+                    </td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">
+                      {account.address}
+                    </td>
                     <td className="px-3 py-3">{account.msisdn}</td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">{account.email}</td>
+                    <td className="px-3 py-3 max-w-[200px] truncate">
+                      {account.email}
+                    </td>
                     <td className="px-3 py-3">
                       <button
                         onClick={() => handleStatusToggle(account)}
@@ -292,8 +306,8 @@ const AccountTable = ({ refresh, openModal }) => {
                   disabled={currentPage === 1}
                   className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                     currentPage === 1
-                      ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   Previous
@@ -303,60 +317,65 @@ const AccountTable = ({ refresh, openModal }) => {
                   disabled={currentPage === totalPages}
                   className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                     currentPage === totalPages
-                      ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Page <span className="font-medium">{currentPage}</span> of{' '}
-                    <span className="font-medium">{totalPages}</span>
-                  </p>
+                {/* Showing entries text moved to left side */}
+                <div className="text-sm text-gray-700">
+                  Showing {indexOfFirstItem + 1} to{" "}
+                  {Math.min(indexOfLastItem, filteredAccounts.length)} of{" "}
+                  {filteredAccounts.length} entries
                 </div>
                 <div>
-                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <nav
+                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                    aria-label="Pagination"
+                  >
                     <button
                       onClick={handlePreviousPage}
                       disabled={currentPage === 1}
                       className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                         currentPage === 1
-                          ? 'cursor-not-allowed bg-gray-50'
-                          : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          ? "cursor-not-allowed bg-gray-50"
+                          : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       }`}
                     >
                       <span className="sr-only">Previous</span>
                       <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                     </button>
-                    
+
                     {getPageNumbers().map((pageNumber, index) => (
                       <button
                         key={index}
-                        onClick={() => pageNumber !== '...' && handlePageChange(pageNumber)}
-                        disabled={pageNumber === '...'}
+                        onClick={() =>
+                          pageNumber !== "..." && handlePageChange(pageNumber)
+                        }
+                        disabled={pageNumber === "..."}
                         aria-current="page"
                         className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                           pageNumber === currentPage
-                            ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
-                            : pageNumber === '...'
-                            ? 'text-gray-700 cursor-default'
-                            : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                            ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                            : pageNumber === "..."
+                            ? "text-gray-700 cursor-default"
+                            : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                         }`}
                       >
                         {pageNumber}
                       </button>
                     ))}
-                    
+
                     <button
                       onClick={handleNextPage}
                       disabled={currentPage === totalPages}
                       className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                         currentPage === totalPages
-                          ? 'cursor-not-allowed bg-gray-50'
-                          : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          ? "cursor-not-allowed bg-gray-50"
+                          : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       }`}
                     >
                       <span className="sr-only">Next</span>
@@ -424,7 +443,7 @@ const AccountTable = ({ refresh, openModal }) => {
         onClose={() => setShowCreateUserModal(false)}
         accountId={selectedAccountId}
       />
-      
+
       {/* update account modal */}
       {showUpdateAccountModal && (
         <UpdateAccount

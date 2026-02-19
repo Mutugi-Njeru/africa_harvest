@@ -35,6 +35,7 @@ export const firstName=(firstName)=>localStorage.setItem("firstName", firstName)
 export const permissions=(permissions)=>localStorage.setItem("permissions", permissions)
 export const storeRoles=(roles)=>localStorage.setItem("roles", roles)
 export const storeUserId=(userId)=>localStorage.setItem("userId", userId)
+export const saveLoggedinUser = (auth) => localStorage.setItem("authenticatedUser", auth)
 
 
 
@@ -43,3 +44,9 @@ export const logout=()=>{
     localStorage.clear();
     sessionStorage.clear();
   }
+
+export const isUserLoggedIn = () => {
+  const auth = localStorage.getItem("authenticatedUser");
+  return auth !== null; // Return boolean directly
+}
+

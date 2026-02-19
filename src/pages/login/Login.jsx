@@ -12,6 +12,7 @@ import {
   loginUser,
   logout,
   permissions,
+  saveLoggedinUser,
   storeRoles,
   storeSuperAdmin,
   storeToken,
@@ -62,6 +63,7 @@ const Login = () => {
       const response = await loginUser(auth);
       const token = "Bearer " + response.data.message.token;
       storeToken(token);
+      saveLoggedinUser(auth);
       firstName(response.data.message.user.firstName);
       storeRoles(JSON.stringify(response.data.message.user.roles));
       permissions(JSON.stringify(response.data.message.user.permissions));

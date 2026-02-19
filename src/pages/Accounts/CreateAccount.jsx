@@ -166,7 +166,7 @@ const CreateAccount = ({ isModalOpen, closeModal, onAccountCreated }) => {
               </div>
               
               {/* Footer with buttons */}
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+              <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
                 <button
                   type="submit"
                   form="createAccountForm"

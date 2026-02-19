@@ -20,11 +20,14 @@ import {
   Network,
   Share2,
   ListChecks,
+  GraduationCap, // Added for Trainings icon
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
+  const [isLocationsDropdownOpen, setLocationsDropdownOpen] = useState(false);
+  const [isTrainingsDropdownOpen, setTrainingsDropdownOpen] = useState(false); // New state for Trainings dropdown
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
 
   //roles
@@ -46,13 +49,44 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const toggleUsersDropdown = () => {
     setUsersDropdownOpen(!isUsersDropdownOpen);
+    // Close other dropdowns
+    if (!isUsersDropdownOpen) {
+      setLocationsDropdownOpen(false);
+      setTrainingsDropdownOpen(false);
+    }
+  };
+
+  const toggleLocationsDropdown = () => {
+    setLocationsDropdownOpen(!isLocationsDropdownOpen);
+    // Close other dropdowns
+    if (!isLocationsDropdownOpen) {
+      setUsersDropdownOpen(false);
+      setTrainingsDropdownOpen(false);
+    }
+  };
+
+  const toggleTrainingsDropdown = () => {
+    setTrainingsDropdownOpen(!isTrainingsDropdownOpen);
+    // Close other dropdowns
+    if (!isTrainingsDropdownOpen) {
+      setUsersDropdownOpen(false);
+      setLocationsDropdownOpen(false);
+    }
   };
 
   const handleMenuItemClick = (item) => {
     if (item.hasDropdown) {
-      toggleUsersDropdown();
+      if (item.text === "User management") {
+        toggleUsersDropdown();
+      } else if (item.text === "Locations") {
+        toggleLocationsDropdown();
+      } else if (item.text === "Trainings") {
+        toggleTrainingsDropdown();
+      }
     } else {
       setUsersDropdownOpen(false);
+      setLocationsDropdownOpen(false);
+      setTrainingsDropdownOpen(false);
       if (item.path) {
         navigate(item.path);
       }
@@ -62,6 +96,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const handleDropdownItemClick = (path) => {
     navigate(path);
     setUsersDropdownOpen(false);
+    setLocationsDropdownOpen(false);
+    setTrainingsDropdownOpen(false);
   };
 
   const menuItems = [
@@ -72,42 +108,59 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       path: "/accounts",
       showOnlyForSuperAdmin: true, // only for super admins
     },
-    { icon: Users, text: "Users", path: "/users" },
     { icon: Globe, text: "Locations", hasDropdown: true },
+    { icon: Users, text: "User management", hasDropdown: true },
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Activities", path: "/activity" },
-    { icon: Share2, text: "Engagements", path: "/engagements" },
+    { icon: GraduationCap, text: "Trainings", hasDropdown: true }, // New Trainings dropdown with GraduationCap icon
     { icon: ListChecks, text: "Summaries" },
     { icon: Settings, text: "Profile", path: "/profile" },
   ];
 
   const usersDropdownItems = [
     {
-      text: "Admin",
-      path: "/regions",
-      showOnlyForAdmin: true, // Only show this for admins/super admins
+      text: "Users",
+      path: "/users",
     },
     {
-      text: "R Coodinator",
+      text: "Regional Coodinator",
       path: "/counties",
-      showOnlyForRegionalCoordinator: true, //show only for regional coordinator and admin
+      showOnlyForRegionalCoordinator: true,
     },
     {
-      text: "C Coordinator",
+      text: "County Coordinator",
       path: "/subcounties",
-      showOnlyForCountyCoordinator: true, //show only for county coordinator and admin
+      showOnlyForCountyCoordinator: true,
     },
-    { text: "SC Coordinator", path: "/wards" },
+    { text: "SCounty Coordinator", path: "/wards" },
     { text: "Ward Coordinator", path: "/ward" },
   ];
 
-  // Filter menu items based on role
+  // Locations dropdown items
+  const locationsDropdownItems = [
+    {
+      text: "Regions",
+      path: "/regions",
+    },
+  ];
+
+  const trainingsDropdownItems = [
+    {
+      text: "Engagements",
+      path: "/engagements",
+    },
+     {
+      text: "Training",
+      path: "/training",
+    },
+  ];
+
   const filteredMenuItems = menuItems.filter(
     (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
   );
 
-  // Filter dropdown items - only show Regions if admin/super admin
-  const filteredDropdownItems = usersDropdownItems.filter((item) => {
+  // Filter users dropdown items
+  const filteredUsersDropdownItems = usersDropdownItems.filter((item) => {
     if (isSuperAdmin) return true;
     if (isAdmin) return true;
 
@@ -142,6 +195,18 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       !item.showOnlyForCountyCoordinator
     );
   });
+
+  // Filter locations dropdown items
+  const filteredLocationsDropdownItems = locationsDropdownItems.filter((item) => {
+    return true;
+  });
+
+  // Filter trainings dropdown items
+  const filteredTrainingsDropdownItems = trainingsDropdownItems.filter((item) => {
+    // Add any role-based filtering for trainings here if needed
+    return true;
+  });
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -172,7 +237,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
         <div className="px-4 py-3">
           {" "}
           {isExpanded && (
-            <span className="ml-3 font-medium text-gray-400">MAIN MENU</span>
+            <span className="ml-3 font-medium text-gray-400">DASHBOARD</span>
           )}
         </div>
         {/* Menu Items */}
@@ -182,7 +247,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               <div
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
-                  location.pathname === item.path
+                  (!item.hasDropdown && location.pathname === item.path) ||
+                  (item.hasDropdown && item.text === "Locations" && isLocationsDropdownOpen) ||
+                  (item.hasDropdown && item.text === "User management" && isUsersDropdownOpen) ||
+                  (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen)
                     ? "bg-green-700 text-white"
                     : ""
                 }`}
@@ -195,7 +263,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {isUsersDropdownOpen ? (
+                    {(item.text === "Locations" && isLocationsDropdownOpen) ||
+                    (item.text === "User management" && isUsersDropdownOpen) ||
+                    (item.text === "Trainings" && isTrainingsDropdownOpen) ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -209,15 +279,74 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                   </div>
                 )}
               </div>
-              {/* Dropdown Items with Transition */}
-              {item.hasDropdown && isExpanded && (
+              
+              {/* Users Dropdown Items */}
+              {item.hasDropdown && item.text === "User management" && isExpanded && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     isUsersDropdownOpen ? "max-h-[500px]" : "max-h-0"
                   }`}
                 >
                   <div className="ml-8">
-                    {filteredDropdownItems.map((dropdownItem, idx) => (
+                    {filteredUsersDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-medium">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Locations Dropdown Items */}
+              {item.hasDropdown && item.text === "Locations" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isLocationsDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredLocationsDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-medium">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trainings Dropdown Items */}
+              {item.hasDropdown && item.text === "Trainings" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isTrainingsDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredTrainingsDropdownItems.map((dropdownItem, idx) => (
                       <div
                         key={idx}
                         onClick={() =>

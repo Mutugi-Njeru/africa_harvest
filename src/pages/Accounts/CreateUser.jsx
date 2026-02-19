@@ -29,7 +29,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     const fetchRoles = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/roles"
+          BASE_REST_API_URL + "security/v1/roles",
         );
         setRoles(response.data.message);
       } catch (error) {
@@ -40,7 +40,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     const fetchPermissions = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/permissions"
+          BASE_REST_API_URL + "security/v1/permissions",
         );
         setPermissions(response.data.message);
       } catch (error) {
@@ -71,7 +71,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
       };
       const response = await axios.post(
         BASE_REST_API_URL + `users/v1/create?accountId=${accountId}`,
-        updatedFormData
+        updatedFormData,
       );
       toast.success(response.data.message);
       setFormData({
@@ -271,20 +271,20 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
           </div>
 
           {/* Buttons */}
-          <div className="flex">
+          <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+            <button
+              type="submit"
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating..." : "Create"}
+            </button>
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600 text-white"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-500 text-white hover:bg-green-600"
-              disabled={isLoading}
-            >
-              {isLoading ? "Creating..." : "Create"}{" "}
             </button>
           </div>
         </form>

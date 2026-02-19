@@ -1,9 +1,8 @@
-import { Plus, Edit, UserPlus } from "lucide-react"; // Import the necessary icons
 import React, { useState } from "react";
 import CreateAccount from "./CreateAccount";
 import AccountTable from "./AccountTable";
 
-const SAdmin = () => {
+const Accounts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
@@ -33,4 +32,4 @@ const SAdmin = () => {
   );
 };
 
-export default SAdmin;
+export default Accounts;
