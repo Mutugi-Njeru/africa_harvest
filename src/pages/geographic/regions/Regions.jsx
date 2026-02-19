@@ -46,7 +46,6 @@ const Regions = () => {
         <div className="text-xl font-bold text-gray-600">Regions</div>
       </div>
 
-      {/* Search and Buttons Row */}
       <div className="flex justify-between items-center gap-3 mb-3">
         {/* Search input */}
         <div className="mb-2 relative">
