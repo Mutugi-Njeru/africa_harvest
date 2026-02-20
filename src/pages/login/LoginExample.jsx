@@ -105,8 +105,8 @@ const LoginExample = () => {
             backgroundImage: `url(${Farm})`,
           }}
         >
-          {/* Overlay with blue tint */}
-          <div className="absolute inset-0 bg-yellowOrange bg-opacity-90 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
+          {/* Overlay with yellow-orange tint */}
+          <div className="absolute inset-0 bg-yellowOrange bg-opacity-60 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
 
           {/* Cubes Animation - hidden on mobile if too heavy, optional */}
           <div className="hidden md:block">
@@ -154,17 +154,14 @@ const LoginExample = () => {
 
       {/* Right Section - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 order-1 md:order-2">
-        <img 
-          src={logo1} 
-          alt="Logo" 
-          className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto mb-4 md:mb-6" 
-        />
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-600 mb-1 md:mb-2 text-center">
-          Welcome Back!
-        </h1>
-        <p className="text-sm sm:text-base font-bold text-gray-400 text-center">
-          Please Log in to continue.
-        </p>
+        {/* Logo centered above form */}
+        <div className="flex justify-center w-full mb-6 sm:mb-8">
+          <img 
+            src={logo1} 
+            alt="Logo" 
+            className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto" 
+          />
+        </div>
         
         <div className="p-4 sm:p-6 md:p-8 lg:p-10 w-full">
           <form
@@ -235,11 +232,11 @@ const LoginExample = () => {
               )}
             </button>
 
-            {/* Forgot Password Link */}
-            <div className="text-center mt-1 sm:mt-2">
+            {/* Forgot Password Link - Small font, aligned right */}
+            <div className="flex justify-end mt-1 sm:mt-2">
               <a
                 href="#"
-                className="text-sm sm:text-base md:text-lg font-semibold text-gray-500 hover:text-liftonBlue"
+                className="text-xs sm:text-sm text-gray-500 hover:text-liftonBlue hover:underline"
               >
                 Forgot Password?{" "}
                 <span className="text-liftonGreen">Click here</span>
