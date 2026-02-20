@@ -24,6 +24,7 @@ import { isUserLoggedIn, logout } from "./service/AuthService";
 import { useEffect } from "react";
 import Training from "./pages/training/Training";
 import Accounts from "./pages/Accounts/Accounts";
+import CreateTrainer from "./pages/training/CreateTrainer";
 
 function App() {
   useEffect(() => {
@@ -109,6 +110,14 @@ function App() {
             element={
               <AuthenticatedRoute>
                 <Training />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/create-trainer"
+            element={
+              <AuthenticatedRoute>
+                <CreateTrainer />
               </AuthenticatedRoute>
             }
           />

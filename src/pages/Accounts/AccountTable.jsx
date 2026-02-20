@@ -213,7 +213,7 @@ const AccountTable = ({ refresh, openModal }) => {
         </div>
       ) : (
         <>
-          <table className="w-full text-base text-left rtl:text-right text-gray-500 ">
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500">
             <thead className="text-xs text-gray-700 uppercase border-b bg-white">
               <tr>
                 <th className="px-4 py-4">ID</th>

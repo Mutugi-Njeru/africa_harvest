@@ -1,13 +1,9 @@
 import { Download, Plus, Search } from 'lucide-react'
 import React, { useState } from 'react'
-import CreateTrainerModal from './CreateTrainerModal';
-import CreateTrainingModal from './CreateTrainingModal';
 import TrainingsTable from './TrainingsTable';
 
 
 const Training = () => {
-  const [showCreateTrainerModal, setShowCreateTrainerModal] = useState(false);
-  const [showCreateTrainingModal, setShowCreateTrainingModal] = useState(false);
   
   return (
     <div className="pr-4 pl-3 relative">
@@ -28,38 +24,12 @@ const Training = () => {
             // onChange={handleSearchChange}
           />
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-row justify-end">
-          <button
-             onClick={() => setShowCreateTrainerModal(true)}
-            className="flex items-center border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange cursor-pointer text-white rounded-md"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="ml-2 mr-2">Create Trainer</span>
-          </button>
-          <button
-            onClick={() => setShowCreateTrainingModal(true)}
-            className="flex items-center cursor-pointer border border-black pl-3 pr-3 p-2 text-black hover:bg-gray-100 rounded-md"
-          >
-            <Download className="w-4 h-4" />
-            <span className="mr-2">Create Training</span>
-          </button>
-        </div>
       </div>
 
       {/* table */}
       <TrainingsTable
       />
-
-      <CreateTrainerModal
-        isOpen={showCreateTrainerModal}
-        onClose={() => setShowCreateTrainerModal(false)}
-      />
-       <CreateTrainingModal
-        isOpen={showCreateTrainingModal}
-        onClose={() => setShowCreateTrainingModal(false)}
-      />
+    
     </div>
   )
 }

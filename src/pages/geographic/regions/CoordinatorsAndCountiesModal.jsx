@@ -362,13 +362,13 @@ const CoordinatorsAndCountiesModal = ({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-end ">
           <button
             onClick={() => {
               handleCloseModal();
               onCloseModal();
             }}
-            className="w-1/2 px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+            className="rounded-md px-8 py-2 bg-green-400 text-white hover:bg-green-700"
           >
             Close
           </button>

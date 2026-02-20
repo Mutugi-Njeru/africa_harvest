@@ -98,7 +98,6 @@ const LoginExample = () => {
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Left Section - Background Image with Carousel */}
       <div className="w-full md:w-1/2 h-[300px] md:h-screen relative order-2 md:order-1">
-        {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center md:rounded-tr-3xl md:rounded-bl-3xl m-0 md:m-2"
           style={{
@@ -106,7 +105,7 @@ const LoginExample = () => {
           }}
         >
           {/* Overlay with yellow-orange tint */}
-          <div className="absolute inset-0 bg-yellowOrange bg-opacity-60 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
+          <div className="absolute inset-0 bg-yellowOrange bg-opacity-50 md:rounded-tr-3xl md:rounded-bl-3xl flex items-center justify-center overflow-hidden"></div>
 
           {/* Cubes Animation - hidden on mobile if too heavy, optional */}
           <div className="hidden md:block">
@@ -154,8 +153,7 @@ const LoginExample = () => {
 
       {/* Right Section - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 order-1 md:order-2">
-        {/* Logo centered above form */}
-        <div className="flex justify-center w-full mb-6 sm:mb-8">
+        <div className="flex justify-center w-full mb-2 sm:mb-8">
           <img 
             src={logo1} 
             alt="Logo" 
