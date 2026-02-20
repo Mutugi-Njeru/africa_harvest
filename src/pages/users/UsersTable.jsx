@@ -8,7 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UpdateUser from "./UpdateUser";
 import { hasPermission } from "../../utils/Utils";
 import PermissionsModal from "./PermissionsModal";
@@ -35,9 +35,13 @@ const UsersTable = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showActivateModal, setShowActivateModal] = useState(false);
   
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
+  // Pagination states for users
+  const [currentUserPage, setCurrentUserPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  
+  // Pagination states for roles
+  const [currentRolePage, setCurrentRolePage] = useState(1);
+  const [rolesPerPage] = useState(10);
 
   const handleEditClick = (user) => {
     setSelectedUser(user);
@@ -68,65 +72,126 @@ const UsersTable = ({
   });
 
   // Reset to first page when search term changes
-  useState(() => {
-    setCurrentPage(1);
+  useEffect(() => {
+    setCurrentUserPage(1);
   }, [searchTerm]);
 
-  // Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  // Users Pagination logic
+  const indexOfLastUser = currentUserPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalUserPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  // Roles Pagination logic
+  const indexOfLastRole = currentRolePage * rolesPerPage;
+  const indexOfFirstRole = indexOfLastRole - rolesPerPage;
+  const currentRoles = allRoles.slice(indexOfFirstRole, indexOfLastRole);
+  const totalRolePages = Math.ceil(allRoles.length / rolesPerPage);
+
+  const handleUserPageChange = (pageNumber) => {
+    setCurrentUserPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+  const handleRolePageChange = (pageNumber) => {
+    setCurrentRolePage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePreviousUserPage = () => {
+    if (currentUserPage > 1) {
+      setCurrentUserPage(currentUserPage - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const handleNextUserPage = () => {
+    if (currentUserPage < totalUserPages) {
+      setCurrentUserPage(currentUserPage + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // Generate page numbers to display
-  const getPageNumbers = () => {
+  const handlePreviousRolePage = () => {
+    if (currentRolePage > 1) {
+      setCurrentRolePage(currentRolePage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleNextRolePage = () => {
+    if (currentRolePage < totalRolePages) {
+      setCurrentRolePage(currentRolePage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Generate page numbers to display for users
+  const getUserPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
     
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (totalUserPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalUserPages; i++) {
         pageNumbers.push(i);
       }
     } else {
-      if (currentPage <= 3) {
+      if (currentUserPage <= 3) {
         for (let i = 1; i <= 4; i++) {
           pageNumbers.push(i);
         }
         pageNumbers.push('...');
-        pageNumbers.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(totalUserPages);
+      } else if (currentUserPage >= totalUserPages - 2) {
         pageNumbers.push(1);
         pageNumbers.push('...');
-        for (let i = totalPages - 3; i <= totalPages; i++) {
+        for (let i = totalUserPages - 3; i <= totalUserPages; i++) {
           pageNumbers.push(i);
         }
       } else {
         pageNumbers.push(1);
         pageNumbers.push('...');
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        for (let i = currentUserPage - 1; i <= currentUserPage + 1; i++) {
           pageNumbers.push(i);
         }
         pageNumbers.push('...');
-        pageNumbers.push(totalPages);
+        pageNumbers.push(totalUserPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
+  // Generate page numbers to display for roles
+  const getRolePageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    
+    if (totalRolePages <= maxPagesToShow) {
+      for (let i = 1; i <= totalRolePages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentRolePage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalRolePages);
+      } else if (currentRolePage >= totalRolePages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = totalRolePages - 3; i <= totalRolePages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = currentRolePage - 1; i <= currentRolePage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalRolePages);
       }
     }
     
@@ -244,11 +309,6 @@ const UsersTable = ({
         <div className="relative overflow-x-auto min-h-[400px]">
           {showUsers ? (
             <div>
-              {/* Results count */}
-              <div className="text-sm text-gray-600 mb-2">
-                Showing {filteredUsers.length > 0 ? indexOfFirstItem + 1 : 0} to {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} entries
-              </div>
-              
               <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
                 <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
                   <tr>
@@ -281,7 +341,7 @@ const UsersTable = ({
                           scope="row"
                           className="px-4 py-3 font-medium text-green-600 whitespace-nowrap "
                         >
-                          {indexOfFirstItem + index + 1}
+                          {indexOfFirstUser + index + 1}
                         </th>
                         <td className="px-4 py-3 truncate max-w-[200px]">
                           {user.firstName} {user.lastName}
@@ -377,91 +437,6 @@ const UsersTable = ({
                   )}
                 </tbody>
               </table>
-
-              {/* Pagination Controls */}
-              {filteredUsers.length > 0 && (
-                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
-                  <div className="flex flex-1 justify-between sm:hidden">
-                    <button
-                      onClick={handlePreviousPage}
-                      disabled={currentPage === 1}
-                      className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
-                        currentPage === 1
-                          ? 'text-gray-300 cursor-not-allowed'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
-                      className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
-                        currentPage === totalPages
-                          ? 'text-gray-300 cursor-not-allowed'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        Page <span className="font-medium">{currentPage}</span> of{' '}
-                        <span className="font-medium">{totalPages}</span>
-                      </p>
-                    </div>
-                    <div>
-                      <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                        <button
-                          onClick={handlePreviousPage}
-                          disabled={currentPage === 1}
-                          className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
-                            currentPage === 1
-                              ? 'cursor-not-allowed bg-gray-50'
-                              : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
-                          }`}
-                        >
-                          <span className="sr-only">Previous</span>
-                          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                        
-                        {getPageNumbers().map((pageNumber, index) => (
-                          <button
-                            key={index}
-                            onClick={() => pageNumber !== '...' && handlePageChange(pageNumber)}
-                            disabled={pageNumber === '...'}
-                            aria-current="page"
-                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                              pageNumber === currentPage
-                                ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
-                                : pageNumber === '...'
-                                ? 'text-gray-700 cursor-default'
-                                : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
-                            }`}
-                          >
-                            {pageNumber}
-                          </button>
-                        ))}
-                        
-                        <button
-                          onClick={handleNextPage}
-                          disabled={currentPage === totalPages}
-                          className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
-                            currentPage === totalPages
-                              ? 'cursor-not-allowed bg-gray-50'
-                              : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
-                          }`}
-                        >
-                          <span className="sr-only">Next</span>
-                          <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                        </button>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div>
@@ -477,36 +452,216 @@ const UsersTable = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {allRoles.map((role, index) => (
-                    <tr
-                      key={role.roleId}
-                      className="bg-white border-b  hover:bg-gray-50 "
-                    >
-                      <th
-                        scope="row"
-                        className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                  {currentRoles.length > 0 ? (
+                    currentRoles.map((role, index) => (
+                      <tr
+                        key={role.roleId}
+                        className="bg-white border-b  hover:bg-gray-50 "
                       >
-                        {index + 1}
-                      </th>
-                      <td className="px-6 py-3 truncate max-w-[200px]">
-                        {role.role}
-                      </td>
-                      <td className="px-6 py-3">{role.description}</td>
-                      <td className="px-6 py-3">{role.createdAt}</td>
+                        <th
+                          scope="row"
+                          className="px-6 py-3 font-medium text-green-600 whitespace-nowrap "
+                        >
+                          {indexOfFirstRole + index + 1}
+                        </th>
+                        <td className="px-6 py-3 truncate max-w-[200px]">
+                          {role.role}
+                        </td>
+                        <td className="px-6 py-3">{role.description}</td>
+                        <td className="px-6 py-3">{role.createdAt}</td>
 
-                      <td className="px-6 py-3 truncate max-w-[150px]">
-                        {role.updatedAt}
-                      </td>
-                      <td className="px-6 py-3 truncate max-w-[200px]">
-                        Active
+                        <td className="px-6 py-3 truncate max-w-[150px]">
+                          {role.updatedAt}
+                        </td>
+                        <td className="px-6 py-3 truncate max-w-[200px]">
+                          Active
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center py-8 text-gray-500">
+                        No roles found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
           )}
         </div>
+
+        {/* Users Pagination Controls - Moved outside the min-h div with mt-4 spacing */}
+        {showUsers && filteredUsers.length > 0 && (
+          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                onClick={handlePreviousUserPage}
+                disabled={currentUserPage === 1}
+                className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentUserPage === 1
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNextUserPage}
+                disabled={currentUserPage === totalUserPages}
+                className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentUserPage === totalUserPages
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{filteredUsers.length > 0 ? indexOfFirstUser + 1 : 0}</span> to{' '}
+                  <span className="font-medium">{Math.min(indexOfLastUser, filteredUsers.length)}</span> of{' '}
+                  <span className="font-medium">{filteredUsers.length}</span> entries
+                </p>
+              </div>
+              <div>
+                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <button
+                    onClick={handlePreviousUserPage}
+                    disabled={currentUserPage === 1}
+                    className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentUserPage === 1
+                        ? 'cursor-not-allowed bg-gray-50'
+                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  
+                  {getUserPageNumbers().map((pageNumber, index) => (
+                    <button
+                      key={index}
+                      onClick={() => pageNumber !== '...' && handleUserPageChange(pageNumber)}
+                      disabled={pageNumber === '...'}
+                      aria-current="page"
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                        pageNumber === currentUserPage
+                          ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
+                          : pageNumber === '...'
+                          ? 'text-gray-700 cursor-default'
+                          : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={handleNextUserPage}
+                    disabled={currentUserPage === totalUserPages}
+                    className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentUserPage === totalUserPages
+                        ? 'cursor-not-allowed bg-gray-50'
+                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Roles Pagination Controls - Moved outside the min-h div with mt-4 spacing */}
+        {!showUsers && allRoles.length > 0 && (
+          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                onClick={handlePreviousRolePage}
+                disabled={currentRolePage === 1}
+                className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentRolePage === 1
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNextRolePage}
+                disabled={currentRolePage === totalRolePages}
+                className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentRolePage === totalRolePages
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{allRoles.length > 0 ? indexOfFirstRole + 1 : 0}</span> to{' '}
+                  <span className="font-medium">{Math.min(indexOfLastRole, allRoles.length)}</span> of{' '}
+                  <span className="font-medium">{allRoles.length}</span> entries
+                </p>
+              </div>
+              <div>
+                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <button
+                    onClick={handlePreviousRolePage}
+                    disabled={currentRolePage === 1}
+                    className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentRolePage === 1
+                        ? 'cursor-not-allowed bg-gray-50'
+                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  
+                  {getRolePageNumbers().map((pageNumber, index) => (
+                    <button
+                      key={index}
+                      onClick={() => pageNumber !== '...' && handleRolePageChange(pageNumber)}
+                      disabled={pageNumber === '...'}
+                      aria-current="page"
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                        pageNumber === currentRolePage
+                          ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
+                          : pageNumber === '...'
+                          ? 'text-gray-700 cursor-default'
+                          : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={handleNextRolePage}
+                    disabled={currentRolePage === totalRolePages}
+                    className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentRolePage === totalRolePages
+                        ? 'cursor-not-allowed bg-gray-50'
+                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Modals */}

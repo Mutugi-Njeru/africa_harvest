@@ -279,7 +279,7 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleAddCounties}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="bg-green-600 text-white px-7 py-1 rounded-md"
                 disabled={isAddingCounties}
               >
                 {isAddingCounties ? "Adding..." : "Add"}
@@ -303,7 +303,7 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleAddCoordinator}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="bg-green-600 text-white px-7 py-1 rounded-md"
                 disabled={isAddingCoordinator}
               >
                 {isAddingCoordinator ? "Adding..." : "Add"}
