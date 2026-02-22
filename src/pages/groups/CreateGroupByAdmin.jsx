@@ -26,12 +26,12 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
   const fetchWards = async () => {
     try {
       const response = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`,
       );
       const wards = response.data.message.flatMap((region) =>
         region.counties.flatMap((county) =>
-          county.subCounties.flatMap((subCounty) => subCounty.wards)
-        )
+          county.subCounties.flatMap((subCounty) => subCounty.wards),
+        ),
       );
       setWards(wards);
     } catch (error) {
@@ -45,7 +45,7 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
       let url = BASE_REST_API_URL + "/users/v1/all";
       const response = await axios.get(url);
       const coordinators = response.data.message.filter((user) =>
-        user.roles.includes("WARD_CORDINATOR")
+        user.roles.includes("WARD_CORDINATOR"),
       );
       setWardCoordinators(coordinators);
     } catch (error) {
@@ -68,7 +68,7 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
       await axios.post(
         BASE_REST_API_URL +
           `groups/v1/create?userId=${selectedCoordinator.value}`,
-        payload
+        payload,
       );
 
       toast.success("Group created successfully!");
@@ -168,22 +168,25 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
             />
           </div>
 
-          <div className="flex">
+          <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+            <button
+              type="submit"
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isCreating}
+            >
+              {isCreating ? "Creating..." : "Create"}
+            </button>
+
             <button
               type="button"
               onClick={handleCloseModal}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
-              disabled={isCreating}
-            >
-              {isCreating ? "Creating" : "Create"}
-            </button>
+
           </div>
+
         </form>
       </div>
     </div>

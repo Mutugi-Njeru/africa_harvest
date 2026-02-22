@@ -158,9 +158,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       text: "Training",
       path: "/training",
     },
-    {
-      text: "Create Trainer",
-      path: "/create-trainer",
+      {
+      text: "Trainers",
+      path: "/trainers",
     },
   ];
 
@@ -263,11 +263,11 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             <div key={index}>
               <div
                 onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
                   (item.hasDropdown && item.text === "Locations" && isLocationsDropdownOpen) ||
                   (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen)
-                    ? "bg-green-700 text-white"
+                    ? "bg-green-800 text-white"
                     : ""
                 }`}
               >
@@ -309,7 +309,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -338,7 +338,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -372,7 +372,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             <div key={`user-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
                   (item.hasDropdown && item.text === "User management" && isUsersDropdownOpen)
                     ? "bg-green-700 text-white"
@@ -416,7 +416,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-green-700 hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""

@@ -61,9 +61,8 @@ const Activities = () => {
             </button>
           )}
 
-          <button className="flex items-center cursor-pointer border border-black pl-3 pr-3 p-2 text-black hover:bg-gray-100">
+          <button className="flex items-center cursor-pointer pl-3 pr-3 p-2 text-black hover:bg-gray-100">
             <Download className="w-4 h-4" />
-            <span className="mr-2">Export CSV</span>
           </button>
         </div>
       </div>

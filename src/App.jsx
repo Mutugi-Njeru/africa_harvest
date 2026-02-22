@@ -25,6 +25,7 @@ import { useEffect } from "react";
 import Training from "./pages/training/Training";
 import Accounts from "./pages/Accounts/Accounts";
 import CreateTrainer from "./pages/training/CreateTrainer";
+import Trainers from "./pages/trainers/Trainers";
 
 function App() {
   useEffect(() => {
@@ -114,10 +115,10 @@ function App() {
             }
           />
           <Route
-            path="/create-trainer"
+            path="/trainers"
             element={
               <AuthenticatedRoute>
-                <CreateTrainer />
+                <Trainers />
               </AuthenticatedRoute>
             }
           />
