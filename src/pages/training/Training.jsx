@@ -1,10 +1,33 @@
-import { Download, Plus, Search } from 'lucide-react'
-import React, { useState } from 'react'
-import TrainingsTable from './TrainingsTable';
-
+import { Download, Plus, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import TrainingsTable from "./TrainingsTable";
+import { BASE_REST_API_URL } from "../../service/AuthService";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Training = () => {
-  
+  const [trainings, setTrainings] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchTrainings();
+  }, []);
+
+  const fetchTrainings = async () => {
+    setIsLoading(true);
+    try {
+      let url = BASE_REST_API_URL + "/training/v1/trainings/";
+      const response = await axios.get(url);
+      setTrainings(response.data.message.data)
+    } catch (error) {
+      console.error("Error fetching trainings:", error);
+      toast.error("Failed to fetch trainings");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="pr-4 pl-3 relative">
       <div className="mt-3 mb-4">
@@ -27,11 +50,10 @@ const Training = () => {
       </div>
 
       {/* table */}
-      <TrainingsTable
-      />
-    
+      <TrainingsTable 
+      trainings={trainings}/>
     </div>
-  )
-}
+  );
+};
 
-export default Training
+export default Training;

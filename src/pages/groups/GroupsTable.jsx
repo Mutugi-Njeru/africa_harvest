@@ -14,7 +14,7 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  useEffect(() => {
+  useEffect(() => { 
     setCurrentPage(1);
   }, [searchTerm]);
 

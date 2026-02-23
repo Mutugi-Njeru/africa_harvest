@@ -1,5 +1,5 @@
-import { ClipboardEditIcon, Edit, Search, Trash2 } from "lucide-react";
-import React, { useState, useMemo } from "react";
+import { ClipboardEditIcon, Edit, Search, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
 import UpdateActivity from "./UpdateActivity";
 import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
@@ -19,6 +19,14 @@ const ActivitiesTable = ({
   const [showDeleteSubActivityModal, setShowDeleteSubActivityModal] =
     useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, showActivities]);
 
   const deleteActivity = async (activityId) => {
     try {
@@ -76,6 +84,22 @@ const ActivitiesTable = ({
     );
   }, [allSubactivities, searchTerm]);
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  
+  const currentActivities = useMemo(() => {
+    return filteredActivities.slice(indexOfFirstItem, indexOfLastItem);
+  }, [filteredActivities, indexOfFirstItem, indexOfLastItem]);
+  
+  const currentSubactivities = useMemo(() => {
+    return filteredSubactivities.slice(indexOfFirstItem, indexOfLastItem);
+  }, [filteredSubactivities, indexOfFirstItem, indexOfLastItem]);
+  
+  const totalPages = showActivities 
+    ? Math.ceil(filteredActivities.length / itemsPerPage)
+    : Math.ceil(filteredSubactivities.length / itemsPerPage);
+
   const handleCloseModal = () => {
     setIsUpdateModalOpen(false);
     setSelectedActivity(null);
@@ -104,6 +128,61 @@ const ActivitiesTable = ({
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("...");
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("...");
+        pageNumbers.push(totalPages);
+      }
+    }
+
+    return pageNumbers;
   };
 
   return (
@@ -166,7 +245,7 @@ const ActivitiesTable = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredActivities.map((activity, index) => (
+                    {currentActivities.map((activity, index) => (
                       <tr
                         key={activity.activityId}
                         className="bg-white border-b hover:bg-gray-50"
@@ -175,7 +254,7 @@ const ActivitiesTable = ({
                           scope="row"
                           className="px-6 py-3 font-medium text-green-600 whitespace-nowrap"
                         >
-                          {index + 1}
+                          {indexOfFirstItem + index + 1}
                         </th>
                         <td className="px-6 py-3 truncate max-w-[200px]">
                           {activity.activity}
@@ -232,7 +311,7 @@ const ActivitiesTable = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredSubactivities.map((subactivity, index) => (
+                    {currentSubactivities.map((subactivity, index) => (
                       <tr
                         key={subactivity.subActivityId}
                         className="bg-white border-b  hover:bg-gray-50"
@@ -241,7 +320,7 @@ const ActivitiesTable = ({
                           scope="row"
                           className="px-6 py-3 font-medium text-green-600 whitespace-nowrap"
                         >
-                          {index + 1}
+                          {indexOfFirstItem + index + 1}
                         </th>
                         <td className="px-6 py-3 truncate max-w-[200px]">
                           {subactivity.subActivity}
@@ -280,6 +359,96 @@ const ActivitiesTable = ({
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {((showActivities && filteredActivities.length > 0) || 
+          (!showActivities && filteredSubactivities.length > 0)) && (
+          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentPage === 1
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                  currentPage === totalPages
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div className="text-sm text-gray-700">
+                Showing {indexOfFirstItem + 1} to{" "}
+                {Math.min(indexOfLastItem, showActivities ? filteredActivities.length : filteredSubactivities.length)} of{" "}
+                {showActivities ? filteredActivities.length : filteredSubactivities.length} entries
+              </div>
+              <div>
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentPage === 1
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    }`}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+
+                  {getPageNumbers().map((pageNumber, index) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        pageNumber !== "..." && handlePageChange(pageNumber)
+                      }
+                      disabled={pageNumber === "..."}
+                      aria-current="page"
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                        pageNumber === currentPage
+                          ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                          : pageNumber === "..."
+                          ? "text-gray-700 cursor-default"
+                          : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                      currentPage === totalPages
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    }`}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Delete Modals */}
