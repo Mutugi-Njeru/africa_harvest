@@ -71,7 +71,7 @@ const Counties = () => {
     <div className="pr-4 pl-3 relative">
       {/* header */}
       <div className="flex justify-between items-center mt-3 mb-5">
-        <div className="text-xl font-bold text-gray-600">Counties</div>
+        <div className="text-xl font-bold text-gray-600">Regional Extension Agent</div>
         <div className="flex justify-end items-center">
           <button
             onClick={() => {

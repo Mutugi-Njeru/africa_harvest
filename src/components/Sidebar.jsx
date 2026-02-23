@@ -113,7 +113,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Activities", path: "/activity" },
     { icon: GraduationCap, text: "Trainings", hasDropdown: true }, // Trainings dropdown with GraduationCap icon
-    { icon: ListChecks, text: "Summaries" },
+    // { icon: ListChecks, text: "Summaries" },
   ];
 
   // User management and Profile section (to be placed below)
@@ -128,17 +128,17 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       path: "/users",
     },
     {
-      text: "Regional Coodinator",
+      text: "REA",
       path: "/counties",
       showOnlyForRegionalCoordinator: true,
     },
     {
-      text: "County Coordinator",
+      text: "CEA",
       path: "/subcounties",
       showOnlyForCountyCoordinator: true,
     },
-    { text: "SCounty Coordinator", path: "/wards" },
-    { text: "Ward Coordinator", path: "/ward" },
+    { text: "SCEA", path: "/wards" },
+    { text: "TOT/VBS", path: "/ward" },
   ];
 
   // Locations dropdown items
@@ -150,10 +150,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   ];
 
   const trainingsDropdownItems = [
-    {
-      text: "Engagements",
-      path: "/engagements",
-    },
+    // {
+    //   text: "Engagements",
+    //   path: "/engagements",
+    // },
      {
       text: "Training",
       path: "/training",
@@ -361,7 +361,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               <div className="my-6 border-t border-gray-300"></div>
               <div className="px-3 mb-2">
                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  User Management
+                  Settings
                 </span>
               </div>
             </>

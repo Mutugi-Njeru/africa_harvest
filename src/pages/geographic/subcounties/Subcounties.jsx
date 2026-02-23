@@ -67,7 +67,7 @@ const Subcounties = () => {
     <div className="pr-4 pl-3 relative">
       {/* header */}
       <div className="flex justify-between items-center mt-3 mb-5">
-        <div className="text-xl font-bold text-gray-600">Subcounties</div>
+        <div className="text-xl font-bold text-gray-600">County Extension Agents</div>
         <div className="flex justify-end items-center">
           <button
             onClick={() => {
