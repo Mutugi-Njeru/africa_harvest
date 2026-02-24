@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../assets/ahlogo.png";
+import logo from "../assets/ahlogo2.png";
 import smallLogo from "../assets/smallLogo.png";
 import {
   LayoutDashboard,
@@ -232,7 +232,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
         <div className="flex-shrink-0">
           <div className="flex items-center justify-center h-20 bg-transparent">
             {isExpanded ? (
-              <img src={logo} alt="Africa Harvest" className="h-16" />
+              <img src={logo} alt="Africa Harvest" className="h-20" />
             ) : (
               <img src={smallLogo} alt="Africa Harvest" className="h-12" />
             )}

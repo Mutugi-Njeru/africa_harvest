@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/1.png";
-import logo1 from "../../assets/ahlogo.png";
+import logo1 from "../../assets/ahlogo2.png";
 import Farm from "../../assets/farm2.jpg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -157,11 +157,11 @@ const LoginExample = () => {
           <img 
             src={logo1} 
             alt="Logo" 
-            className="h-16 sm:h-20 md:h-24 lg:h-32 w-auto" 
+            className="h-20 sm:h-20 md:h-24 lg:h-32 w-auto" 
           />
         </div>
         
-        <div className="p-4 sm:p-6 md:p-8 lg:p-10 w-full">
+        <div className="sm:p-6 md:p-8 lg:p-2 w-full">
           <form
             onSubmit={handleLogin}
             className="flex w-full max-w-sm sm:max-w-md mx-auto flex-col space-y-4 sm:space-y-5"
