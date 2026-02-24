@@ -139,9 +139,9 @@ const Activities = () => {
       {/* Header */}
       <div className="mt-3 mb-4">
         {showActivities ? (
-          <div className="text-xl font-bold text-gray-600">Activities</div>
+          <div className="text-xl font-bold text-gray-600">Value Chain Types</div>
         ) : (
-          <div className="text-xl font-bold text-gray-600">SubActivities</div>
+          <div className="text-xl font-bold text-gray-600">Value Chains</div>
         )}
       </div>
 
@@ -157,7 +157,7 @@ const Activities = () => {
               className="flex items-center border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange cursor-pointer text-white rounded-md"
             >
               <Plus className="w-4 h-4" />
-              <span className="ml-2 mr-2">Create Activity</span>
+              <span className="ml-2 mr-2">Create Value Chain Types </span>
             </button>
           ) : (
             <button
@@ -165,7 +165,7 @@ const Activities = () => {
               className="flex items-center border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange cursor-pointer text-white rounded-md"
             >
               <Plus className="w-4 h-4" />
-              <span className="ml-2 mr-2">Create Subactivity</span>
+              <span className="ml-2 mr-2">Create Value Chain </span>
             </button>
           )}
 

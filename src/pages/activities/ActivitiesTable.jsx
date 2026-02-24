@@ -196,7 +196,7 @@ const ActivitiesTable = ({
                 showActivities ? "text-white bg-green-800" : "bg-transparent"
               }`}
             >
-              Activities
+              Value Chain Types
             </button>
             <button
               onClick={() => setShowActivities(false)}
@@ -204,7 +204,7 @@ const ActivitiesTable = ({
                 !showActivities ? "text-white bg-green-800" : "bg-transparent"
               }`}
             >
-              Subactivities
+              Value Chain 
             </button>
           </div>
           <div className="mb-2 relative">
@@ -237,7 +237,7 @@ const ActivitiesTable = ({
                   <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
                     <tr>
                       <th className="px-6 py-4">ID</th>
-                      <th className="px-6 py-4">Activity</th>
+                      <th className="px-6 py-4">Value Chain Type</th>
                       <th className="px-6 py-4">Description</th>
                       <th className="px-6 py-4">Created At</th>
                       <th className="px-6 py-4">Updated At</th>
@@ -302,9 +302,9 @@ const ActivitiesTable = ({
                   <thead className="text-xs text-gray-700 uppercase bg-white border-b  ">
                     <tr>
                       <th className="px-6 py-4">ID</th>
-                      <th className="px-6 py-4">Subactivity</th>
+                      <th className="px-6 py-4">Value Chain </th>
                       <th className="px-6 py-4">Description</th>
-                      <th className="px-6 py-4">Activity</th>
+                      <th className="px-6 py-4">Value Chain Type</th>
                       <th className="px-6 py-4">Created At</th>
                       <th className="px-6 py-4">Updated At</th>
                       <th className="px-6 py-4">Actions</th>

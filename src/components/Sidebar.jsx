@@ -111,7 +111,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     },
     { icon: Globe, text: "Locations", hasDropdown: true },
     { icon: Network, text: "Groups", path: "/groups" },
-    { icon: FileText, text: "Activities", path: "/activity" },
+    { icon: FileText, text: "Value Chains", path: "/activity" },
     { icon: GraduationCap, text: "Trainings", hasDropdown: true }, // Trainings dropdown with GraduationCap icon
     // { icon: ListChecks, text: "Summaries" },
   ];

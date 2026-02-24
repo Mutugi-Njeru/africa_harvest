@@ -55,11 +55,11 @@ const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 shadow-lg w-[600px]">
-        <h2 className="text-lg font-semibold mb-4">Update Activity</h2>
+        <h2 className="text-lg font-semibold mb-4">Update Value Chain Type</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              Activity Name
+             Value Chain Type
             </label>
             <input
               type="text"
