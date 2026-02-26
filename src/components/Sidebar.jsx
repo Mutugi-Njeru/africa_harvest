@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/ahlogo2.png";
 import smallLogo from "../assets/smallLogo.png";
+import liftonLogo from "../assets/1.png";
 import {
   LayoutDashboard,
   Users,
@@ -432,6 +433,35 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Bottom Section with Trademark and Logo */}
+        <div className="flex-shrink-0 border-t border-gray-300 bg-gradient-to-t from-green-100 to-transparent p-4">
+          <div className="flex items-center justify-between">
+            {isExpanded ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <img src={smallLogo} alt="Africa Harvest" className="h-8 w-8" />
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-600 font-medium">Africa Harvest</span>
+                    <span className="text-xs text-gray-400">© 2026 All rights reserved</span>
+                  </div>
+                </div>
+                <span className="text-xs text-gray-400 font-medium">™</span>
+              </>
+            ) : (
+              <div className="w-full flex justify-center">
+                <img src={smallLogo} alt="Africa Harvest" className="h-8 w-8" />
+              </div>
+            )}
+          </div>
+          
+          {/* Version number when expanded */}
+          {isExpanded && (
+            <div className="mt-2 text-center">
+              <span className="text-xs text-gray-400">Version 1.0.0</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
