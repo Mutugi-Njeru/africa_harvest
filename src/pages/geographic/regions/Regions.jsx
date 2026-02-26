@@ -55,7 +55,7 @@ const Regions = () => {
           <input
             type="text"
             placeholder="Search by region name, coordinator..."
-            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-transparent"
+            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
             value={searchTerm}
             onChange={handleSearchChange}
           />
@@ -65,7 +65,7 @@ const Regions = () => {
         <div className="flex flex-row justify-end">
           <button
             onClick={() => setShowCreateRegionModal(true)}
-            className="flex items-center border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange cursor-pointer text-white rounded-md"
+            className="flex items-center border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange cursor-pointer text-white rounded-md"
           >
             <Plus className="w-4 h-4" />
             <span className="ml-2 mr-2">Create Region</span>

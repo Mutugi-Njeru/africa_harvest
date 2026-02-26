@@ -32,7 +32,7 @@ const Trainers = () => {
         <div className="flex flex-row justify-end">
           <button
             onClick={() => setShowCreateTrainerModal(true)}
-            className="flex items-center border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange cursor-pointer text-white rounded-md"
+            className="flex items-center border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange cursor-pointer text-white rounded-md"
           >
             <Plus className="w-4 h-4" />
             <span className="ml-2 mr-2">Create Trainer</span>

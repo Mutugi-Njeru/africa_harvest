@@ -2,24 +2,24 @@ const CustomFiltersStyles = {
   control: (provided, state) => ({
     ...provided,
     backgroundColor: "#f9fafb",
-    borderColor: state.isFocused ? "#FDE047" : "#d1d5db",
-    boxShadow: state.isFocused ? "0 0 0 1px #FDE047" : "none",
+    borderColor: state.isFocused ? "#14503c" : "#d1d5db",
+    boxShadow: state.isFocused ? "0 0 0 1px #14503c" : "none",
     "&:hover": {
-      borderColor: "#FDE047",
+      borderColor: "#14503c",
     },
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isSelected ? "#fbb03b" : "white", // Selected option background
-    color: state.isSelected ? "white" : "#1f2937", // Selected option text color
+    backgroundColor: state.isSelected ? "#E8F4EF" : "white", // Selected option background
+    color: state.isSelected ? "white" : "#000000", // Selected option text color
     "&:hover": {
-      backgroundColor: "#fbb03b", // Hover background
-      color: "#1f2937", // Hover text color
+      backgroundColor: "#E8F4EF", // Hover background
+      color: "#000000", // Hover text color
     },
   }),
   multiValue: (provided) => ({
     ...provided,
-    backgroundColor: "#e0e7ff", // Background color for selected items
+    backgroundColor: "#e8f4ef", // Background color for selected items
   }),
   multiValueLabel: (provided) => ({
     ...provided,

@@ -5,6 +5,8 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  Check,
+  X,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
@@ -192,14 +194,14 @@ const AccountTable = ({ refresh, openModal }) => {
             placeholder="Search by account name, phone, or email"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-transparent"
+            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
           />
         </div>
 
         <div className="flex justify-end items-center">
           <button
             onClick={openModal}
-            className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-green-700 hover:bg-yellowOrange text-white"
+            className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange text-white"
           >
             <Plus className="w-4 h-4" />
             <span className="ml-2 mr-2">Create Account</span>
@@ -256,7 +258,9 @@ const AccountTable = ({ refresh, openModal }) => {
                       <button
                         onClick={() => handleStatusToggle(account)}
                         className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                          account.isActive ? "bg-green-500" : "bg-yellowOrange"
+                          account.isActive
+                            ? "bg-green-300"
+                            : "bg-veryLightGreen"
                         }`}
                       >
                         <div
@@ -392,21 +396,27 @@ const AccountTable = ({ refresh, openModal }) => {
       {/* Activation Confirmation Modal */}
       {showActivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 className="text-lg font-semibold mb-4">Confirm Activation</h2>
-            <p>Are you sure you want to activate this account?</p>
-            <div className="mt-6 flex">
+            <p className="text-gray-600">
+              Are you sure you want to activate this account?
+            </p>
+
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowActivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+                className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
               >
+                <X size={20} />
                 Cancel
               </button>
+
               <button
                 onClick={handleConfirmActivation}
-                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+                className="flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] bg-saveButton hover:bg-yellowOrange text-white"
               >
-                Yes, Activate
+                <Check size={20} />
+                Activate
               </button>
             </div>
           </div>
@@ -416,21 +426,27 @@ const AccountTable = ({ refresh, openModal }) => {
       {/* Deactivation Confirmation Modal */}
       {showDeactivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
-            <p>Are you sure you want to deactivate this account?</p>
-            <div className="mt-6 flex">
+            <p className="text-gray-600">
+              Are you sure you want to deactivate this account?
+            </p>
+
+            <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowDeactivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+                className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
               >
+                <X size={20} />
                 Cancel
               </button>
+
               <button
                 onClick={handleConfirmDeactivation}
-                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+                className="flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] bg-saveButton hover:bg-yellowOrange text-white"
               >
-                Yes, Deactivate
+                <Check size={20} />
+                Deactivate
               </button>
             </div>
           </div>

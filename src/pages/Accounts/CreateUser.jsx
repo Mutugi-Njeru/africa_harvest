@@ -5,6 +5,7 @@ import Select from "react-select";
 import { accountId, BASE_REST_API_URL } from "../../service/AuthService";
 import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Check, X } from "lucide-react";
 
 const CreateUser = ({ isOpen, onClose, accountId }) => {
   const [roles, setRoles] = useState([]);
@@ -133,7 +134,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="First Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -148,7 +149,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -165,7 +166,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -179,7 +180,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
               <button
@@ -203,7 +204,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -217,7 +218,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.msisdn}
                 onChange={handleChange}
                 placeholder="254712345678"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -264,26 +265,38 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               rows="3"
               required
             />
           </div>
-
           {/* Buttons */}
-          <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+          <div className="flex gap-3 mt-6 flex-row-reverse">
             <button
               type="submit"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
+              className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+                isLoading
+                  ? "bg-gray-400"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              } text-white`}
             >
-              {isLoading ? "Creating..." : "Create"}
+              {isLoading ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Create
+                </>
+              )}
             </button>
+
             <button
               type="button"
               onClick={onClose}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
             >
+              <X size={20} />
               Cancel
             </button>
           </div>

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
+import { Check, Trash, Trash2, X } from "lucide-react";
 
 const CoordinatorsAndCountiesModal = ({
   handleCloseModal,
@@ -16,7 +17,7 @@ const CoordinatorsAndCountiesModal = ({
   const [selectedCoordinators, setSelectedCoordinators] = useState([]);
   const [selectedRemoveCounties, setSelectedRemoveCounties] = useState([]);
   const [selectedRemoveCoordinators, setSelectedRemoveCoordinators] = useState(
-    []
+    [],
   );
   const [regionCoordinators, setRegionCoordinators] = useState([]);
   const [isAddingCounties, setIsAddingCounties] = useState(false);
@@ -35,7 +36,7 @@ const CoordinatorsAndCountiesModal = ({
     const fetchAllCounties = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "geographic/v1/counties/simple"
+          BASE_REST_API_URL + "geographic/v1/counties/simple",
         );
         setCounties(response.data.message);
       } catch (error) {
@@ -51,7 +52,7 @@ const CoordinatorsAndCountiesModal = ({
         }
         const response = await axios.get(url);
         const regionalCoordinators = response.data.message.filter((user) =>
-          user.roles.includes("REGIONAL_CORDINATOR")
+          user.roles.includes("REGIONAL_CORDINATOR"),
         );
         setRegionCoordinators(regionalCoordinators);
       } catch (error) {
@@ -70,7 +71,7 @@ const CoordinatorsAndCountiesModal = ({
       const response = await axios.post(
         BASE_REST_API_URL +
           `/geographic/v1/regions/${region.regionId}/counties`,
-        { countyIds }
+        { countyIds },
       );
       setSelectedCounties([]);
       // fetchRegionCounties();
@@ -109,7 +110,7 @@ const CoordinatorsAndCountiesModal = ({
       const response = await axios.post(
         BASE_REST_API_URL +
           `/geographic/v1/regions/${region.regionId}/coordinators`,
-        { userIds }
+        { userIds },
       );
       setSelectedCoordinators([]);
       if (response.data.message && response.data.message.details) {
@@ -148,7 +149,7 @@ const CoordinatorsAndCountiesModal = ({
       const response = await axios.delete(
         BASE_REST_API_URL +
           `/geographic/v1/regions/${region.regionId}/coordinators`,
-        { data: { userIds } }
+        { data: { userIds } },
       );
       setSelectedRemoveCoordinators([]);
       if (response.data.message && response.data.message.details) {
@@ -186,7 +187,7 @@ const CoordinatorsAndCountiesModal = ({
       const response = await axios.delete(
         BASE_REST_API_URL +
           `/geographic/v1/regions/${region.regionId}/counties`,
-        { data: { countyIds } }
+        { data: { countyIds } },
       );
       setSelectedRemoveCounties([]);
       if (response.data.message && response.data.message.details) {
@@ -279,9 +280,10 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleAddCounties}
-                className="bg-green-600 text-white px-7 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingCounties}
               >
+                <Check size={20} />
                 {isAddingCounties ? "Adding..." : "Add"}
               </button>
             </div>
@@ -303,9 +305,10 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleAddCoordinator}
-                className="bg-green-600 text-white px-7 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingCoordinator}
               >
+                <Check size={20} />
                 {isAddingCoordinator ? "Adding..." : "Add"}
               </button>
             </div>
@@ -328,10 +331,11 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleRemoveCounty}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCounties}
               >
-                {isRemovingCounties ? "Removing..." : "Remove"}{" "}
+                <Check size={20} />
+                {isRemovingCounties ? "Removing..." : "Remove"}
               </button>
             </div>
           </div>
@@ -353,10 +357,11 @@ const CoordinatorsAndCountiesModal = ({
               />
               <button
                 onClick={handleRemoveCoordinator}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCoordinator}
               >
-                {isRemovingCoordinator ? "Removing..." : "Remove"}{" "}
+                <Trash2 className="w-5 h-5" />
+                {isRemovingCoordinator ? "Removing..." : "Remove"}
               </button>
             </div>
           </div>
@@ -368,8 +373,9 @@ const CoordinatorsAndCountiesModal = ({
               handleCloseModal();
               onCloseModal();
             }}
-            className="rounded-md px-8 py-2 bg-green-400 text-white hover:bg-green-700"
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
           >
+            <X size={20} />
             Close
           </button>
         </div>

@@ -3,6 +3,7 @@ import { BASE_REST_API_URL } from "../../service/AuthService";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Check } from "lucide-react";
 
 const UserProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +27,7 @@ const UserProfile = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `${BASE_REST_API_URL}/users/v1/${userId}`
+        `${BASE_REST_API_URL}/users/v1/${userId}`,
       );
       const userData = response.data.message;
       setFormData({
@@ -60,7 +61,7 @@ const UserProfile = () => {
     try {
       const response = await axios.put(
         `${BASE_REST_API_URL}/users/v1/${userId}`,
-        formData
+        formData,
       );
       toast.success(response.data.message);
       // Refresh user data after update
@@ -227,12 +228,19 @@ const UserProfile = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`flex items-center border pl-5 pr-5 p-2 ${
-                isLoading ? "bg-gray-400" : "bg-green-700 hover:bg-yellowOrange"
+              className={`flex items-center gap-2 border pl-5 pr-5 p-2 rounded-md ${
+                isLoading ? "bg-gray-400" : "bg-saveButton hover:bg-yellowOrange"
               } text-white`}
             >
-              {isLoading ? "Saving..." : "Save Changes"}
-            </button>
+              {isLoading ? (
+                "Saving..."
+              ) : (
+                <>
+                  <Check size={24} />
+                  Save Changes
+                </>
+              )}
+            </button> 
           </div>
         </form>
       </div>

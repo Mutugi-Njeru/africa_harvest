@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
+import { Check, X } from "lucide-react";
 
 const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +27,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
     try {
       const response = await axios.put(
         BASE_REST_API_URL + `accounts/v1/${account.accountId}`,
-        formData
+        formData,
       );
       toast.success(response.data.message);
       onClose();
@@ -60,7 +61,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
                 name="accountName"
                 value={formData.accountName}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 placeholder="Enter Account name"
                 required
               />
@@ -74,7 +75,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 placeholder="Enter account email"
                 required
               />
@@ -88,7 +89,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
                 name="msisdn"
                 value={formData.msisdn}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 placeholder="Enter phone number"
                 required
               />
@@ -102,7 +103,7 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 placeholder="Enter address"
                 required
               />
@@ -115,30 +116,42 @@ const UpdateAccount = ({ isOpen, onClose, account, onAccountUpdate }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full border border-gray-300 shadow-sm p-3 focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 placeholder="Enter description"
                 rows="4"
                 required
               />
             </div>
-            
-           <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-  <button
-    type="submit"
-    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-    disabled={isLoading}
-  >
-    {isLoading ? "Updating..." : "Update"}
-  </button>
-  <button
-    type="button"
-    onClick={onClose}
-    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-  >
-    Cancel
-  </button>
-</div>
 
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
+              >
+                <X size={20} />
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+                  isLoading
+                    ? "bg-gray-400"
+                    : "bg-saveButton hover:bg-yellowOrange"
+                } text-white`}
+              >
+                {isLoading ? (
+                  "Updating..."
+                ) : (
+                  <>
+                    <Check size={20} />
+                    Update
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>
