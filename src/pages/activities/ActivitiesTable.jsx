@@ -1,4 +1,12 @@
-import { ClipboardEditIcon, Edit, Search, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ClipboardEditIcon,
+  Edit,
+  Search,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import UpdateActivity from "./UpdateActivity";
 import axios from "axios";
@@ -19,7 +27,7 @@ const ActivitiesTable = ({
   const [showDeleteSubActivityModal, setShowDeleteSubActivityModal] =
     useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -31,7 +39,7 @@ const ActivitiesTable = ({
   const deleteActivity = async (activityId) => {
     try {
       const response = await axios.delete(
-        BASE_REST_API_URL + `/activities/v1/${activityId}`
+        BASE_REST_API_URL + `/activities/v1/${activityId}`,
       );
       toast.success(response.data.message);
       fetchActivities();
@@ -40,11 +48,11 @@ const ActivitiesTable = ({
       toast.error(error.response?.data?.message || "Cannot delete activity");
     }
   };
-  
+
   const deleteSubActivity = async (subAtivityId) => {
     try {
       const response = await axios.delete(
-        BASE_REST_API_URL + `/activities/v1/sub/${subAtivityId}`
+        BASE_REST_API_URL + `/activities/v1/sub/${subAtivityId}`,
       );
       toast.success(response.data.message);
       fetchActivities();
@@ -57,10 +65,11 @@ const ActivitiesTable = ({
   // Filter activities based on search term
   const filteredActivities = useMemo(() => {
     if (!searchTerm.trim()) return activities;
-    
-    return activities.filter(activity => 
-      activity.activity.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.description.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return activities.filter(
+      (activity) =>
+        activity.activity.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.description.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [activities, searchTerm]);
 
@@ -70,33 +79,38 @@ const ActivitiesTable = ({
       (activity.subActivities || []).map((sub) => ({
         ...sub,
         parentActivity: activity.activity,
-      }))
+      })),
     );
   }, [activities]);
 
   // Filter subactivities based on search term
   const filteredSubactivities = useMemo(() => {
     if (!searchTerm.trim()) return allSubactivities;
-    
-    return allSubactivities.filter(subactivity => 
-      subactivity.subActivity.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      subactivity.parentActivity.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return allSubactivities.filter(
+      (subactivity) =>
+        subactivity.subActivity
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        subactivity.parentActivity
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
     );
   }, [allSubactivities, searchTerm]);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  
+
   const currentActivities = useMemo(() => {
     return filteredActivities.slice(indexOfFirstItem, indexOfLastItem);
   }, [filteredActivities, indexOfFirstItem, indexOfLastItem]);
-  
+
   const currentSubactivities = useMemo(() => {
     return filteredSubactivities.slice(indexOfFirstItem, indexOfLastItem);
   }, [filteredSubactivities, indexOfFirstItem, indexOfLastItem]);
-  
-  const totalPages = showActivities 
+
+  const totalPages = showActivities
     ? Math.ceil(filteredActivities.length / itemsPerPage)
     : Math.ceil(filteredSubactivities.length / itemsPerPage);
 
@@ -104,12 +118,12 @@ const ActivitiesTable = ({
     setIsUpdateModalOpen(false);
     setSelectedActivity(null);
   };
-  
+
   const handleEditClick = (activity) => {
     setSelectedActivity(activity);
     setIsUpdateModalOpen(true);
   };
-  
+
   const handleConfirmDeletion = () => {
     if (selectedActivity) {
       deleteActivity(selectedActivity.activityId);
@@ -117,7 +131,7 @@ const ActivitiesTable = ({
       setSelectedActivity(null);
     }
   };
-  
+
   const handleConfirmSubactivityDeletion = () => {
     if (selectedSubactivity) {
       deleteSubActivity(selectedSubactivity.subActivityId);
@@ -204,7 +218,7 @@ const ActivitiesTable = ({
                 !showActivities ? "text-white bg-green-800" : "bg-transparent"
               }`}
             >
-              Value Chain 
+              Value Chain
             </button>
           </div>
           <div className="mb-2 relative">
@@ -213,10 +227,14 @@ const ActivitiesTable = ({
             </div>
             <input
               type="text"
-              placeholder={showActivities ? "Search by activity..." : "Search by subactivity or activity..."}
+              placeholder={
+                showActivities
+                  ? "Search by activity..."
+                  : "Search by subactivity or activity..."
+              }
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-72 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-transparent"
+              className="w-72 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
             />
           </div>
         </div>
@@ -230,7 +248,9 @@ const ActivitiesTable = ({
             <div>
               {filteredActivities.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
-                  {searchTerm ? "No activities match your search" : "No activities available"}
+                  {searchTerm
+                    ? "No activities match your search"
+                    : "No activities available"}
                 </div>
               ) : (
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
@@ -295,7 +315,9 @@ const ActivitiesTable = ({
             <div>
               {filteredSubactivities.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
-                  {searchTerm ? "No subactivities match your search" : "No subactivities available"}
+                  {searchTerm
+                    ? "No subactivities match your search"
+                    : "No subactivities available"}
                 </div>
               ) : (
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
@@ -361,7 +383,7 @@ const ActivitiesTable = ({
         </div>
 
         {/* Pagination Controls */}
-        {((showActivities && filteredActivities.length > 0) || 
+        {((showActivities && filteredActivities.length > 0) ||
           (!showActivities && filteredSubactivities.length > 0)) && (
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
             <div className="flex flex-1 justify-between sm:hidden">
@@ -391,8 +413,17 @@ const ActivitiesTable = ({
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div className="text-sm text-gray-700">
                 Showing {indexOfFirstItem + 1} to{" "}
-                {Math.min(indexOfLastItem, showActivities ? filteredActivities.length : filteredSubactivities.length)} of{" "}
-                {showActivities ? filteredActivities.length : filteredSubactivities.length} entries
+                {Math.min(
+                  indexOfLastItem,
+                  showActivities
+                    ? filteredActivities.length
+                    : filteredSubactivities.length,
+                )}{" "}
+                of{" "}
+                {showActivities
+                  ? filteredActivities.length
+                  : filteredSubactivities.length}{" "}
+                entries
               </div>
               <div>
                 <nav
@@ -450,54 +481,63 @@ const ActivitiesTable = ({
           </div>
         )}
       </div>
-      
+
       {/* Delete Modals */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 shadow-lg rounded-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
-            <p>Are you sure you want to delete this activity?</p>
-            <div className="mt-6 flex gap-3">
+            <p>Are you sure you want to delete this value chain type?</p>
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
               >
+                <X size={20} />
                 Cancel
               </button>
               <button
-                onClick={handleConfirmDeletion}
-                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+               onClick={handleConfirmDeletion}
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-red-500 rounded-md bg-red-500 text-white hover:bg-red-600 min-w-[100px]"
               >
-                Yes, Delete
+                <Trash2 size={20} />
+                Delete
               </button>
             </div>
           </div>
         </div>
       )}
-      
+
       {showDeleteSubActivityModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 shadow-lg rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
-            <p>Are you sure you want to delete this subActivity?</p>
-            <div className="mt-6 flex gap-3">
+          <div className="bg-white p-6 shadow-lg rounded-lg max-w-md w-full mx-4">
+            <h2 className="text-lg font-semibold mb-2">Confirm Delete</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this value chain? This action
+              cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowDeleteSubActivityModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
               >
+                <X size={20} />
                 Cancel
               </button>
+
               <button
                 onClick={handleConfirmSubactivityDeletion}
-                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-red-500 rounded-md bg-red-500 text-white hover:bg-red-600 min-w-[100px]"
               >
-                Yes, Delete
+                <Trash2 size={20} />
+                Delete
               </button>
             </div>
           </div>
         </div>
       )}
-      
+
       {isUpdateModalOpen && (
         <UpdateActivity
           isOpen={isUpdateModalOpen}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ClipboardEditIcon, Edit, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { ClipboardEditIcon, Edit, ChevronLeft, ChevronRight, Eye, Check, X } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
@@ -9,6 +9,9 @@ import { FaEye } from "react-icons/fa";
 const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [groupToToggle, setGroupToToggle] = useState(null);
+  const [toggleAction, setToggleAction] = useState(null); // 'activate' or 'deactivate'
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,12 +70,37 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
     }
   };
 
-  const handleToggleStatus = (groupId, currentStatus) => {
-    if (currentStatus) {
-      deactivateGroup(groupId);
+  const handleToggleClick = (groupId, currentStatus) => {
+    // Find the group details
+    const group = groups.find(g => g.groupId === groupId);
+    setGroupToToggle({
+      id: groupId,
+      name: group?.groupName || 'Unknown',
+      currentStatus
+    });
+    setToggleAction(currentStatus ? 'deactivate' : 'activate');
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmToggle = async () => {
+    if (!groupToToggle) return;
+    
+    setIsConfirmModalOpen(false);
+    
+    if (toggleAction === 'deactivate') {
+      await deactivateGroup(groupToToggle.id);
     } else {
-      activateGroup(groupId);
+      await activateGroup(groupToToggle.id);
     }
+    
+    setGroupToToggle(null);
+    setToggleAction(null);
+  };
+
+  const handleCancelToggle = () => {
+    setIsConfirmModalOpen(false);
+    setGroupToToggle(null);
+    setToggleAction(null);
   };
 
   const handleCloseModal = () => {
@@ -186,15 +214,15 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
                         <td className="px-6 py-3 truncate max-w-[150px]">
                           <button
                             onClick={() =>
-                              handleToggleStatus(
+                              handleToggleClick(
                                 group.groupId,
                                 !group.softDeleted
                               )
                             }
                             className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
                               group.softDeleted
-                                ? "bg-yellowOrange"
-                                : "bg-green-500"
+                                ? "bg-veryLightGreen"
+                                : "bg-green-300"
                             }`}
                           >
                             <div
@@ -332,6 +360,69 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
           </div>
         )}
       </div>
+      
+      {/* Confirmation Modal */}
+{isConfirmModalOpen && groupToToggle && (
+  <div className="fixed inset-0 z-50 overflow-y-auto">
+    {/* Backdrop */}
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
+      onClick={handleCancelToggle}
+    ></div>
+    
+    {/* Modal Container - Perfectly centered */}
+   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+  <div className="bg-white p-6 w-[400px] rounded-md">
+    <h2 className="text-lg font-semibold mb-4">
+      {toggleAction === 'deactivate' ? 'Deactivate Group' : 'Activate Group'}
+    </h2>
+    
+    <div className="mb-6">
+      <p className="text-xl text-gray-600">
+        {toggleAction === 'deactivate' 
+          ? `Are you sure you want to deactivate "${groupToToggle.name}"? This action cannot be reversed.`
+          : `Are you sure you want to activate "${groupToToggle.name}"? The group will become active again.`
+        }
+      </p>
+    </div>
+
+    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <button
+        type="button"
+        onClick={handleCancelToggle}
+        className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
+      >
+        <X size={20} />
+        Cancel
+      </button>
+      
+      <button
+        type="button"
+        onClick={handleConfirmToggle}
+        className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+          toggleAction === 'deactivate'
+            ? 'bg-red-600 hover:bg-red-700'
+            : 'bg-saveButton hover:bg-yellowOrange'
+        }`}
+      >
+        {toggleAction === 'deactivate' ? (
+          <>
+            <X size={20} />
+            Deactivate
+          </>
+        ) : (
+          <>
+            <Check size={20} />
+            Activate
+          </>
+        )}
+      </button>
+    </div>
+  </div>
+</div>
+  </div>
+)}
+      
       {isUpdateModalOpen && (
         <UpdateGroupDetails
           handleCloseModal={handleCloseModal}

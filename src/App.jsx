@@ -24,7 +24,6 @@ import { isUserLoggedIn, logout } from "./service/AuthService";
 import { useEffect } from "react";
 import Training from "./pages/training/Training";
 import Accounts from "./pages/Accounts/Accounts";
-import CreateTrainer from "./pages/training/CreateTrainer";
 import Trainers from "./pages/trainers/Trainers";
 
 function App() {

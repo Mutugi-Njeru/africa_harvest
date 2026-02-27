@@ -163,7 +163,7 @@ const Groups = () => {
           <input
             type="text"
             placeholder="Search by group name, manager, ward..."
-            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 bg-transparent"
+            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
             value={searchTerm}
             onChange={handleSearchChange}
           />

@@ -4,6 +4,7 @@ import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Check, X } from "lucide-react";
 
 const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
   const [wards, setWards] = useState([]);
@@ -118,12 +119,12 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
                 value={formData.groupName}
                 onChange={handleInputChange}
                 placeholder="Group Name"
-                className=" block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
 
-            <div className="">
+            <div>
               <label className="block text-sm font-medium text-gray-700">
                 Ward
               </label>
@@ -138,21 +139,20 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
               />
             </div>
           </div>
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Group Manager
-              </label>
-              <Select
-                name="wardId"
-                options={wardCoordinatorOptions}
-                onChange={handleCoordinatorChange}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                styles={CustomFiltersStyles}
-                required
-              />
-            </div>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Group Manager
+            </label>
+            <Select
+              name="wardId"
+              options={wardCoordinatorOptions}
+              onChange={handleCoordinatorChange}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              styles={CustomFiltersStyles}
+              required
+            />
           </div>
 
           <div className="mb-4">
@@ -163,30 +163,40 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               rows="3"
             />
           </div>
 
-          <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-            <button
-              type="submit"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isCreating}
-            >
-              {isCreating ? "Creating..." : "Create"}
-            </button>
-
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
             >
+              <X size={20} />
               Cancel
             </button>
-
+            
+            <button
+              type="submit"
+              disabled={isCreating}
+              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+                isCreating
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              }`}
+            >
+              {isCreating ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Create
+                </>
+              )}
+            </button>
           </div>
-
         </form>
       </div>
     </div>

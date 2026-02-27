@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
+import { Check, X } from "lucide-react";
 
 const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
   const accountId = parseInt(localStorage.getItem("accountId"));
@@ -37,7 +38,7 @@ const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
     try {
       await axios.put(
         `${BASE_REST_API_URL}/activities/v1/${activity.activityId}`,
-        formData
+        formData,
       );
       toast.success("Activity Updated Successfully");
       onClose();
@@ -59,7 +60,7 @@ const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-             Value Chain Type
+              Value Chain Type
             </label>
             <input
               type="text"
@@ -67,7 +68,7 @@ const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
               value={formData.activity}
               onChange={handleChange}
               placeholder="Activity Name"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               required
             />
           </div>
@@ -81,27 +82,40 @@ const UpdateActivity = ({ isOpen, onClose, activity, fetchActivities }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               rows="3"
               required
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600 text-white"
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
             >
+              <X size={20} />
               Cancel
             </button>
+
             <button
               type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
               disabled={isSubmitting}
+              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              }`}
             >
-              {isSubmitting ? "Updating..." : "Update"}
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Update
+                </>
+              )}
             </button>
           </div>
         </form>
