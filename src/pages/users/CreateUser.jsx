@@ -5,6 +5,7 @@ import Select from "react-select";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Check, X } from "lucide-react";
 
 const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
   const [roles, setRoles] = useState([]);
@@ -135,7 +136,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="First Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -149,7 +150,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -166,7 +167,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -180,7 +181,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
               <button
@@ -204,7 +205,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -218,7 +219,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
                 value={formData.msisdn}
                 onChange={handleChange}
                 placeholder="254712345678"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -265,27 +266,40 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               rows="3"
               required
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex">
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600"
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
             >
+              <X size={20} />
               Cancel
             </button>
-            <button
+            
+             <button
               type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
               disabled={isLoading}
+              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              }`}
             >
-              {isLoading ? "Creating..." : "Create"}{" "}
+              {isLoading ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Create
+                </>
+              )}
             </button>
           </div>
         </form>

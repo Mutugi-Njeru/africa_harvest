@@ -10,10 +10,9 @@ import {
 import { useState } from "react";
 import CountyCoordinatorsModal from "./CountyCoordinatorsModal";
 
-const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
+const CountiesTable = ({ counties, isLoading, fetchCounties, searchTerm, setSearchTerm }) => {
   const [isCoordinatorsModalOpen, setIsCoordinatorsModalOpen] = useState(false);
   const [selectedCounty, setSelectedCounty] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCloseModal = () => {
     setIsCoordinatorsModalOpen(false);
@@ -26,7 +25,7 @@ const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
     const term = searchTerm.toLowerCase();
     return counties.filter((county) => {
       // Check county title
-      if (county.title.toLowerCase().includes(term)) return true;
+      if (county.title?.toLowerCase().includes(term)) return true;
 
       // Check region name
       if (county.regionName?.toLowerCase().includes(term)) return true;
@@ -49,21 +48,7 @@ const CountiesTable = ({ counties, isLoading, fetchCounties }) => {
 
   return (
     <div>
-      <div className="relative overflow-x-auto shadow-md mt-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="mb-2 relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="w-5 h-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by county, coordinator, or region"
-              className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
+      <div className="relative overflow-x-auto shadow-md">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>

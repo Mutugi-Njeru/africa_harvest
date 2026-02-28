@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Check, X } from "lucide-react";
 
 const UpdateUser = ({ isOpen, onClose, userData, onUserUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -173,20 +174,33 @@ const UpdateUser = ({ isOpen, onClose, userData, onUserUpdated }) => {
           </div>
 
           {/* Buttons */}
-          <div className="flex">
-            <button
+          <div className="flex justify-end gap-3">
+             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600 text-white"
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
             >
+              <X size={20} />
               Cancel
             </button>
+
             <button
               type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-500 text-white hover:bg-green-600"
               disabled={isLoading}
+              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              }`}
             >
-              {isLoading ? "Updating..." : "Update"}{" "}
+              {isLoading ? (
+                "Updating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Update
+                </>
+              )}
             </button>
           </div>
         </form>

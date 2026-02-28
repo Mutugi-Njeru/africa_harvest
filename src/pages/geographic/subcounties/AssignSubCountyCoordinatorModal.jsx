@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
+import { Check, X } from "lucide-react";
 
 const AssignSubCountyCoordinatorModal = ({
   handleCloseModal,
@@ -192,22 +193,26 @@ const AssignSubCountyCoordinatorModal = ({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end gap-3">
           <button
-            onClick={() => {
+              type="button"
+               onClick={() => {
               handleCloseModal();
             }}
-            className="w-1/2 bg-red-400 text-white p-3 hover:bg-red-600"
-          >
-            Cancel
-          </button>
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
+            >
+              <X size={20} />
+              Cancel
+            </button>
+
           <button
             onClick={(e) => {
               handleAddCoordinator(e);
             }}
-            className="w-1/2 bg-green-500 text-white p-3 hover:bg-green-600"
+            className="flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] bg-saveButton hover:bg-yellowOrange"
             disabled={isLoading}
           >
+             <Check size={20} />
             {isLoading.submitting ? "Assigning..." : "Assign"}
           </button>
         </div>

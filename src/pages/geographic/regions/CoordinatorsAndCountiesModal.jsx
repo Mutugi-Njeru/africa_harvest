@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
-import { Check, Trash, Trash2, X } from "lucide-react";
+import { Check, Minus, Plus, Trash, Trash2, X } from "lucide-react";
 
 const CoordinatorsAndCountiesModal = ({
   handleCloseModal,
@@ -283,7 +283,7 @@ const CoordinatorsAndCountiesModal = ({
                 className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingCounties}
               >
-                <Check size={20} />
+                <Plus size={20} />
                 {isAddingCounties ? "Adding..." : "Add"}
               </button>
             </div>
@@ -308,7 +308,7 @@ const CoordinatorsAndCountiesModal = ({
                 className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingCoordinator}
               >
-                <Check size={20} />
+                <Plus size={20} />
                 {isAddingCoordinator ? "Adding..." : "Add"}
               </button>
             </div>
@@ -334,7 +334,7 @@ const CoordinatorsAndCountiesModal = ({
                 className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCounties}
               >
-                <Check size={20} />
+                <Minus size={20} />
                 {isRemovingCounties ? "Removing..." : "Remove"}
               </button>
             </div>
@@ -360,7 +360,7 @@ const CoordinatorsAndCountiesModal = ({
                 className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCoordinator}
               >
-                <Trash2 className="w-5 h-5" />
+                <Minus className="w-5 h-5" />
                 {isRemovingCoordinator ? "Removing..." : "Remove"}
               </button>
             </div>

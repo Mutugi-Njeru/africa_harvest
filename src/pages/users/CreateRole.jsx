@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
+import { Check, X } from "lucide-react";
 
 const CreateRole = ({ isOpen, onClose, onRoleCreated }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +62,7 @@ const CreateRole = ({ isOpen, onClose, onRoleCreated }) => {
               value={formData.role}
               onChange={handleChange}
               placeholder="Role Name"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               required
             />
           </div>
@@ -75,27 +76,39 @@ const CreateRole = ({ isOpen, onClose, onRoleCreated }) => {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
               rows="3"
               required
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex">
-            <button
+          <div className="flex justify-end gap-3 ">
+             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 px-4 py-2.5 bg-red-400 hover:bg-red-600"
+              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
             >
+              <X size={20} />
               Cancel
             </button>
-            <button
+              <button
               type="submit"
-              className="w-1/2 px-4 py-2.5 bg-green-600 text-white hover:bg-green-700"
               disabled={isLoading}
+              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-saveButton hover:bg-yellowOrange"
+              }`}
             >
-              {isLoading ? "Creating..." : "Create"}{" "}
+              {isLoading ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Check size={20} />
+                  Create
+                </>
+              )}
             </button>
           </div>
         </form>

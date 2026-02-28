@@ -4,6 +4,7 @@ import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Minus, Plus, X } from "lucide-react";
 
 const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
   const [permissions, setPermissions] = useState([]);
@@ -25,7 +26,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
     const fetchAllPermissions = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/permissions"
+          BASE_REST_API_URL + "security/v1/permissions",
         );
         setPermissions(response.data.message);
       } catch (error) {
@@ -35,7 +36,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
     const fetchAllRoles = async () => {
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + "security/v1/roles"
+          BASE_REST_API_URL + "security/v1/roles",
         );
         setRoles(response.data.message);
       } catch (error) {
@@ -53,7 +54,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
   const fetchUserPermissions = async () => {
     try {
       const response = await axios.get(
-        BASE_REST_API_URL + `security/v1/users/${user.userId}/permissions`
+        BASE_REST_API_URL + `security/v1/users/${user.userId}/permissions`,
       );
       setUserPermissions(response.data.message);
     } catch (error) {
@@ -64,7 +65,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
   const fetchUserRoles = async () => {
     try {
       const response = await axios.get(
-        BASE_REST_API_URL + `security/v1/users/${user.userId}/roles`
+        BASE_REST_API_URL + `security/v1/users/${user.userId}/roles`,
       );
       setUserRoles(response.data.message);
     } catch (error) {
@@ -77,11 +78,11 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
     setIsAddingPermission(true);
     try {
       const permissionIds = selectedPermissions.map((perm) =>
-        Number(perm.value)
+        Number(perm.value),
       );
       const response = await axios.post(
         BASE_REST_API_URL + `security/v1/users/${user.userId}/permissions`,
-        { permissionIds }
+        { permissionIds },
       );
       setSelectedPermissions([]);
       fetchUserPermissions();
@@ -119,7 +120,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
       const roleIds = selectedRoles.map((role) => role.value);
       const response = await axios.post(
         BASE_REST_API_URL + `security/v1/users/${user.userId}/roles`,
-        { roleIds }
+        { roleIds },
       );
       setSelectedRoles([]);
       fetchUserRoles();
@@ -159,12 +160,12 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
       console.log(
         BASE_REST_API_URL +
           `/security/v1/users/${user.userId}/permissions/deactivate`,
-        { permissionIds }
+        { permissionIds },
       );
       const response = await axios.put(
         BASE_REST_API_URL +
           `/security/v1/users/${user.userId}/permissions/deactivate`,
-        { permissionIds }
+        { permissionIds },
       );
       setSelectedUserPermissions([]);
       fetchUserPermissions();
@@ -203,7 +204,7 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
       const roleIds = selectedUserRoles.map((perm) => perm.value);
       const response = await axios.delete(
         BASE_REST_API_URL + `security/v1/users/${user.userId}/roles`,
-        { data: { roleIds } }
+        { data: { roleIds } },
       );
       toast.success(response.data.message.details[0]);
       setSelectedUserRoles([]);
@@ -291,9 +292,10 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
               />
               <button
                 onClick={handleAddPermissions}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingPermission}
               >
+                <Plus size={20} />
                 {isAddingPermission ? "Adding..." : "Add"}
               </button>
             </div>
@@ -315,9 +317,10 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
               />
               <button
                 onClick={handleAddRoles}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAddingRole}
               >
+                <Plus size={20} />
                 {isAddingRole ? "Adding..." : "Add"}
               </button>
             </div>
@@ -340,9 +343,10 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
               />
               <button
                 onClick={handleRemovePermissions}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingPermission}
               >
+                <Minus size={20} />
                 {isRemovingPermission ? "Removing..." : "Remove"}{" "}
               </button>
             </div>
@@ -365,9 +369,10 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
               />
               <button
                 onClick={handleRemoveRole}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingRole}
               >
+                <Minus size={20} />
                 {isRemovingRole ? "Removing..." : "Remove"}{" "}
               </button>
             </div>
@@ -376,13 +381,15 @@ const PermissionsModal = ({ handleCloseModal, user, onCloseModal }) => {
 
         <div className="mt-6 flex justify-end gap-3">
           <button
+            type="button"
             onClick={() => {
               handleCloseModal();
               onCloseModal();
             }}
-            className="w-1/2 px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+            className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
           >
-            Close
+            <X size={20} />
+            Cancel
           </button>
         </div>
       </div>

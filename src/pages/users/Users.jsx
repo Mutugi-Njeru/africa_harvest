@@ -108,11 +108,10 @@ const Users = () => {
           )}
           {canDownload && (
             <button
-              className="flex items-center cursor-pointer border border-black pl-3 pr-3 p-2 text-black"
+              className="flex items-center cursor-pointer pl-3 pr-3 p-2 text-black hover:bg-gray-100"
               onClick={downloadUsers}
             >
-              <Download className="w-4 h-4" />
-              <span className="mr-2">Export CSV</span>
+              <Download className="w-6 h-6" />
             </button>
           )}
         </div>

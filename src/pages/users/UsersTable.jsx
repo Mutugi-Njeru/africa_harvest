@@ -7,6 +7,8 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  X,
+  Check,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import UpdateUser from "./UpdateUser";
@@ -34,11 +36,11 @@ const UsersTable = ({
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showActivateModal, setShowActivateModal] = useState(false);
-  
+
   // Pagination states for users
   const [currentUserPage, setCurrentUserPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  
+
   // Pagination states for roles
   const [currentRolePage, setCurrentRolePage] = useState(1);
   const [rolesPerPage] = useState(10);
@@ -53,7 +55,7 @@ const UsersTable = ({
     setIsRolesModalOpen(false);
     setSelectedUser(null);
   };
-  
+
   const handleRolesClick = (user) => {
     setSelectedUser(user);
     setIsRolesModalOpen(true);
@@ -90,39 +92,39 @@ const UsersTable = ({
 
   const handleUserPageChange = (pageNumber) => {
     setCurrentUserPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleRolePageChange = (pageNumber) => {
     setCurrentRolePage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePreviousUserPage = () => {
     if (currentUserPage > 1) {
       setCurrentUserPage(currentUserPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextUserPage = () => {
     if (currentUserPage < totalUserPages) {
       setCurrentUserPage(currentUserPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePreviousRolePage = () => {
     if (currentRolePage > 1) {
       setCurrentRolePage(currentRolePage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNextRolePage = () => {
     if (currentRolePage < totalRolePages) {
       setCurrentRolePage(currentRolePage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -130,7 +132,7 @@ const UsersTable = ({
   const getUserPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalUserPages <= maxPagesToShow) {
       for (let i = 1; i <= totalUserPages; i++) {
         pageNumbers.push(i);
@@ -140,25 +142,25 @@ const UsersTable = ({
         for (let i = 1; i <= 4; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalUserPages);
       } else if (currentUserPage >= totalUserPages - 2) {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = totalUserPages - 3; i <= totalUserPages; i++) {
           pageNumbers.push(i);
         }
       } else {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = currentUserPage - 1; i <= currentUserPage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalUserPages);
       }
     }
-    
+
     return pageNumbers;
   };
 
@@ -166,7 +168,7 @@ const UsersTable = ({
   const getRolePageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalRolePages <= maxPagesToShow) {
       for (let i = 1; i <= totalRolePages; i++) {
         pageNumbers.push(i);
@@ -176,32 +178,32 @@ const UsersTable = ({
         for (let i = 1; i <= 4; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalRolePages);
       } else if (currentRolePage >= totalRolePages - 2) {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = totalRolePages - 3; i <= totalRolePages; i++) {
           pageNumbers.push(i);
         }
       } else {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = currentRolePage - 1; i <= currentRolePage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalRolePages);
       }
     }
-    
+
     return pageNumbers;
   };
 
   const deactivateUser = async (userId) => {
     try {
       const response = await axios.put(
-        BASE_REST_API_URL + `/users/v1/${userId}/deactivate`
+        BASE_REST_API_URL + `/users/v1/${userId}/deactivate`,
       );
       toast.success(response.data.message);
       fetchUsers();
@@ -210,11 +212,11 @@ const UsersTable = ({
       toast.error("Cannot deactivate user");
     }
   };
-  
+
   const deleteUser = async (userId) => {
     try {
       const response = await axios.delete(
-        BASE_REST_API_URL + `/users/v1/${userId}/delete`
+        BASE_REST_API_URL + `/users/v1/${userId}/delete`,
       );
       toast.success(response.data.message);
       fetchUsers();
@@ -223,11 +225,11 @@ const UsersTable = ({
       toast.error("Cannot delete user");
     }
   };
-  
+
   const activateUser = async (userId) => {
     try {
       const response = await axios.put(
-        BASE_REST_API_URL + `/users/v1/${userId}/activate`
+        BASE_REST_API_URL + `/users/v1/${userId}/activate`,
       );
       toast.success(response.data.message);
       fetchUsers();
@@ -236,7 +238,7 @@ const UsersTable = ({
       toast.error("Cannot activate user");
     }
   };
-  
+
   const handleStatusToggle = (user) => {
     setSelectedUser(user);
     if (user.isActive) {
@@ -245,7 +247,7 @@ const UsersTable = ({
       setShowActivateModal(true);
     }
   };
-  
+
   const handleConfirmDeactivation = () => {
     if (selectedUser) {
       deactivateUser(selectedUser.userId);
@@ -253,7 +255,7 @@ const UsersTable = ({
       setSelectedUser(null);
     }
   };
-  
+
   const handleConfirmActivation = () => {
     if (selectedUser) {
       activateUser(selectedUser.userId);
@@ -261,7 +263,7 @@ const UsersTable = ({
       setSelectedUser(null);
     }
   };
-  
+
   const handleConfirmDeletion = () => {
     if (selectedUser) {
       deleteUser(selectedUser.userId);
@@ -300,7 +302,7 @@ const UsersTable = ({
               placeholder="Search by name, phone, email or roles"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-96 px-4 py-2 pl-10 focus:outline-none border-0 border-b-2 border-gray-300 focus:border-green-500 bg-transparent"
+              className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent disabled:cursor-not-allowed"
               disabled={!showUsers}
             />
           </div>
@@ -377,7 +379,9 @@ const UsersTable = ({
                             <button
                               onClick={() => handleStatusToggle(user)}
                               className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                                user.isActive ? "bg-green-500" : "bg-yellowOrange"
+                                user.isActive
+                                  ? "bg-green-500"
+                                  : "bg-yellowOrange"
                               }`}
                             >
                               <div
@@ -430,7 +434,10 @@ const UsersTable = ({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="12" className="text-center py-8 text-gray-500">
+                      <td
+                        colSpan="12"
+                        className="text-center py-8 text-gray-500"
+                      >
                         No users found
                       </td>
                     </tr>
@@ -480,7 +487,10 @@ const UsersTable = ({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-500">
+                      <td
+                        colSpan="6"
+                        className="text-center py-8 text-gray-500"
+                      >
                         No roles found
                       </td>
                     </tr>
@@ -500,8 +510,8 @@ const UsersTable = ({
                 disabled={currentUserPage === 1}
                 className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                   currentUserPage === 1
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Previous
@@ -511,8 +521,8 @@ const UsersTable = ({
                 disabled={currentUserPage === totalUserPages}
                 className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                   currentUserPage === totalUserPages
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Next
@@ -521,51 +531,63 @@ const UsersTable = ({
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{filteredUsers.length > 0 ? indexOfFirstUser + 1 : 0}</span> to{' '}
-                  <span className="font-medium">{Math.min(indexOfLastUser, filteredUsers.length)}</span> of{' '}
-                  <span className="font-medium">{filteredUsers.length}</span> entries
+                  Showing{" "}
+                  <span className="font-medium">
+                    {filteredUsers.length > 0 ? indexOfFirstUser + 1 : 0}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-medium">
+                    {Math.min(indexOfLastUser, filteredUsers.length)}
+                  </span>{" "}
+                  of <span className="font-medium">{filteredUsers.length}</span>{" "}
+                  entries
                 </p>
               </div>
               <div>
-                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
                   <button
                     onClick={handlePreviousUserPage}
                     disabled={currentUserPage === 1}
                     className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                       currentUserPage === 1
-                        ? 'cursor-not-allowed bg-gray-50'
-                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     }`}
                   >
                     <span className="sr-only">Previous</span>
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
-                  
+
                   {getUserPageNumbers().map((pageNumber, index) => (
                     <button
                       key={index}
-                      onClick={() => pageNumber !== '...' && handleUserPageChange(pageNumber)}
-                      disabled={pageNumber === '...'}
+                      onClick={() =>
+                        pageNumber !== "..." && handleUserPageChange(pageNumber)
+                      }
+                      disabled={pageNumber === "..."}
                       aria-current="page"
                       className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                         pageNumber === currentUserPage
-                          ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
-                          : pageNumber === '...'
-                          ? 'text-gray-700 cursor-default'
-                          : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                          : pageNumber === "..."
+                          ? "text-gray-700 cursor-default"
+                          : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       }`}
                     >
                       {pageNumber}
                     </button>
                   ))}
-                  
+
                   <button
                     onClick={handleNextUserPage}
                     disabled={currentUserPage === totalUserPages}
                     className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                       currentUserPage === totalUserPages
-                        ? 'cursor-not-allowed bg-gray-50'
-                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     }`}
                   >
                     <span className="sr-only">Next</span>
@@ -586,8 +608,8 @@ const UsersTable = ({
                 disabled={currentRolePage === 1}
                 className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                   currentRolePage === 1
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Previous
@@ -597,8 +619,8 @@ const UsersTable = ({
                 disabled={currentRolePage === totalRolePages}
                 className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
                   currentRolePage === totalRolePages
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 Next
@@ -607,51 +629,63 @@ const UsersTable = ({
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{allRoles.length > 0 ? indexOfFirstRole + 1 : 0}</span> to{' '}
-                  <span className="font-medium">{Math.min(indexOfLastRole, allRoles.length)}</span> of{' '}
-                  <span className="font-medium">{allRoles.length}</span> entries
+                  Showing{" "}
+                  <span className="font-medium">
+                    {allRoles.length > 0 ? indexOfFirstRole + 1 : 0}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-medium">
+                    {Math.min(indexOfLastRole, allRoles.length)}
+                  </span>{" "}
+                  of <span className="font-medium">{allRoles.length}</span>{" "}
+                  entries
                 </p>
               </div>
               <div>
-                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
                   <button
                     onClick={handlePreviousRolePage}
                     disabled={currentRolePage === 1}
                     className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                       currentRolePage === 1
-                        ? 'cursor-not-allowed bg-gray-50'
-                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     }`}
                   >
                     <span className="sr-only">Previous</span>
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
-                  
+
                   {getRolePageNumbers().map((pageNumber, index) => (
                     <button
                       key={index}
-                      onClick={() => pageNumber !== '...' && handleRolePageChange(pageNumber)}
-                      disabled={pageNumber === '...'}
+                      onClick={() =>
+                        pageNumber !== "..." && handleRolePageChange(pageNumber)
+                      }
+                      disabled={pageNumber === "..."}
                       aria-current="page"
                       className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                         pageNumber === currentRolePage
-                          ? 'z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600'
-                          : pageNumber === '...'
-                          ? 'text-gray-700 cursor-default'
-                          : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                          ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                          : pageNumber === "..."
+                          ? "text-gray-700 cursor-default"
+                          : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       }`}
                     >
                       {pageNumber}
                     </button>
                   ))}
-                  
+
                   <button
                     onClick={handleNextRolePage}
                     disabled={currentRolePage === totalRolePages}
                     className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
                       currentRolePage === totalRolePages
-                        ? 'cursor-not-allowed bg-gray-50'
-                        : 'hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                        ? "cursor-not-allowed bg-gray-50"
+                        : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     }`}
                   >
                     <span className="sr-only">Next</span>
@@ -663,25 +697,30 @@ const UsersTable = ({
           </div>
         )}
       </div>
-      
+
       {/* Modals */}
       {showDeactivateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Deactivation</h2>
             <p>Are you sure you want to deactivate this user?</p>
-            <div className="mt-6 flex">
+
+            <div className="mt-6 flex justify-end gap-3">
               <button
+                type="button"
                 onClick={() => setShowDeactivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
               >
+                <X size={20} />
                 Cancel
               </button>
+
               <button
                 onClick={handleConfirmDeactivation}
-                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md text-white min-w-[100px] bg-saveButton hover:bg-yellowOrange"
               >
-                Yes, Deactivate
+                <Check size={20} />
+                Deactivate
               </button>
             </div>
           </div>
@@ -692,18 +731,20 @@ const UsersTable = ({
           <div className="bg-white p-6 shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Activation</h2>
             <p>Are you sure you want to activate this user?</p>
-            <div className="mt-6 flex">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowActivateModal(false)}
-                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
               >
+                 <X size={20} />
                 Cancel
               </button>
               <button
                 onClick={handleConfirmActivation}
-                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+                className="flex items-center justify-center gap-2 px-5 py-2 rounded-md text-white min-w-[100px] bg-saveButton hover:bg-yellowOrange"
               >
-                Yes, Activate
+                 <Check size={20} />
+                Activate
               </button>
             </div>
           </div>
@@ -714,18 +755,24 @@ const UsersTable = ({
           <div className="bg-white p-6 shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
             <p>Are you sure you want to delete this user?</p>
-            <div className="mt-6 flex">
+
+            <div className="mt-6 flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="w-1/2 px-4 py-2 bg-red-400 hover:bg-red-600 text-white"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
               >
+                <X size={20} />
                 Cancel
               </button>
+
               <button
+                type="button"
                 onClick={handleConfirmDeletion}
-                className="w-1/2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+                className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-red-500 rounded-md bg-red-100 text-red-500 hover:bg-gray-50 min-w-[100px]"
               >
-                Yes, Delete
+                <Trash2 size={20} />
+                Delete
               </button>
             </div>
           </div>
