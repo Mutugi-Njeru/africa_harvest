@@ -258,7 +258,7 @@ const CoordinatorsAndCountiesModal = ({
       <div className="bg-white p-6 w-[800px] ">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
-            Manage Counties and coordinators for {region.region}
+            Manage Counties and agents for {region.region}
           </h3>
         </div>
 

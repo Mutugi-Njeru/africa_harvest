@@ -25,6 +25,10 @@ import { useEffect } from "react";
 import Training from "./pages/training/Training";
 import Accounts from "./pages/Accounts/Accounts";
 import Trainers from "./pages/trainers/Trainers";
+import RegionalEA from "./pages/agents/RegionalEA";
+import CountyEA from "./pages/agents/CountyEA";
+import SubCountyEA from "./pages/agents/SubCountyEA";
+import WardEA from "./pages/agents/WardEA";
 
 function App() {
   useEffect(() => {
@@ -78,6 +82,38 @@ function App() {
             element={
               <AuthenticatedRoute>
                 <Users />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/regionalagents"
+            element={
+              <AuthenticatedRoute>
+                <RegionalEA/>
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/countyagents"
+            element={
+              <AuthenticatedRoute>
+                <CountyEA/>
+              </AuthenticatedRoute>
+            }
+          />
+           <Route
+            path="/subcountyagents"
+            element={
+              <AuthenticatedRoute>
+                <SubCountyEA/>
+              </AuthenticatedRoute>
+            }
+          />
+           <Route
+            path="/wardagents"
+            element={
+              <AuthenticatedRoute>
+                <WardEA/>
               </AuthenticatedRoute>
             }
           />

@@ -101,7 +101,7 @@ const Subcounties = () => {
             className="flex items-center border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange cursor-pointer text-white"
           >
             <Plus className="w-4 h-4" />
-            <span className="ml-2 mr-2">Assign SubC Coordinator</span>
+            <span className="ml-2 mr-2">Assign SCEA</span>
           </button>
           <button className="flex items-center cursor-pointer pl-3 pr-3 p-2 text-black hover:bg-gray-100">
             <Download className="w-6 h-6" />

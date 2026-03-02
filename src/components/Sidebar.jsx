@@ -27,7 +27,7 @@ import { hasRolePermission } from "../utils/Utils";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
-  const [isLocationsDropdownOpen, setLocationsDropdownOpen] = useState(false);
+  const [isGeographicDropdownOpen, setGeographicDropdownOpen] = useState(false);
   const [isTrainingsDropdownOpen, setTrainingsDropdownOpen] = useState(false); // New state for Trainings dropdown
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
 
@@ -52,15 +52,15 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     setUsersDropdownOpen(!isUsersDropdownOpen);
     // Close other dropdowns
     if (!isUsersDropdownOpen) {
-      setLocationsDropdownOpen(false);
+      setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
     }
   };
 
-  const toggleLocationsDropdown = () => {
-    setLocationsDropdownOpen(!isLocationsDropdownOpen);
+  const toggleGeographicDropdown = () => {
+    setGeographicDropdownOpen(!isGeographicDropdownOpen);
     // Close other dropdowns
-    if (!isLocationsDropdownOpen) {
+    if (!isGeographicDropdownOpen) {
       setUsersDropdownOpen(false);
       setTrainingsDropdownOpen(false);
     }
@@ -71,7 +71,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     // Close other dropdowns
     if (!isTrainingsDropdownOpen) {
       setUsersDropdownOpen(false);
-      setLocationsDropdownOpen(false);
+      setGeographicDropdownOpen(false);
     }
   };
 
@@ -79,14 +79,14 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     if (item.hasDropdown) {
       if (item.text === "User management") {
         toggleUsersDropdown();
-      } else if (item.text === "Locations") {
-        toggleLocationsDropdown();
+      } else if (item.text === "Geographic") {
+        toggleGeographicDropdown();
       } else if (item.text === "Trainings") {
         toggleTrainingsDropdown();
       }
     } else {
       setUsersDropdownOpen(false);
-      setLocationsDropdownOpen(false);
+      setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
       if (item.path) {
         navigate(item.path);
@@ -97,11 +97,11 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const handleDropdownItemClick = (path) => {
     navigate(path);
     setUsersDropdownOpen(false);
-    setLocationsDropdownOpen(false);
+    setGeographicDropdownOpen(false);
     setTrainingsDropdownOpen(false);
   };
 
-  // Main menu items (excluding User management and Profile)
+  // Main menu items (excluding User management, Geographic, and Profile)
   const mainMenuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
@@ -110,43 +110,48 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       path: "/accounts",
       showOnlyForSuperAdmin: true, // only for super admins
     },
-    { icon: Globe, text: "Locations", hasDropdown: true },
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Value Chains", path: "/activity" },
     { icon: GraduationCap, text: "Trainings", hasDropdown: true }, // Trainings dropdown with GraduationCap icon
     // { icon: ListChecks, text: "Summaries" },
   ];
 
-  // User management and Profile section (to be placed below)
+  // User management and Geographic section (to be placed after main menu)
   const userSectionItems = [
     { icon: Users, text: "User management", hasDropdown: true },
+    { icon: Globe, text: "Geographic", hasDropdown: true },
     { icon: Settings, text: "Profile", path: "/profile" },
   ];
 
   const usersDropdownItems = [
     {
-      text: "Users",
+      text: "User Profiles",
       path: "/users",
     },
-    {
-      text: "REA",
-      path: "/counties",
-      showOnlyForRegionalCoordinator: true,
-    },
-    {
-      text: "CEA",
-      path: "/subcounties",
-      showOnlyForCountyCoordinator: true,
-    },
-    { text: "SCEA", path: "/wards" },
-    { text: "TOT/VBS", path: "/ward" },
+    { text: "Regional EA", path: "/regionalagents" },
+    { text: "County EA", path: "/countyagents" },
+    { text: "SubCounty EA", path: "/subcountyagents" },
+    { text: "Ward EA", path: "/wardagents" },
+    { text: "Members", path: "/ward" },
   ];
 
-  // Locations dropdown items
-  const locationsDropdownItems = [
+  // Geographic dropdown items - moved REA, CEA, and SCEA here with original paths
+  const geographicDropdownItems = [
     {
       text: "Regions",
       path: "/regions",
+    },
+    {
+      text: "REA",
+      path: "/counties", // Original path unchanged
+    },
+    {
+      text: "CEA",
+      path: "/subcounties", // Original path unchanged
+    },
+    {
+      text: "SCEA",
+      path: "/wards", // Original path unchanged
     },
   ];
 
@@ -210,8 +215,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     );
   });
 
-  // Filter locations dropdown items
-  const filteredLocationsDropdownItems = locationsDropdownItems.filter((item) => {
+  // Filter geographic dropdown items
+  const filteredGeographicDropdownItems = geographicDropdownItems.filter((item) => {
+    // Add any role-based filtering for geographic here if needed
     return true;
   });
 
@@ -266,7 +272,6 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "Locations" && isLocationsDropdownOpen) ||
                   (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen)
                     ? "bg-green-800 text-white"
                     : ""
@@ -280,8 +285,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {(item.text === "Locations" && isLocationsDropdownOpen) ||
-                    (item.text === "Trainings" && isTrainingsDropdownOpen) ? (
+                    {(item.text === "Trainings" && isTrainingsDropdownOpen) ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -296,35 +300,6 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 )}
               </div>
               
-              {/* Locations Dropdown Items */}
-              {item.hasDropdown && item.text === "Locations" && isExpanded && (
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isLocationsDropdownOpen ? "max-h-[500px]" : "max-h-0"
-                  }`}
-                >
-                  <div className="ml-8">
-                    {filteredLocationsDropdownItems.map((dropdownItem, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() =>
-                          handleDropdownItemClick(dropdownItem.path)
-                        }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
-                          location.pathname === dropdownItem.path
-                            ? "bg-green-700 text-white"
-                            : ""
-                        }`}
-                      >
-                        <span className="ml-3 font-medium">
-                          {dropdownItem.text}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Trainings Dropdown Items */}
               {item.hasDropdown && item.text === "Trainings" && isExpanded && (
                 <div
@@ -362,20 +337,21 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               <div className="my-6 border-t border-gray-300"></div>
               <div className="px-3 mb-2">
                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Settings
+                  Configurations
                 </span>
               </div>
             </>
           )}
           
-          {/* User Section Items */}
+          {/* User Section Items (including User management and Geographic) */}
           {filteredUserSectionItems.map((item, index) => (
             <div key={`user-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "User management" && isUsersDropdownOpen)
+                  (item.hasDropdown && item.text === "User management" && isUsersDropdownOpen) ||
+                  (item.hasDropdown && item.text === "geographic" && isGeographicDropdownOpen)
                     ? "bg-green-700 text-white"
                     : ""
                 }`}
@@ -388,7 +364,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {item.text === "User management" && isUsersDropdownOpen ? (
+                    {(item.text === "User management" && isUsersDropdownOpen) ||
+                     (item.text === "Geographic" && isGeographicDropdownOpen) ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -412,6 +389,35 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 >
                   <div className="ml-8">
                     {filteredUsersDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-medium">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Geographic Dropdown Items */}
+              {item.hasDropdown && item.text === "Geographic" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isGeographicDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredGeographicDropdownItems.map((dropdownItem, idx) => (
                       <div
                         key={idx}
                         onClick={() =>
