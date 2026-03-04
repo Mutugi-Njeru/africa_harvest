@@ -30,44 +30,50 @@ const Subcounties = () => {
     fetchsubCounties();
   }, [accountId]);
 
-  //fetch subcounties for county coordinator
-  const fetchsubCounties = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-      );
-      let subCounties;
+ //fetch subcounties for county coordinator
+const fetchsubCounties = async () => {
+  try {
+    setIsLoading(true);
+    const response = await axios.get(
+      BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+    );
+    
+    let subCounties;
+    
+    // Check if response.data.message has regions array
+    if (response.data.message && response.data.message.regions) {
       if (isAdmin) {
-        subCounties = response.data.message
-          .flatMap((region) => region.counties)
-          .flatMap((county) =>
-            county.subCounties.map((subCounty) => ({
+        subCounties = response.data.message.regions
+          .flatMap((region) => region.counties || [])
+          .flatMap((county) => 
+            (county.subCounties || []).map((subCounty) => ({
               ...subCounty,
               countyName: county.title,
             }))
           );
       } else {
-        const counties = response.data.message
-          .flatMap((region) => region.counties)
+        const counties = response.data.message.regions
+          .flatMap((region) => region.counties || [])
           .filter((county) =>
-            county.coordinators.some((coord) => coord.userId === userId)
-          );
+            county.coordinators && county.coordinators.some((coord) => coord.userId === userId)
+          );  
         subCounties = counties.flatMap((county) =>
-          county.subCounties.map((subCounty) => ({
+          (county.subcounties || []).map((subCounty) => ({
             ...subCounty,
             countyName: county.title,
           }))
         );
       }
-
-      setSubCounties(subCounties);
-    } catch (error) {
-      console.error("Failed to fetch subcounties:", error);
-    } finally {
-      setIsLoading(false);
+    } else {
+      subCounties = [];
     }
-  };
+    setSubCounties(subCounties);
+  } catch (error) {
+    console.error("Failed to fetch subcounties:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="pr-4 pl-3 relative">

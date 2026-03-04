@@ -45,48 +45,59 @@ const AssignSubCountyCoordinatorModal = ({
   };
 
   //fetch all subcounties by county coordinator or admin
-  const fetchCountiesAndSubcounties = async () => {
-    try {
-      const hierarchyResponse = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-      );
-      let counties;
+ const fetchCountiesAndSubcounties = async () => {
+  try {
+    const hierarchyResponse = await axios.get(
+      BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+    );
+    
+    // Check if message has regions property and it's an array
+    const message = hierarchyResponse.data.message;
+    let counties;
+    
+    if (message && Array.isArray(message.regions)) {
       if (isAdmin) {
-        counties = hierarchyResponse.data.message
-          .flatMap((region) => region.counties)
+        counties = message.regions
+          .flatMap((region) => region.counties || [])
           .map((county) => county.countyId);
       } else {
-        counties = hierarchyResponse.data.message
-          .flatMap((region) => region.counties)
+        counties = message.regions
+          .flatMap((region) => region.counties || [])
           .filter((county) =>
-            county.coordinators.some((coord) => coord.userId === userId)
+            county.coordinators && county.coordinators.some((coord) => coord.userId === userId)
           )
           .map((county) => county.countyId);
       }
-      const subcountiesData = await Promise.all(
-        counties.map(async (countyId) => {
-          try {
-            const response = await axios.get(
-              BASE_REST_API_URL + `/geographic/v1/counties/simple/${countyId}`
-            );
-            return response.data.message;
-          } catch (error) {
-            console.error(
-              `Failed to fetch data for county ${countyId}:`,
-              error
-            );
-            return null;
-          }
-        })
-      );
-
-      const validData = subcountiesData.filter((data) => data !== null);
-      const allSubcounties = validData.flatMap((county) => county.subcounties);
-      setSubcounties(allSubcounties);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
+    } else {
+      console.error("Invalid hierarchy response format:", message);
+      return;
     }
-  };
+    
+    // Continue with fetching subcounties...
+    const subcountiesData = await Promise.all(
+      counties.map(async (countyId) => {
+        try {
+          const response = await axios.get(
+            BASE_REST_API_URL + `/geographic/v1/counties/simple/${countyId}`
+          );
+          return response.data.message;
+        } catch (error) {
+          console.error(
+            `Failed to fetch data for county ${countyId}:`,
+            error
+          );
+          return null;
+        }
+      })
+    );
+
+    const validData = subcountiesData.filter((data) => data !== null);
+    const allSubcounties = validData.flatMap((county) => county.subcounties || []);
+    setSubcounties(allSubcounties);
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+  }
+};
 
   //assign subcounty coordinator
   const handleAddCoordinator = async (e) => {

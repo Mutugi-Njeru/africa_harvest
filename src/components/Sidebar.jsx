@@ -77,9 +77,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const handleMenuItemClick = (item) => {
     if (item.hasDropdown) {
-      if (item.text === "User management") {
+      if (item.text === "User Management") {
         toggleUsersDropdown();
-      } else if (item.text === "Geographic") {
+      } else if (item.text === "Geo-Structure") {
         toggleGeographicDropdown();
       } else if (item.text === "Trainings") {
         toggleTrainingsDropdown();
@@ -118,8 +118,12 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   // User management and Geographic section (to be placed after main menu)
   const userSectionItems = [
-    { icon: Users, text: "User management", hasDropdown: true },
-    { icon: Globe, text: "Geographic", hasDropdown: true },
+    { icon: Users, text: "User Management", hasDropdown: true },
+    { icon: Globe, text: "Geo-Structure", hasDropdown: true },
+  ];
+
+  // Settings section items (moved Profile here)
+  const settingsSectionItems = [
     { icon: Settings, text: "Profile", path: "/profile" },
   ];
 
@@ -132,8 +136,16 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { text: "County EA", path: "/countyagents" },
     { text: "SubCounty EA", path: "/subcountyagents" },
     { text: "Ward EA", path: "/wardagents" },
-    { text: "Members", path: "/ward" },
+    // { text: "Members", path: "/ward" },
   ];
+  const rolePermissions = {
+  SUPER_ADMIN: ['*'], // All items
+  ADMIN: ['*'], // All items
+  REGIONAL_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+  COUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+  SUBCOUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+  WARD_CORDINATOR: ['/ward']
+};
 
   // Geographic dropdown items - moved REA, CEA, and SCEA here with original paths
   const geographicDropdownItems = [
@@ -156,10 +168,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   ];
 
   const trainingsDropdownItems = [
-    // {
-    //   text: "Engagements",
-    //   path: "/engagements",
-    // },
+    {
+      text: "Engagements",
+      path: "/engagements",
+    },
      {
       text: "Training",
       path: "/training",
@@ -178,42 +190,33 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
   );
 
+  const filteredSettingsSectionItems = settingsSectionItems.filter(
+    (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
+  );
+
   // Filter users dropdown items
   const filteredUsersDropdownItems = usersDropdownItems.filter((item) => {
-    if (isSuperAdmin) return true;
-    if (isAdmin) return true;
+  // Get the allowed paths for the user's role
+  let allowedPaths = [];
+  
+  if (isSuperAdmin || isAdmin) {
+    allowedPaths = ['*']; // '*' means all items
+  } else if (isRegionalCoordinator) {
+    allowedPaths = rolePermissions.REGIONAL_CORDINATOR;
+  } else if (isCountyCoordinator) {
+    allowedPaths = rolePermissions.COUNTY_CORDINATOR;
+  } else if (isSubCountyCoordinator) {
+    allowedPaths = rolePermissions.SUBCOUNTY_CORDINATOR;
+  } else if (isWardCoordinator) {
+    allowedPaths = rolePermissions.WARD_CORDINATOR;
+  }
 
-    if (isRegionalCoordinator) {
-      return (
-        item.showOnlyForRegionalCoordinator ||
-        (!item.showOnlyForAdmin &&
-          !item.showOnlyForCountyCoordinator &&
-          item.path !== "/subcounties" &&
-          item.path !== "/wards" &&
-          item.path !== "/ward")
-      );
-    }
-    if (isCountyCoordinator) {
-      return (
-        item.showOnlyForCountyCoordinator ||
-        (!item.showOnlyForAdmin &&
-          !item.showOnlyForRegionalCoordinator &&
-          item.path !== "/wards" &&
-          item.path !== "/ward")
-      );
-    }
-    if (isSubCountyCoordinator) {
-      return item.path === "/wards";
-    }
-    if (isWardCoordinator) {
-      return item.path === "/ward";
-    }
-    return (
-      !item.showOnlyForAdmin &&
-      !item.showOnlyForRegionalCoordinator &&
-      !item.showOnlyForCountyCoordinator
-    );
-  });
+  // If allowedPaths includes '*', show all items
+  if (allowedPaths.includes('*')) return true;
+  
+  // Otherwise, check if the item's path is in allowedPaths
+  return allowedPaths.includes(item.path);
+});
 
   // Filter geographic dropdown items
   const filteredGeographicDropdownItems = geographicDropdownItems.filter((item) => {
@@ -331,7 +334,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             </div>
           ))}
 
-          {/* Divider with spacing */}
+          {/* Divider with spacing - Configurations Section */}
           {isExpanded && (
             <>
               <div className="my-6 border-t border-gray-300"></div>
@@ -343,15 +346,15 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             </>
           )}
           
-          {/* User Section Items (including User management and Geographic) */}
+          {/* User Section Items (User Management and Geo-Structure) */}
           {filteredUserSectionItems.map((item, index) => (
             <div key={`user-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "User management" && isUsersDropdownOpen) ||
-                  (item.hasDropdown && item.text === "geographic" && isGeographicDropdownOpen)
+                  (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen) ||
+                  (item.hasDropdown && item.text === "Geo-Structure" && isGeographicDropdownOpen)
                     ? "bg-green-700 text-white"
                     : ""
                 }`}
@@ -364,8 +367,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {(item.text === "User management" && isUsersDropdownOpen) ||
-                     (item.text === "Geographic" && isGeographicDropdownOpen) ? (
+                    {(item.text === "User Management" && isUsersDropdownOpen) ||
+                     (item.text === "Geo-Structure" && isGeographicDropdownOpen) ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -381,7 +384,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               </div>
               
               {/* Users Dropdown Items */}
-              {item.hasDropdown && item.text === "User management" && isExpanded && (
+              {item.hasDropdown && item.text === "User Management" && isExpanded && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     isUsersDropdownOpen ? "max-h-[500px]" : "max-h-0"
@@ -410,7 +413,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               )}
               
               {/* Geographic Dropdown Items */}
-              {item.hasDropdown && item.text === "Geographic" && isExpanded && (
+              {item.hasDropdown && item.text === "Geo-Structure" && isExpanded && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     isGeographicDropdownOpen ? "max-h-[500px]" : "max-h-0"
@@ -437,6 +440,37 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                   </div>
                 </div>
               )}
+            </div>
+          ))}
+
+          {/* Divider with spacing - Settings Section */}
+          {isExpanded && filteredSettingsSectionItems.length > 0 && (
+            <>
+              <div className="my-6 border-t border-gray-300"></div>
+              <div className="px-3 mb-2">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Setting
+                </span>
+              </div>
+            </>
+          )}
+
+          {/* Settings Section Items (Profile) */}
+          {filteredSettingsSectionItems.map((item, index) => (
+            <div key={`settings-${index}`}>
+              <div
+                onClick={() => handleMenuItemClick(item)}
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                  location.pathname === item.path ? "bg-green-700 text-white" : ""
+                }`}
+              >
+                <div className="flex items-center">
+                  <item.icon size={24} className="min-w-6" />
+                  {isExpanded && (
+                    <span className="ml-3 font-medium">{item.text}</span>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

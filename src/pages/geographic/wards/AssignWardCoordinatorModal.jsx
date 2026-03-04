@@ -42,65 +42,66 @@ const AssignWardCoordinatorModal = ({ handleCloseModal, onCloseModal }) => {
   };
 
   // //fetch all wards by subcounty coordinator or admin
-  const fetchWardsBySubcountyCoordinator = async () => {
-    try {
-      const hierarchyResponse = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+ const fetchWardsBySubcountyCoordinator = async () => {
+  try {
+    const hierarchyResponse = await axios.get(
+      BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+    );
+
+    // Access the regions array from the message object
+    const result = hierarchyResponse.data.message.regions
+      .flatMap((region) => region.counties)
+      .flatMap((county) => {
+        // If user is admin, get all subcounties without filtering by userId
+        const matchingSubCounties = isAdmin
+          ? county.subcounties  // Changed from subCounties to subcounties (lowercase)
+          : county.subcounties.filter((subCounty) =>  // Changed from subCounties to subcounties
+              subCounty.coordinators?.some((coord) => coord.userId === userId)
+            );
+
+        if (matchingSubCounties?.length > 0) {
+          return {
+            countyId: county.countyId,
+            subCountyIds: matchingSubCounties.map((sc) => sc.subcountyId), // Changed from subCountyId to subcountyId
+          };
+        }
+        return [];
+      });
+
+    const countyIds = result.map((item) => item.countyId);
+    const subCountyIds = result.flatMap((item) => item.subCountyIds);
+
+    const wardsData = await Promise.all(
+      countyIds.map(async (countyId) => {
+        try {
+          const response = await axios.get(
+            BASE_REST_API_URL + `/geographic/v1/counties/simple/${countyId}`
+          );
+          return response.data.message;
+        } catch (error) {
+          console.error(
+            `Failed to fetch data for county ${countyId}:`,
+            error
+          );
+          return null;
+        }
+      })
+    );
+
+    const wards = wardsData
+      .filter((data) => data !== null)
+      .flatMap((county) =>
+        county.subcounties
+          .filter((sub) => subCountyIds.includes(sub.subcountyId))
+          .flatMap((sub) => sub.wards)
       );
 
-      const result = hierarchyResponse.data.message
-        .flatMap((region) => region.counties)
-        .flatMap((county) => {
-          // If user is admin, get all subcounties without filtering by userId
-          const matchingSubCounties = isAdmin
-            ? county.subCounties
-            : county.subCounties.filter((subCounty) =>
-                subCounty.coordinators.some((coord) => coord.userId === userId)
-              );
-
-          if (matchingSubCounties.length > 0) {
-            return {
-              countyId: county.countyId,
-              subCountyIds: matchingSubCounties.map((sc) => sc.subCountyId),
-            };
-          }
-          return [];
-        });
-
-      const countyIds = result.map((item) => item.countyId);
-      const subCountyIds = result.flatMap((item) => item.subCountyIds);
-
-      const wardsData = await Promise.all(
-        countyIds.map(async (countyId) => {
-          try {
-            const response = await axios.get(
-              BASE_REST_API_URL + `/geographic/v1/counties/simple/${countyId}`
-            );
-            return response.data.message;
-          } catch (error) {
-            console.error(
-              `Failed to fetch data for county ${countyId}:`,
-              error
-            );
-            return null;
-          }
-        })
-      );
-
-      const wards = wardsData
-        .filter((data) => data !== null)
-        .flatMap((county) =>
-          county.subcounties
-            .filter((sub) => subCountyIds.includes(sub.subcountyId))
-            .flatMap((sub) => sub.wards)
-        );
-
-      setWards(wards);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      return [];
-    }
-  };
+    setWards(wards);
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return [];
+  }
+};
   // //assign ward coordinator
   const handleAddCoordinator = async (e) => {
     e.preventDefault();

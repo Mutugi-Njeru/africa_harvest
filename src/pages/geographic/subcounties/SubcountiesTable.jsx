@@ -18,17 +18,12 @@ const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties, searchTerm
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
     return subCounties.filter((subcounty) => {
-      // Check subcounty title
       if (subcounty.title.toLowerCase().includes(lowerCaseSearchTerm)) {
         return true;
       }
-
-      // Check county name
       if (subcounty.countyName.toLowerCase().includes(lowerCaseSearchTerm)) {
         return true;
       }
-
-      // Check coordinators
       if (subcounty.coordinators && subcounty.coordinators.length > 0) {
         const hasMatchingCoordinator = subcounty.coordinators.some(
           (coordinator) => {
@@ -37,10 +32,8 @@ const SubcountiesTable = ({ isLoading, subCounties, fetchsubCounties, searchTerm
             return fullName.includes(lowerCaseSearchTerm);
           }
         );
-
         if (hasMatchingCoordinator) return true;
       }
-
       return false;
     });
   };

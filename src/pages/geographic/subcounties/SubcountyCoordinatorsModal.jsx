@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
+import { Minus, Plus, X } from "lucide-react";
 
 const SubcountyCoordinatorsModal = ({
   handleCloseModal,
@@ -19,7 +20,7 @@ const SubcountyCoordinatorsModal = ({
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
   const superAdmin = hasRolePermission(userRoles, "SUPER_ADMIN");
   const [selectedRemoveCoordinators, setSelectedRemoveCoordinators] = useState(
-    []
+    [],
   );
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const SubcountyCoordinatorsModal = ({
       }
       const response = await axios.get(url);
       const coordinators = response.data.message.filter(
-        (user) => user.roles.includes("SUBCOUNTY_CORDINATOR") // || user.isCountyCoordinator
+        (user) => user.roles.includes("SUBCOUNTY_CORDINATOR"), // || user.isCountyCoordinator
       );
       setSubCountyCoordinators(coordinators);
     } catch (error) {
@@ -51,8 +52,8 @@ const SubcountyCoordinatorsModal = ({
       const userIds = selectedCoordinator.map((user) => user.value);
       const response = await axios.post(
         BASE_REST_API_URL +
-          `geographic/v1/subcounties/${subcounty.subCountyId}/coordinators`,
-        { userIds }
+          `geographic/v1/subcounties/${subcounty.subcountyId}/coordinators`,
+        { userIds },
       );
       setSelectedCoordinator([]);
       if (response.data.message && response.data.message.details) {
@@ -88,10 +89,12 @@ const SubcountyCoordinatorsModal = ({
     setIsRemovingCoordinator(true);
     try {
       const userIds = selectedRemoveCoordinators.map((user) => user.value);
+      console.log(userIds);
+
       const response = await axios.delete(
         BASE_REST_API_URL +
-          `/geographic/v1/subcounties/${subcounty.subCountyId}/coordinators`,
-        { data: { userIds } }
+          `/geographic/v1/subcounties/${subcounty.subcountyId}/coordinators`,
+        { data: { userIds } },
       );
       setSelectedRemoveCoordinators([]);
       if (response.data.message && response.data.message.details) {
@@ -125,7 +128,7 @@ const SubcountyCoordinatorsModal = ({
     (coordinator) => ({
       value: coordinator.userId,
       label: `${coordinator.firstName} ${coordinator.lastName}`,
-    })
+    }),
   );
   const handleCoordinatorChange = (selectedOption) => {
     setSelectedCoordinator(selectedOption);
@@ -148,7 +151,7 @@ const SubcountyCoordinatorsModal = ({
       <div className="bg-white p-6 w-[800px] ">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
-            Manage subcounty coordinators
+            Manage Subcounty Extension Agents
           </h3>
         </div>
 
@@ -170,9 +173,10 @@ const SubcountyCoordinatorsModal = ({
               />
               <button
                 onClick={handleAddCoordinator}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAdding}
               >
+                <Plus size={20} />
                 {isAdding ? "Adding..." : "Add"}
               </button>
             </div>
@@ -195,9 +199,10 @@ const SubcountyCoordinatorsModal = ({
               />
               <button
                 onClick={handleRemoveCoordinator}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCoordinator}
               >
+                <Minus className="w-5 h-5" />
                 {isRemovingCoordinator ? "Removing..." : "Remove"}
               </button>
             </div>
@@ -210,8 +215,9 @@ const SubcountyCoordinatorsModal = ({
               handleCloseModal();
               onCloseModal();
             }}
-            className="w-1/2 px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
           >
+            <X size={20} />
             Close
           </button>
         </div>

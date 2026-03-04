@@ -26,47 +26,51 @@ const Counties = () => {
   }, [accountId]);
 
   //fetch assigned counties by regional coordinator or admin
-  const fetchCounties = async () => {
-    try {
-      setIsLoading(true);
-      let countiesWithRegions;
+//fetch assigned counties by regional coordinator or admin
+const fetchCounties = async () => {
+  try {
+    setIsLoading(true);
+    let countiesWithRegions;
 
-      if (isAdmin) {
-        const response = await axios.get(
-          BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-        );
-        countiesWithRegions = response.data.message.flatMap((region) =>
-          region.counties.map((county) => ({
-            ...county,
-            regionName: region.region,
-            updatedAt: region.updatedAt,
-            description: region.description,
-          }))
-        );
-      } else {
-        const response = await axios.get(
-          BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-        );
-        const regions = response.data.message.filter((region) =>
-          region.coordinators.some((coord) => coord.userId === userId)
-        );
-        countiesWithRegions = regions.flatMap((region) =>
-          region.counties.map((county) => ({
-            ...county,
-            regionName: region.region,
-            updatedAt: region.updatedAt,
-            description: region.description,
-          }))
-        );
-      }
-
-      setCounties(countiesWithRegions);
-    } catch (error) {
-      console.error("Failed to fetch regions:", error);
-    } finally {
-      setIsLoading(false);
+    if (isAdmin) {
+      const response = await axios.get(
+        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+      );
+      // Access the regions array from the message object
+      const regions = response.data.message.regions || [];
+      countiesWithRegions = regions.flatMap((region) =>
+        region.counties.map((county) => ({
+          ...county,
+          regionName: region.name, // Changed from region.region to region.name
+          updatedAt: region.updatedAt,
+          description: region.description,
+        }))
+      );
+    } else {
+      const response = await axios.get(
+        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+      );
+      const allRegions = response.data.message.regions || [];
+      const regions = allRegions.filter((region) =>
+        region.coordinators.some((coord) => coord.userId === userId)
+      );
+      countiesWithRegions = regions.flatMap((region) =>
+        region.counties.map((county) => ({
+          ...county,
+          regionName: region.name, // Changed from region.region to region.name
+          updatedAt: region.updatedAt,
+          description: region.description,
+        }))
+      );
     }
-  };
+
+    setCounties(countiesWithRegions);
+  } catch (error) {
+    console.error("Failed to fetch regions:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="pr-4 pl-3 relative">

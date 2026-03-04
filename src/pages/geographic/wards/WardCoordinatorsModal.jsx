@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import CustomFiltersStyles from "../../../styles/CustomFiltersStyles";
 import { BASE_REST_API_URL } from "../../../service/AuthService";
 import { hasRolePermission } from "../../../utils/Utils";
+import { Minus, Plus, X } from "lucide-react";
 
 const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
   const accountId = localStorage.getItem("accountId");
@@ -141,14 +142,14 @@ const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
       <div className="bg-white p-6 w-[800px] ">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">
-            Manage ward coordinators for {ward.title}
+            Manage TOT/VBS for {ward.title}
           </h3>
         </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Add Coordinator(s)
+              Add TOT/VBS(s)
             </label>
             <div className="flex gap-2">
               <Select
@@ -163,9 +164,10 @@ const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
               />
               <button
                 onClick={handleAddCoordinator}
-                className="bg-green-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-saveButton hover:bg-yellowOrange text-white items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px]"
                 disabled={isAdding}
               >
+                <Plus size={20} />
                 {isAdding ? "Adding..." : "Add"}
               </button>
             </div>
@@ -173,7 +175,7 @@ const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Remove Coordinator(s)
+              Remove TOT/VBS(s)
             </label>
             <div className="flex gap-2">
               <Select
@@ -186,11 +188,12 @@ const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
                 onChange={handleRemovingCoordinatorsChange}
                 styles={CustomFiltersStyles}
               />
-              <button
+             <button
                 onClick={handleRemoveCoordinator}
-                className="bg-red-600 text-white px-3 py-1 rounded-md"
+                className="flex bg-red-50 text-red-600 font-bold items-center justify-center gap-2 border border-red-300 rounded-md px-6 py-2 min-w-[120px] transition-all duration-200 hover:bg-red-100 hover:border-red-400 hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 disabled={isRemovingCoordinator}
               >
+                <Minus className="w-5 h-5" />
                 {isRemovingCoordinator ? "Removing..." : "Remove"}
               </button>
             </div>
@@ -203,8 +206,9 @@ const WardCoordinatorsModal = ({ handleCloseModal, onCloseModal, ward }) => {
               handleCloseModal();
               onCloseModal();
             }}
-            className="w-1/2 px-4 py-2 bg-green-600 text-white hover:bg-green-700"
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
           >
+            <X size={20} />
             Close
           </button>
         </div>

@@ -45,7 +45,6 @@ const Groups = () => {
       setWards(wards);
     } catch (error) {
       console.error("Error fetching wards:", error);
-      toast.error("Failed to fetch wards");
     }
   };
   //fetch groups by admin or coordinator
@@ -65,7 +64,6 @@ const Groups = () => {
       setGroups(response.data.message);
     } catch (error) {
       console.error("Error fetching groups:", error);
-      toast.error("Failed to fetch groups");
       throw error;
     } finally {
       setIsLoading(false);

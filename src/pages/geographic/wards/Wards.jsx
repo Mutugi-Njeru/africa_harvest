@@ -31,46 +31,57 @@ const Wards = () => {
   }, [accountId, userId]);
 
   //fetch wards for sub county coordinator
-  const fetchWards = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
-      );
-      if (isAdmin) {
-        const wards = response.data.message
-          .flatMap((region) => region.counties)
-          .flatMap((county) => county.subCounties)
-          .flatMap((subCounty) =>
-            subCounty.wards.map((ward) => ({
-              ...ward,
-              subCountyName: subCounty.title,
-              countyName: subCounty.county.title,
-            }))
-          );
-        setWards(wards);
-      } else {
-        const subCounties = response.data.message
-          .flatMap((region) => region.counties)
-          .flatMap((county) => county.subCounties)
-          .filter((subCounty) =>
-            subCounty.coordinators.some((coord) => coord.userId === userId)
-          );
-        const wards = subCounties.flatMap((subCounty) =>
+ const fetchWards = async () => {
+  try {
+    setIsLoading(true);
+    const response = await axios.get(
+      BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+    );
+    
+    // Access the regions array from the message object
+    const regions = response.data.message.regions;
+    
+    if (isAdmin) {
+      const wards = regions
+        .flatMap((region) => region.counties)
+        .flatMap((county) => county.subcounties) // Changed from subCounties to subcounties
+        .flatMap((subCounty) =>
           subCounty.wards.map((ward) => ({
             ...ward,
             subCountyName: subCounty.title,
-            countyName: subCounty.county.title,
+            countyName: county.title, // Changed: access county title directly
           }))
         );
-        setWards(wards);
-      }
-    } catch (error) {
-      console.error("Failed to fetch wards:", error);
-    } finally {
-      setIsLoading(false);
+      setWards(wards);
+    } else {
+      const subCounties = regions
+        .flatMap((region) => region.counties)
+        .flatMap((county) => county.subcounties) // Changed from subCounties to subcounties
+        .filter((subCounty) =>
+          subCounty.coordinators?.some((coord) => coord.userId === userId)
+        );
+      
+      const wards = subCounties.flatMap((subCounty) => {
+        // Find the county that contains this subcounty to get county name
+        const county = regions
+          .flatMap(region => region.counties)
+          .find(c => c.subcounties?.some(sc => sc.subcountyId === subCounty.subcountyId));
+        
+        return subCounty.wards.map((ward) => ({
+          ...ward,
+          subCountyName: subCounty.title,
+          countyName: county?.title || 'Unknown County',
+        }));
+      });
+      
+      setWards(wards);
     }
-  };
+  } catch (error) {
+    console.error("Failed to fetch wards:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     //done by subcounty coordinator

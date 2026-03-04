@@ -229,8 +229,8 @@ const ActivitiesTable = ({
               type="text"
               placeholder={
                 showActivities
-                  ? "Search by activity..."
-                  : "Search by subactivity or activity..."
+                  ? "Search by value chain type..."
+                  : "Search by value chain or type..."
               }
               value={searchTerm}
               onChange={handleSearchChange}
@@ -249,8 +249,8 @@ const ActivitiesTable = ({
               {filteredActivities.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
                   {searchTerm
-                    ? "No activities match your search"
-                    : "No activities available"}
+                    ? "No value chains match your search"
+                    : "No value chain types available"}
                 </div>
               ) : (
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
@@ -316,8 +316,8 @@ const ActivitiesTable = ({
               {filteredSubactivities.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
                   {searchTerm
-                    ? "No subactivities match your search"
-                    : "No subactivities available"}
+                    ? "No value chains match your search"
+                    : "No value chains available"}
                 </div>
               ) : (
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">

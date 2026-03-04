@@ -29,6 +29,7 @@ import RegionalEA from "./pages/agents/RegionalEA";
 import CountyEA from "./pages/agents/CountyEA";
 import SubCountyEA from "./pages/agents/SubCountyEA";
 import WardEA from "./pages/agents/WardEA";
+import GroupMembersTable from "./pages/groups/GroupMembersTable";
 
 function App() {
   useEffect(() => {
@@ -162,6 +163,14 @@ function App() {
             element={
               <AuthenticatedRoute>
                 <BeneficiariesPage />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/groups/:groupId/members"
+            element={
+              <AuthenticatedRoute>
+                <GroupMembersTable />
               </AuthenticatedRoute>
             }
           />

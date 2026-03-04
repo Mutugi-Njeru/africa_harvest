@@ -5,6 +5,7 @@ import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 import UpdateGroupDetails from "./UpdateGroupDetails";
 import { FaEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -12,7 +13,7 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [groupToToggle, setGroupToToggle] = useState(null);
   const [toggleAction, setToggleAction] = useState(null); // 'activate' or 'deactivate'
-  
+  const navigate= useNavigate();
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -69,6 +70,17 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
       toast.error("Cannot deactivate group");
     }
   };
+
+   const handleShowMembers = async (groupId) => {
+      try {
+        navigate(`/groups/${groupId}/members`);
+      } catch (error) {
+        console.error("Error navigating to members:", error);
+        toast.error("Failed to view members");
+      }
+    };
+
+
 
   const handleToggleClick = (groupId, currentStatus) => {
     // Find the group details
@@ -244,7 +256,9 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
                           </a>
                            <div className="relative">
                           <a
-                            onClick={() => handleEditClick(group)}
+                            onClick={() =>
+                            handleShowMembers(group.groupId)
+                          }
                             className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
                           >
                             <Eye className="h-4 w-4 mr-1" />
