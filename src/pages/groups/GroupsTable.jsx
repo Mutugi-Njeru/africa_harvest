@@ -79,9 +79,6 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
         toast.error("Failed to view members");
       }
     };
-
-
-
   const handleToggleClick = (groupId, currentStatus) => {
     // Find the group details
     const group = groups.find(g => g.groupId === groupId);

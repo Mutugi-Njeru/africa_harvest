@@ -30,6 +30,8 @@ import CountyEA from "./pages/agents/CountyEA";
 import SubCountyEA from "./pages/agents/SubCountyEA";
 import WardEA from "./pages/agents/WardEA";
 import GroupMembersTable from "./pages/groups/GroupMembersTable";
+import TrainingAttendance from "./pages/training/TrainingAttendance";
+import Courses from "./pages/courses/Courses";
 
 function App() {
   useEffect(() => {
@@ -174,6 +176,14 @@ function App() {
               </AuthenticatedRoute>
             }
           />
+          <Route
+            path="/training/:trainingId/attendance"
+            element={
+              <AuthenticatedRoute>
+                <TrainingAttendance />
+              </AuthenticatedRoute>
+            }
+          />
 
           <Route
             path="/regions"
@@ -201,6 +211,14 @@ function App() {
             element={
               <AuthenticatedRoute>
                 <Subcounties />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/courses"
+            element={
+              <AuthenticatedRoute>
+                <Courses />
               </AuthenticatedRoute>
             }
           />

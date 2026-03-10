@@ -22,6 +22,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
     msisdn: "",
     password: "",
     description: "",
+    gender: "", // Added gender field
     roles: [],
     permissions: [],
   });
@@ -83,6 +84,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
         msisdn: "",
         password: "",
         description: "",
+        gender: "", // Reset gender field
         roles: [],
         permissions: [],
       });
@@ -120,7 +122,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6  shadow-lg w-[800px]">
+      <div className="bg-white p-6 shadow-lg w-[800px]">
         <h2 className="text-lg font-semibold mb-4">Create User</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -166,7 +168,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -204,7 +206,7 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300  shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
             </div>
@@ -221,6 +223,51 @@ const CreateUser = ({ isOpen, onClose, accountId }) => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                 required
               />
+            </div>
+          </div>
+
+          {/* Gender Field - New Addition */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Gender
+            </label>
+            <div className="flex gap-6">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="MALE"
+                  checked={formData.gender === "MALE"}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  required
+                />
+                <span className="ml-2 text-sm text-gray-700">Male</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="FEMALE"
+                  checked={formData.gender === "FEMALE"}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  required
+                />
+                <span className="ml-2 text-sm text-gray-700">Female</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="OTHER"
+                  checked={formData.gender === "OTHER"}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  required
+                />
+                <span className="ml-2 text-sm text-gray-700">Other</span>
+              </label>
             </div>
           </div>
 

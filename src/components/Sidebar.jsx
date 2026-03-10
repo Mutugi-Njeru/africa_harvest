@@ -21,14 +21,17 @@ import {
   Network,
   Share2,
   ListChecks,
-  GraduationCap, // Added for Trainings icon
+  GraduationCap,
+  BookOpen, // Added for Education icon
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
   const [isGeographicDropdownOpen, setGeographicDropdownOpen] = useState(false);
-  const [isTrainingsDropdownOpen, setTrainingsDropdownOpen] = useState(false); // New state for Trainings dropdown
+  const [isTrainingsDropdownOpen, setTrainingsDropdownOpen] = useState(false);
+  const [isEducationDropdownOpen, setEducationDropdownOpen] = useState(false); // New state for Education dropdown
+
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
 
   //roles
@@ -54,6 +57,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     if (!isUsersDropdownOpen) {
       setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
+      setEducationDropdownOpen(false);
     }
   };
 
@@ -63,6 +67,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     if (!isGeographicDropdownOpen) {
       setUsersDropdownOpen(false);
       setTrainingsDropdownOpen(false);
+      setEducationDropdownOpen(false);
     }
   };
 
@@ -72,6 +77,17 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     if (!isTrainingsDropdownOpen) {
       setUsersDropdownOpen(false);
       setGeographicDropdownOpen(false);
+      setEducationDropdownOpen(false);
+    }
+  };
+
+  const toggleEducationDropdown = () => {
+    setEducationDropdownOpen(!isEducationDropdownOpen);
+    // Close other dropdowns
+    if (!isEducationDropdownOpen) {
+      setUsersDropdownOpen(false);
+      setGeographicDropdownOpen(false);
+      setTrainingsDropdownOpen(false);
     }
   };
 
@@ -83,11 +99,14 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
         toggleGeographicDropdown();
       } else if (item.text === "Trainings") {
         toggleTrainingsDropdown();
+      } else if (item.text === "Education") {
+        toggleEducationDropdown();
       }
     } else {
       setUsersDropdownOpen(false);
       setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
+      setEducationDropdownOpen(false);
       if (item.path) {
         navigate(item.path);
       }
@@ -99,9 +118,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     setUsersDropdownOpen(false);
     setGeographicDropdownOpen(false);
     setTrainingsDropdownOpen(false);
+    setEducationDropdownOpen(false);
   };
 
-  // Main menu items (excluding User management, Geographic, and Profile)
+  // Main menu items (including Trainings and Education)
   const mainMenuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
@@ -112,8 +132,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     },
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Value Chains", path: "/activity" },
-    { icon: GraduationCap, text: "Trainings", hasDropdown: true }, // Trainings dropdown with GraduationCap icon
-    // { icon: ListChecks, text: "Summaries" },
+    { icon: GraduationCap, text: "Trainings", hasDropdown: true },
+    { icon: BookOpen, text: "Education", hasDropdown: true }, // New Education dropdown with BookOpen icon
   ];
 
   // User management and Geographic section (to be placed after main menu)
@@ -138,16 +158,17 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { text: "Ward EA", path: "/wardagents" },
     // { text: "Members", path: "/ward" },
   ];
-  const rolePermissions = {
-  SUPER_ADMIN: ['*'], // All items
-  ADMIN: ['*'], // All items
-  REGIONAL_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-  COUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-  SUBCOUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-  WARD_CORDINATOR: ['/ward']
-};
 
-  // Geographic dropdown items - moved REA, CEA, and SCEA here with original paths
+  const rolePermissions = {
+    SUPER_ADMIN: ['*'], // All items
+    ADMIN: ['*'], // All items
+    REGIONAL_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+    COUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+    SUBCOUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
+    WARD_CORDINATOR: ['/ward']
+  };
+
+  // Geographic dropdown items
   const geographicDropdownItems = [
     {
       text: "Regions",
@@ -155,15 +176,15 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     },
     {
       text: "REA",
-      path: "/counties", // Original path unchanged
+      path: "/counties",
     },
     {
       text: "CEA",
-      path: "/subcounties", // Original path unchanged
+      path: "/subcounties",
     },
     {
       text: "SCEA",
-      path: "/wards", // Original path unchanged
+      path: "/wards",
     },
   ];
 
@@ -172,14 +193,22 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       text: "Engagements",
       path: "/engagements",
     },
-     {
+    {
       text: "Training",
       path: "/training",
     },
-      {
+    {
       text: "Trainers",
       path: "/trainers",
     },
+  ];
+
+  // New Education dropdown items
+  const EducationDropdownItems = [
+    {
+      text: "Courses & Modules",
+      path: "/Courses",
+    }
   ];
 
   const filteredMainMenuItems = mainMenuItems.filter(
@@ -196,27 +225,27 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   // Filter users dropdown items
   const filteredUsersDropdownItems = usersDropdownItems.filter((item) => {
-  // Get the allowed paths for the user's role
-  let allowedPaths = [];
-  
-  if (isSuperAdmin || isAdmin) {
-    allowedPaths = ['*']; // '*' means all items
-  } else if (isRegionalCoordinator) {
-    allowedPaths = rolePermissions.REGIONAL_CORDINATOR;
-  } else if (isCountyCoordinator) {
-    allowedPaths = rolePermissions.COUNTY_CORDINATOR;
-  } else if (isSubCountyCoordinator) {
-    allowedPaths = rolePermissions.SUBCOUNTY_CORDINATOR;
-  } else if (isWardCoordinator) {
-    allowedPaths = rolePermissions.WARD_CORDINATOR;
-  }
+    // Get the allowed paths for the user's role
+    let allowedPaths = [];
+    
+    if (isSuperAdmin || isAdmin) {
+      allowedPaths = ['*']; // '*' means all items
+    } else if (isRegionalCoordinator) {
+      allowedPaths = rolePermissions.REGIONAL_CORDINATOR;
+    } else if (isCountyCoordinator) {
+      allowedPaths = rolePermissions.COUNTY_CORDINATOR;
+    } else if (isSubCountyCoordinator) {
+      allowedPaths = rolePermissions.SUBCOUNTY_CORDINATOR;
+    } else if (isWardCoordinator) {
+      allowedPaths = rolePermissions.WARD_CORDINATOR;
+    }
 
-  // If allowedPaths includes '*', show all items
-  if (allowedPaths.includes('*')) return true;
-  
-  // Otherwise, check if the item's path is in allowedPaths
-  return allowedPaths.includes(item.path);
-});
+    // If allowedPaths includes '*', show all items
+    if (allowedPaths.includes('*')) return true;
+    
+    // Otherwise, check if the item's path is in allowedPaths
+    return allowedPaths.includes(item.path);
+  });
 
   // Filter geographic dropdown items
   const filteredGeographicDropdownItems = geographicDropdownItems.filter((item) => {
@@ -227,6 +256,12 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   // Filter trainings dropdown items
   const filteredTrainingsDropdownItems = trainingsDropdownItems.filter((item) => {
     // Add any role-based filtering for trainings here if needed
+    return true;
+  });
+
+  // Filter Education dropdown items
+  const filteredEducationDropdownItems = EducationDropdownItems.filter((item) => {
+    // Add any role-based filtering for Education here if needed
     return true;
   });
 
@@ -275,7 +310,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen)
+                  (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen) ||
+                  (item.hasDropdown && item.text === "Education" && isEducationDropdownOpen)
                     ? "bg-green-800 text-white"
                     : ""
                 }`}
@@ -288,7 +324,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {(item.text === "Trainings" && isTrainingsDropdownOpen) ? (
+                    {(item.text === "Trainings" && isTrainingsDropdownOpen) ||
+                     (item.text === "Education" && isEducationDropdownOpen) ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -312,6 +349,35 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 >
                   <div className="ml-8">
                     {filteredTrainingsDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-medium">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education Dropdown Items */}
+              {item.hasDropdown && item.text === "Education" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isEducationDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredEducationDropdownItems.map((dropdownItem, idx) => (
                       <div
                         key={idx}
                         onClick={() =>

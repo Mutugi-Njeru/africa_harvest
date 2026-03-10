@@ -5,11 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 
-const GroupMembersTable = () => {
-  const [members, setMembers] = useState([]);
+const TrainingAttendance = () => {
+  const [attendances, setAttendances] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { groupId } = useParams();
+  const { trainingId } = useParams();
   const navigate = useNavigate();
 
   // Pagination states
@@ -17,23 +17,23 @@ const GroupMembersTable = () => {
   const [itemsPerPage] = useState(10);
 
   useEffect(() => {
-    const fetchGroupMembers = async () => {
+    const fetchTrainingAttendances = async () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          BASE_REST_API_URL + `/groups/v1/${groupId}`,
+          BASE_REST_API_URL + `/training/v1/trainings/${trainingId}/attendances`
         );
-        setMembers(response.data.message.members);
+        setAttendances(response.data.message);
       } catch (error) {
-        console.error("Error fetching members", error);
-        toast.error("Failed to fetch members");
+        console.error("Error fetching attendances", error);
+        toast.error("Failed to fetch attendance records");
         navigate(-1);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchGroupMembers();
-  }, [groupId, navigate]);
+    fetchTrainingAttendances();
+  }, [trainingId, navigate]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -54,31 +54,43 @@ const GroupMembersTable = () => {
     });
   };
 
-  // Filter members based on search term
-  const filteredMembers = useMemo(() => {
-    const membersArray = Array.isArray(members) ? members : [];
+  // Format time to readable format
+  const formatTime = (dateTimeString) => {
+    if (!dateTimeString) return "N/A";
+    const date = new Date(dateTimeString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-    if (!searchTerm) return membersArray;
+  // Filter attendances based on search term
+  const filteredAttendances = useMemo(() => {
+    const attendancesArray = Array.isArray(attendances) ? attendances : [];
+
+    if (!searchTerm) return attendancesArray;
 
     const searchLower = searchTerm.toLowerCase();
-    return membersArray.filter((member) => {
+    return attendancesArray.filter((attendance) => {
+      const member = attendance.member || {};
       return (
         member.firstName?.toLowerCase().includes(searchLower) ||
         member.lastName?.toLowerCase().includes(searchLower) ||
         member.msisdn?.includes(searchTerm) ||
         member.email?.toLowerCase().includes(searchLower) ||
-        member.wardTitle?.toLowerCase().includes(searchLower) ||
-        member.subCountyTitle?.toLowerCase().includes(searchLower) ||
-        member.countyTitle?.toLowerCase().includes(searchLower)
+        member.gender?.toLowerCase().includes(searchLower) ||
+        member.idNumber?.includes(searchTerm) ||
+        attendance.status?.toLowerCase().includes(searchLower) ||
+        attendance.remarks?.toLowerCase().includes(searchLower)
       );
     });
-  }, [members, searchTerm]);
+  }, [attendances, searchTerm]);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredMembers.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+  const currentItems = filteredAttendances.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAttendances.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -135,10 +147,26 @@ const GroupMembersTable = () => {
     return pageNumbers;
   };
 
+  // Get status badge color
+  const getStatusBadge = (status) => {
+    switch(status?.toUpperCase()) {
+      case 'PRESENT':
+        return <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">PRESENT</span>;
+      case 'ABSENT':
+        return <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">ABSENT</span>;
+      case 'LATE':
+        return <span className="px-2 py-1 text-xs font-medium text-yellow-700 bg-yellow-100 rounded-full">LATE</span>;
+      case 'EXCUSED':
+        return <span className="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">EXCUSED</span>;
+      default:
+        return <span className="px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full">{status || 'N/A'}</span>;
+    }
+  };
+
   return (
     <div className="pr-4 pl-3 relative">
       <div className="mt-3 mb-4">
-        <div className="text-xl font-bold text-gray-600">Members</div>
+        <div className="text-xl font-bold text-gray-600">Training Attendance</div>
       </div>
       <div className="flex justify-between">
         <div className=" justify-between items-center gap-3 mb-3">
@@ -148,7 +176,7 @@ const GroupMembersTable = () => {
             </div>
             <input
               type="text"
-              placeholder="Search by name, phone, email, location..."
+              placeholder="Search by name, phone, email, status..."
               className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
               value={searchTerm}
               onChange={handleSearchChange}
@@ -180,132 +208,89 @@ const GroupMembersTable = () => {
               <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead className="text-xs text-gray-700 uppercase bg-white border-b">
                   <tr>
-                    <th className="px-3 py-4">ID</th>
-                    <th className="px-2 py-4">Firstname</th>
-                    <th className="px-1 py-4">Lastname</th>
+                    <th className="px-3 py-4">#</th>
+                    <th className="px-2 py-4">Attendance Date</th>
+                    <th className="px-2 py-4">Status</th>
+                    <th className="px-2 py-4">First Name</th>
+                    <th className="px-2 py-4">Last Name</th>
                     <th className="px-2 py-4">Phone Number</th>
-                    <th className="px-6 py-4">Gender</th>
-                    <th className="px-6 py-4">Id Number</th>
-                    <th className="px-6 py-4">DOB</th>
-                    <th className="px-6 py-4">Ward</th>
-                    <th className="px-6 py-4">Value Chains</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Date Created</th>
+                    <th className="px-3 py-4">Email</th>
+                    <th className="px-2 py-4">Gender</th>
+                    <th className="px-2 py-4">ID Number</th>
+                    <th className="px-2 py-4">Check In</th>
+                    <th className="px-2 py-4">Check Out</th>
+                    <th className="px-4 py-4">Remarks</th>
                   </tr>
                 </thead>
                 <tbody>
-  {currentItems.length > 0 ? (
-    currentItems.map((member, index) => (
-      <tr
-        key={member.memberId}
-        className="bg-white border-b hover:bg-gray-50"
-      >
-        <th
-          scope="row"
-          className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
-        >
-          {indexOfFirstItem + index + 1}
-        </th>
-        <td className="px-1 py-3 truncate max-w-[150px]">
-          {member.firstName || "N/A"}
-        </td>
-        <td className="px-1 py-3 truncate max-w-[150px]">
-          {member.lastName || "N/A"}
-        </td>
-        <td className="px-2 py-3 whitespace-nowrap">
-          {member.msisdn || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap capitalize">
-          {member.gender || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {member.idNumber || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {formatDate(member.dob)}
-        </td>
-        <td
-          className="px-6 py-3 truncate max-w-[200px]"
-          title={member.wardTitle}
-        >
-          {member.wardTitle || "N/A"}
-        </td>
-       <td className="px-6 py-3 relative group">
-  {member.subActivities && member.subActivities.length > 0 ? (
-    <>
-      <div className="flex flex-wrap gap-1 max-w-[250px] cursor-help">
-        {member.subActivities.slice(0, 3).map((subActivity, idx) => (
-          <span
-            key={subActivity.subActivityId || idx}
-            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
-          >
-            {subActivity.subActivity.length > 15
-              ? `${subActivity.subActivity.substring(0, 15)}...`
-              : subActivity.subActivity}
-          </span>
-        ))}
-        {member.subActivities.length > 3 && (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            +{member.subActivities.length - 3}
-          </span>
-        )}
-      </div>
-      
-      {/* Tooltip showing all subactivities */}
-      <div className="absolute hidden group-hover:block z-10 bg-gray-800 text-white text-xs rounded p-2 mt-1 min-w-[200px] shadow-lg">
-        <p className="font-semibold mb-1">Value Chains:</p>
-        <ul className="list-disc pl-4">
-          {member.subActivities.map((sa, idx) => (
-            <li key={idx} className="mb-1">
-              <span className="font-medium">{sa.subActivity}</span>
-              {sa.activityName && (
-                <span className="text-gray-300 text-xs block">
-                  ({sa.activityName})
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
-  ) : (
-    <span className="text-gray-400 text-sm">No value chains</span>
-  )}
-</td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {member.isActive ? (
-            <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-              Active
-            </span>
-          ) : (
-            <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
-              Inactive
-            </span>
-          )}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {formatDate(member.createdAt)}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr className="bg-white border-b">
-      <td
-        colSpan="11" // Updated from "10" to "11" since we now have 11 columns
-        className="px-6 py-8 text-center text-gray-500"
-      >
-        {searchTerm
-          ? "No members match your search"
-          : "No members found in this group"}
-      </td>
-    </tr>
-  )}
-</tbody>
+                  {currentItems.length > 0 ? (
+                    currentItems.map((attendance, index) => {
+                      const member = attendance.member || {};
+                      return (
+                        <tr
+                          key={attendance.attendanceId}
+                          className="bg-white border-b hover:bg-gray-50"
+                        >
+                          <th
+                            scope="row"
+                            className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
+                          >
+                            {indexOfFirstItem + index + 1}
+                          </th>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {formatDate(attendance.attendanceDate)}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {getStatusBadge(attendance.status)}
+                          </td>
+                          <td className="px-2 py-3 truncate max-w-[120px]">
+                            {member.firstName || "N/A"}
+                          </td>
+                          <td className="px-2 py-3 truncate max-w-[120px]">
+                            {member.lastName || "N/A"}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {member.msisdn || "N/A"}
+                          </td>
+                          <td className="px-3 py-3 truncate max-w-[180px]" title={member.email}>
+                            {member.email || "N/A"}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap capitalize">
+                            {member.gender || "N/A"}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {member.idNumber || "N/A"}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {formatTime(attendance.checkInTime)}
+                          </td>
+                          <td className="px-2 py-3 whitespace-nowrap">
+                            {formatTime(attendance.checkOutTime)}
+                          </td>
+                          <td className="px-4 py-3 truncate max-w-[200px]" title={attendance.remarks}>
+                            {attendance.remarks || "N/A"}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr className="bg-white border-b">
+                      <td
+                        colSpan="12"
+                        className="px-6 py-8 text-center text-gray-500"
+                      >
+                        {searchTerm
+                          ? "No attendance records match your search"
+                          : "No attendance records found for this training"}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
 
             {/* Pagination Controls*/}
-            {filteredMembers.length > 0 && (
+            {filteredAttendances.length > 0 && (
               <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2">
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
@@ -334,8 +319,8 @@ const GroupMembersTable = () => {
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                   <div className="text-sm text-gray-700">
                     Showing {indexOfFirstItem + 1} to{" "}
-                    {Math.min(indexOfLastItem, filteredMembers.length)} of{" "}
-                    {filteredMembers.length} members
+                    {Math.min(indexOfLastItem, filteredAttendances.length)} of{" "}
+                    {filteredAttendances.length} attendance records
                   </div>
                   <div>
                     <nav
@@ -399,4 +384,4 @@ const GroupMembersTable = () => {
   );
 };
 
-export default GroupMembersTable;
+export default TrainingAttendance;

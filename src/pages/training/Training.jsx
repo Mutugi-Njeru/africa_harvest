@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 const Training = () => {
   const [trainings, setTrainings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchTrainings();
@@ -28,6 +29,10 @@ const Training = () => {
     }
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="pr-4 pl-3 relative">
       <div className="mt-3 mb-4">
@@ -41,17 +46,25 @@ const Training = () => {
           </div>
           <input
             type="text"
-            placeholder="Search by region name, coordinator..."
+            placeholder="Search by title, code, location, trainer..."
             className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
-            // value={searchTerm}
-            // onChange={handleSearchChange}
+            value={searchTerm}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
 
-      {/* table */}
-      <TrainingsTable 
-      trainings={trainings}/>
+      {/* Show loading spinner or table based on isLoading state */}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
+        </div>
+      ) : (
+        <TrainingsTable 
+          trainings={trainings} 
+          searchTerm={searchTerm}
+        />
+      )}
     </div>
   );
 };
