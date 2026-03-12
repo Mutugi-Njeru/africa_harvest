@@ -31,7 +31,7 @@ const AccountTable = ({ refresh, openModal }) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Items per page options
-  const itemsPerPageOptions = [5, 10, 25, 50, 100];
+  const itemsPerPageOptions = [5, 10, 15,25, 50, 100];
 
   const fetchAccounts = async () => {
     setLoading(true);
@@ -208,7 +208,7 @@ const AccountTable = ({ refresh, openModal }) => {
         <div className="flex justify-end items-center">
           <button
             onClick={openModal}
-            className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange text-white"
+            className="flex items-center cursor-pointer rounded-md border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange text-white"
           >
             <Plus className="w-4 h-4" />
             <span className="ml-2 mr-2">Create Account</span>
@@ -223,7 +223,7 @@ const AccountTable = ({ refresh, openModal }) => {
       ) : (
         <>
           <table className="w-full text-xs text-left rtl:text-right text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase border-b bg-white">
+            <thead className="text-xs text-gray-500 uppercase border-b bg-white">
               <tr>
                 <th className="px-4 py-2">ID</th>
                 <th className="px-4 py-2">Account Name</th>
@@ -244,24 +244,24 @@ const AccountTable = ({ refresh, openModal }) => {
                   >
                     <th
                       scope="row"
-                      className="px-4 py-2 font-medium text-green-600 whitespace-nowrap "
+                      className="px-4 py-1 font-medium text-green-600 whitespace-nowrap "
                     >
                       {indexOfFirstItem + index + 1}
                     </th>
-                    <td className="px-3 py-2 max-w-[200px] truncate">
+                    <td className="px-3 py-1 max-w-[200px] truncate">
                       {account.accountName}
                     </td>
-                    <td className="px-3 py-2 max-w-[200px] truncate">
+                    <td className="px-3 py-1 max-w-[200px] truncate">
                       {account.description}
                     </td>
-                    <td className="px-3 py-2 max-w-[200px] truncate">
+                    <td className="px-3 py-1 max-w-[200px] truncate">
                       {account.address}
                     </td>
-                    <td className="px-3 py-2">{account.msisdn}</td>
-                    <td className="px-3 py-2 max-w-[200px] truncate">
+                    <td className="px-3 py-1">{account.msisdn}</td>
+                    <td className="px-3 py-1 max-w-[200px] truncate">
                       {account.email}
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-1">
                       <button
                         onClick={() => handleStatusToggle(account)}
                         className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
@@ -277,7 +277,7 @@ const AccountTable = ({ refresh, openModal }) => {
                         ></div>
                       </button>
                     </td>
-                    <td className="flex items-center px-3 py-2">
+                    <td className="flex items-center px-3 py-1">
                       <a
                         onClick={() => {
                           setSelectedAccount(account);
@@ -358,7 +358,7 @@ const AccountTable = ({ refresh, openModal }) => {
                         </option>
                       ))}
                     </select>
-                    <span className="text-sm text-gray-700">entries</span>
+                    <span className="text-xs text-gray-700">entries</span>
                   </div>
                 </div>
 

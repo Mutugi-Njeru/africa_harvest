@@ -13,9 +13,16 @@ import axios from "axios";
 
 const TopCards = () => {
   const [totalTrainings, setTotalTrainings] = useState(0);
+  const [wardCoordinatorStats, setWardCoordinatorStats] = useState({
+    total: 0,
+    female: 0,
+    male: 0,
+    other: 0
+  });
 
   useEffect(() => {
     fetchTrainings();
+    fetchWardCoordinators();
   }, []);
 
   const fetchTrainings = async () => {
@@ -26,6 +33,30 @@ const TopCards = () => {
     } catch (error) {
       console.error("Error fetching trainings:", error);
     } 
+  };
+
+  const fetchWardCoordinators = async () => {
+    try {
+      let url = BASE_REST_API_URL + "/users/v1/ward-coordinators/counts";
+      const response = await axios.get(url);
+      setWardCoordinatorStats(response.data.message);
+    } catch (error) {
+      console.error("Error fetching ward coordinators:", error);
+    } 
+  };
+
+  // Calculate female percentage for VBS/TOT
+  const calculateFemalePercentage = () => {
+    if (wardCoordinatorStats.total === 0) return 0;
+    return (wardCoordinatorStats.female / wardCoordinatorStats.total) * 100;
+  };
+
+  // Determine status color based on female percentage
+  const getStatusColor = () => {
+    const femalePercentage = calculateFemalePercentage();
+    if (femalePercentage >= 50) return 'bg-green-500';
+    if (femalePercentage === 50) return 'bg-orange-500';
+    return 'bg-red-500';
   };
 
   // Create cardData inside the component or as a function that accesses state
@@ -43,7 +74,7 @@ const TopCards = () => {
       icon: FaUsers, 
       title: "Total Farmers", 
       value: "2,345", 
-      subtext: '<span class="text-green-600 font-medium">Male: 937 (40%)</span> | <span class="text-yellow-500 font-medium">Female: 1,408 (60%)</span>',
+      subtext: '<span class="text-green-600 font-normal">Male: 937 (40%)</span> | <span class="text-yellow-500 font-normal">Female: 1,408 (60%)</span>',
       color: "text-blue-600", 
       status: "green",
       delay: 1 
@@ -51,10 +82,10 @@ const TopCards = () => {
     { 
       icon: FaSeedling, 
       title: "VBS/TOT", 
-      value: "156", 
-      subtext: '<span class="text-green-600 font-medium">Male: 94 (60%)</span> | <span class="text-yellow-500 font-medium">Female: 62 (40%)</span>',
+      value: wardCoordinatorStats.total.toString(),
+      subtext: `<span class="text-green-600 font-normal">Male: ${wardCoordinatorStats.male} (${wardCoordinatorStats.total > 0 ? Math.round((wardCoordinatorStats.male/wardCoordinatorStats.total)*100) : 0}%)</span> | <span class="text-yellow-500 font-normal">Female: ${wardCoordinatorStats.female} (${wardCoordinatorStats.total > 0 ? Math.round((wardCoordinatorStats.female/wardCoordinatorStats.total)*100) : 0}%)</span>`,
       color: "text-yellow-600", 
-      status: "red",
+      useDynamicStatus: true, // Flag to use dynamic status
       delay: 2 
     },
     { 
@@ -78,6 +109,14 @@ const TopCards = () => {
       {cardData.map((card, index) => {
         const IconComponent = card.icon;
         
+        // Determine status circle color
+        let statusColor = card.status;
+        if (card.useDynamicStatus) {
+          statusColor = getStatusColor();
+        } else {
+          statusColor = card.status === 'green' ? 'bg-green-500' : 'bg-red-500';
+        }
+
         return (
           <motion.div
             key={index}
@@ -113,9 +152,7 @@ const TopCards = () => {
             </div>
             
             {/* Status circle at bottom right */}
-            {card.status && (
-              <div className={`absolute bottom-2 right-3 w-3 h-3 rounded-full ${card.status === 'green' ? 'bg-green-500' : 'bg-red-500'} shadow-sm`} />
-            )}
+            <div className={`absolute bottom-2 right-3 w-3 h-3 rounded-full ${statusColor} shadow-sm`} />
           </motion.div>
         );
       })}

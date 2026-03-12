@@ -23,15 +23,17 @@ import {
   Share2,
   ListChecks,
   GraduationCap,
-  BookOpen, // Added for Education icon
+  BookOpen,
+  UserCog,
 } from "lucide-react";
 import { hasRolePermission } from "../utils/Utils";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const [isUsersDropdownOpen, setUsersDropdownOpen] = useState(false);
-  const [isGeographicDropdownOpen, setGeographicDropdownOpen] = useState(false);
+  const [isUserProfilesDropdownOpen, setUserProfilesDropdownOpen] = useState(false);
+  const [isGeoLocationDropdownOpen, setGeoLocationDropdownOpen] = useState(false);
   const [isTrainingsDropdownOpen, setTrainingsDropdownOpen] = useState(false);
-  const [isEducationDropdownOpen, setEducationDropdownOpen] = useState(false); // New state for Education dropdown
+  const [isEducationDropdownOpen, setEducationDropdownOpen] = useState(false);
 
   const userRoles = JSON.parse(localStorage.getItem("roles")) || [];
 
@@ -54,40 +56,43 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const toggleUsersDropdown = () => {
     setUsersDropdownOpen(!isUsersDropdownOpen);
-    // Close other dropdowns
+    // Close other main dropdowns
     if (!isUsersDropdownOpen) {
-      setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
       setEducationDropdownOpen(false);
     }
   };
 
-  const toggleGeographicDropdown = () => {
-    setGeographicDropdownOpen(!isGeographicDropdownOpen);
-    // Close other dropdowns
-    if (!isGeographicDropdownOpen) {
-      setUsersDropdownOpen(false);
-      setTrainingsDropdownOpen(false);
-      setEducationDropdownOpen(false);
+  const toggleUserProfilesDropdown = (e) => {
+    e.stopPropagation();
+    setUserProfilesDropdownOpen(!isUserProfilesDropdownOpen);
+    if (!isUserProfilesDropdownOpen) {
+      setGeoLocationDropdownOpen(false);
+    }
+  };
+
+  const toggleGeoLocationDropdown = (e) => {
+    e.stopPropagation();
+    setGeoLocationDropdownOpen(!isGeoLocationDropdownOpen);
+    if (!isGeoLocationDropdownOpen) {
+      setUserProfilesDropdownOpen(false);
     }
   };
 
   const toggleTrainingsDropdown = () => {
     setTrainingsDropdownOpen(!isTrainingsDropdownOpen);
-    // Close other dropdowns
+    // Close other main dropdowns
     if (!isTrainingsDropdownOpen) {
       setUsersDropdownOpen(false);
-      setGeographicDropdownOpen(false);
       setEducationDropdownOpen(false);
     }
   };
 
   const toggleEducationDropdown = () => {
     setEducationDropdownOpen(!isEducationDropdownOpen);
-    // Close other dropdowns
+    // Close other main dropdowns
     if (!isEducationDropdownOpen) {
       setUsersDropdownOpen(false);
-      setGeographicDropdownOpen(false);
       setTrainingsDropdownOpen(false);
     }
   };
@@ -96,8 +101,6 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     if (item.hasDropdown) {
       if (item.text === "User Management") {
         toggleUsersDropdown();
-      } else if (item.text === "Geo-Structure") {
-        toggleGeographicDropdown();
       } else if (item.text === "Trainings") {
         toggleTrainingsDropdown();
       } else if (item.text === "Education") {
@@ -105,7 +108,8 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       }
     } else {
       setUsersDropdownOpen(false);
-      setGeographicDropdownOpen(false);
+      setUserProfilesDropdownOpen(false);
+      setGeoLocationDropdownOpen(false);
       setTrainingsDropdownOpen(false);
       setEducationDropdownOpen(false);
       if (item.path) {
@@ -116,10 +120,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   const handleDropdownItemClick = (path) => {
     navigate(path);
-    setUsersDropdownOpen(false);
-    setGeographicDropdownOpen(false);
-    setTrainingsDropdownOpen(false);
-    setEducationDropdownOpen(false);
+    // Keep the main dropdown open but close nested dropdowns
+    setUserProfilesDropdownOpen(false);
+    setGeoLocationDropdownOpen(false);
   };
 
   // Main menu items (including Trainings and Education)
@@ -129,26 +132,26 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       icon: Landmark,
       text: "Accounts",
       path: "/accounts",
-      showOnlyForSuperAdmin: true, // only for super admins
+      showOnlyForSuperAdmin: true,
     },
     { icon: Network, text: "Groups", path: "/groups" },
     { icon: FileText, text: "Value Chains", path: "/activity" },
     { icon: GraduationCap, text: "Trainings", hasDropdown: true },
-    { icon: BookOpen, text: "Education", hasDropdown: true }, // New Education dropdown with BookOpen icon
+    { icon: BookOpen, text: "Education", hasDropdown: true },
   ];
 
-  // User management and Geographic section (to be placed after main menu)
+  // User management section
   const userSectionItems = [
     { icon: Users, text: "User Management", hasDropdown: true },
-    { icon: Globe, text: "Geo-Structure", hasDropdown: true },
   ];
 
-  // Settings section items (moved Profile here)
+  // Settings section items
   const settingsSectionItems = [
     { icon: Settings, text: "Profile", path: "/profile" },
   ];
 
-  const usersDropdownItems = [
+  // User Profiles dropdown items
+  const userProfilesDropdownItems = [
     {
       text: "User Profiles",
       path: "/users",
@@ -157,20 +160,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     { text: "County EA", path: "/countyagents" },
     { text: "SubCounty EA", path: "/subcountyagents" },
     { text: "Ward EA", path: "/wardagents" },
-    // { text: "Members", path: "/ward" },
   ];
 
-  const rolePermissions = {
-    SUPER_ADMIN: ['*'], // All items
-    ADMIN: ['*'], // All items
-    REGIONAL_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-    COUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-    SUBCOUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents'],
-    WARD_CORDINATOR: ['/ward']
-  };
-
-  // Geographic dropdown items
-  const geographicDropdownItems = [
+  // Geo-Location dropdown items
+  const geoLocationDropdownItems = [
     {
       text: "Regions",
       path: "/regions",
@@ -189,22 +182,22 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     },
   ];
 
+  const rolePermissions = {
+    SUPER_ADMIN: ['*'],
+    ADMIN: ['*'],
+    REGIONAL_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents', '/regions', '/counties', '/subcounties', '/wards'],
+    COUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents', '/regions', '/counties', '/subcounties', '/wards'],
+    SUBCOUNTY_CORDINATOR: ['/users', '/regionalagents', '/countyagents', '/subcountyagents', '/wardagents', '/regions', '/counties', '/subcounties', '/wards'],
+    WARD_CORDINATOR: ['/ward']
+  };
+
   const trainingsDropdownItems = [
-    // {
-    //   text: "Engagements",
-    //   path: "/engagements",
-    // },
     {
       text: "Training",
       path: "/training",
     },
-    // {
-    //   text: "Trainers",
-    //   path: "/trainers",
-    // },
   ];
 
-  // New Education dropdown items
   const EducationDropdownItems = [
     {
       text: "Courses & Modules",
@@ -224,13 +217,12 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
   );
 
-  // Filter users dropdown items
-  const filteredUsersDropdownItems = usersDropdownItems.filter((item) => {
-    // Get the allowed paths for the user's role
+  // Filter user profiles dropdown items
+  const filteredUserProfilesDropdownItems = userProfilesDropdownItems.filter((item) => {
     let allowedPaths = [];
     
     if (isSuperAdmin || isAdmin) {
-      allowedPaths = ['*']; // '*' means all items
+      allowedPaths = ['*'];
     } else if (isRegionalCoordinator) {
       allowedPaths = rolePermissions.REGIONAL_CORDINATOR;
     } else if (isCountyCoordinator) {
@@ -241,28 +233,37 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       allowedPaths = rolePermissions.WARD_CORDINATOR;
     }
 
-    // If allowedPaths includes '*', show all items
     if (allowedPaths.includes('*')) return true;
-    
-    // Otherwise, check if the item's path is in allowedPaths
     return allowedPaths.includes(item.path);
   });
 
-  // Filter geographic dropdown items
-  const filteredGeographicDropdownItems = geographicDropdownItems.filter((item) => {
-    // Add any role-based filtering for geographic here if needed
-    return true;
+  // Filter geo-location dropdown items
+  const filteredGeoLocationDropdownItems = geoLocationDropdownItems.filter((item) => {
+    let allowedPaths = [];
+    
+    if (isSuperAdmin || isAdmin) {
+      allowedPaths = ['*'];
+    } else if (isRegionalCoordinator) {
+      allowedPaths = rolePermissions.REGIONAL_CORDINATOR;
+    } else if (isCountyCoordinator) {
+      allowedPaths = rolePermissions.COUNTY_CORDINATOR;
+    } else if (isSubCountyCoordinator) {
+      allowedPaths = rolePermissions.SUBCOUNTY_CORDINATOR;
+    } else if (isWardCoordinator) {
+      allowedPaths = rolePermissions.WARD_CORDINATOR;
+    }
+
+    if (allowedPaths.includes('*')) return true;
+    return allowedPaths.includes(item.path);
   });
 
   // Filter trainings dropdown items
   const filteredTrainingsDropdownItems = trainingsDropdownItems.filter((item) => {
-    // Add any role-based filtering for trainings here if needed
     return true;
   });
 
   // Filter Education dropdown items
   const filteredEducationDropdownItems = EducationDropdownItems.filter((item) => {
-    // Add any role-based filtering for Education here if needed
     return true;
   });
 
@@ -413,15 +414,14 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             </>
           )}
           
-          {/* User Section Items (User Management and Geo-Structure) */}
+          {/* User Management Section */}
           {filteredUserSectionItems.map((item, index) => (
             <div key={`user-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
                   (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen) ||
-                  (item.hasDropdown && item.text === "Geo-Structure" && isGeographicDropdownOpen)
+                  (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen)
                     ? "bg-green-700 text-white"
                     : ""
                 }`}
@@ -434,8 +434,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {(item.text === "User Management" && isUsersDropdownOpen) ||
-                     (item.text === "Geo-Structure" && isGeographicDropdownOpen) ? (
+                    {isUsersDropdownOpen ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -450,60 +449,107 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 )}
               </div>
               
-              {/* Users Dropdown Items */}
+              {/* User Management Dropdown Content */}
               {item.hasDropdown && item.text === "User Management" && isExpanded && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isUsersDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                    isUsersDropdownOpen ? "max-h-[800px]" : "max-h-0"
                   }`}
                 >
-                  <div className="ml-8">
-                    {filteredUsersDropdownItems.map((dropdownItem, idx) => (
+                  <div className="ml-4">
+                    {/* User Profiles Section with its own dropdown */}
+                    <div className="mb-2">
                       <div
-                        key={idx}
-                        onClick={() =>
-                          handleDropdownItemClick(dropdownItem.path)
-                        }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
-                          location.pathname === dropdownItem.path
-                            ? "bg-green-700 text-white"
-                            : ""
+                        onClick={toggleUserProfilesDropdown}
+                        className="flex items-center justify-between py-2 px-3 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm"
+                      >
+                        <div className="flex items-center">
+                          <User size={16} className="min-w-4" />
+                          <span className="ml-3 font-medium">User Profiles</span>
+                        </div>
+                        <div>
+                          {isUserProfilesDropdownOpen ? (
+                            <ChevronUp size={16} className="text-gray-500" />
+                          ) : (
+                            <ChevronDown size={16} className="text-gray-500" />
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* User Profiles Dropdown Items */}
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                          isUserProfilesDropdownOpen ? "max-h-[400px]" : "max-h-0"
                         }`}
                       >
-                        <span className="ml-3 font-normal">
-                          {dropdownItem.text}
-                        </span>
+                        <div className="ml-6 mt-1">
+                          {filteredUserProfilesDropdownItems.map((profileItem, idx) => (
+                            <div
+                              key={idx}
+                              onClick={() =>
+                                handleDropdownItemClick(profileItem.path)
+                              }
+                              className={`flex items-center py-2 px-3 mb-1 text-gray-600 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
+                                location.pathname === profileItem.path
+                                  ? "bg-green-700 text-white"
+                                  : ""
+                              }`}
+                            >
+                              <span className="ml-3 font-normal">
+                                {profileItem.text}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Geographic Dropdown Items */}
-              {item.hasDropdown && item.text === "Geo-Structure" && isExpanded && (
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isGeographicDropdownOpen ? "max-h-[500px]" : "max-h-0"
-                  }`}
-                >
-                  <div className="ml-8">
-                    {filteredGeographicDropdownItems.map((dropdownItem, idx) => (
+                    </div>
+
+                    {/* Geo-Location Section with its own dropdown */}
+                    <div className="mb-2">
                       <div
-                        key={idx}
-                        onClick={() =>
-                          handleDropdownItemClick(dropdownItem.path)
-                        }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
-                          location.pathname === dropdownItem.path
-                            ? "bg-green-700 text-white"
-                            : ""
+                        onClick={toggleGeoLocationDropdown}
+                        className="flex items-center justify-between py-2 px-3 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm"
+                      >
+                        <div className="flex items-center">
+                          <UserCog size={16} className="min-w-4" />
+                          <span className="ml-3 font-medium">Role Assignment</span>
+                        </div>
+                        <div>
+                          {isGeoLocationDropdownOpen ? (
+                            <ChevronUp size={16} className="text-gray-500" />
+                          ) : (
+                            <ChevronDown size={16} className="text-gray-500" />
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Geo-Location Dropdown Items */}
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                          isGeoLocationDropdownOpen ? "max-h-[400px]" : "max-h-0"
                         }`}
                       >
-                        <span className="ml-3 font-normal">
-                          {dropdownItem.text}
-                        </span>
+                        <div className="ml-6 mt-1">
+                          {filteredGeoLocationDropdownItems.map((geoItem, idx) => (
+                            <div
+                              key={idx}
+                              onClick={() =>
+                                handleDropdownItemClick(geoItem.path)
+                              }
+                              className={`flex items-center py-2 px-3 mb-1 text-gray-600 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
+                                location.pathname === geoItem.path
+                                  ? "bg-green-700 text-white"
+                                  : ""
+                              }`}
+                            >
+                              <span className="ml-3 font-normal">
+                                {geoItem.text}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
               )}
