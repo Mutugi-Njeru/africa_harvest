@@ -1,4 +1,9 @@
-import { ClipboardEditIcon, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ClipboardEditIcon,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -40,10 +45,21 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
     });
   }, [trainings, searchTerm]);
 
+  const handleViewResources = (trainingId) => {
+  try {
+    navigate(`/training/${trainingId}/resources`);
+  } catch (error) {
+    console.error("Error navigating to resources:", error);
+    toast.error("Failed to view resources");
+  }
+};
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredTrainings.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredTrainings.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
   const totalPages = Math.ceil(filteredTrainings.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
@@ -112,6 +128,8 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
                   <th className="px-4 py-4">ID</th>
                   <th className="px-4 py-4">Title</th>
                   <th className="px-4 py-4">Code</th>
+                  <th className="px-4 py-4">Value Chain</th>
+                  <th className="px-4 py-4">Module</th>
                   <th className="px-4 py-4">Location</th>
                   <th className="px-4 py-4">Start Time</th>
                   <th className="px-4 py-4">End Time</th>
@@ -135,6 +153,12 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
                       </td>
                       <td className="px-4 py-3 truncate max-w-[200px]">
                         {training.trainingCode || "-"}
+                      </td>
+                      <td className="px-4 py-3 truncate max-w-[200px]">
+                        {training.subActivity || "-"}
+                      </td>
+                      <td className="px-4 py-3 truncate max-w-[200px]">
+                        {training.moduleTitle || "-"}
                       </td>
                       <td className="px-4 py-3 truncate max-w-[200px]">
                         {training.location || "-"}
@@ -161,32 +185,39 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                          {training.trainer?.name || "-"}
+                          {training.user?.name || "-"}
                         </div>
                       </td>
                       <td className="px-4 py-3 truncate max-w-[200px]">
                         {training.description || "-"}
                       </td>
-                      <td className="px-4 py-3 flex">
-                        <a className="font-medium text-green-600 cursor-pointer hover:underline flex items-center mr-2">
+                      <td className="px-4 py-3 flex gap-2">
+                        <button
+                          className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                          onClick={() =>
+                            handleViewResources(training.trainingId)
+                          }
+                        >
                           <Eye className="h-4 w-4 mr-1" />
                           Resources
-                        </a>
-                        <a
-                          onClick={() => handleShowAttendance(training.trainingId)}
-                          className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleShowAttendance(training.trainingId)
+                          }
+                          className="font-medium text-yellow-600 cursor-pointer hover:underline flex items-center"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           Attendance
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan="9" className="text-center py-8 text-gray-500">
-                      {searchTerm 
-                        ? "No trainings match your search criteria" 
+                      {searchTerm
+                        ? "No trainings match your search criteria"
                         : "No trainings found"}
                     </td>
                   </tr>

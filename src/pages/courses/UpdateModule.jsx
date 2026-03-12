@@ -4,13 +4,11 @@ import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 
-const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
+const UpdateModule = ({ isOpen, onClose, module, onModuleUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const accountId = localStorage.getItem("accountId");
-    const [error, setError] = useState("");
-
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    accountId: "",
+    courseId: "",
     title: "",
     description: "",
     durationHours: "",
@@ -18,16 +16,16 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
   });
 
   useEffect(() => {
-    if (course) {
+    if (module) {
       setFormData({
-        accountId: accountId || "",
-        title: course.title || "",
-        description: course.description || "",
-        durationHours: course.durationHours || "",
-        isActive: course.isActive !== undefined ? course.isActive : true,
+        courseId: module.courseId || "",
+        title: module.title || "",
+        description: module.description || "",
+        durationHours: module.durationHours || "",
+        isActive: module.isActive !== undefined ? module.isActive : true,
       });
     }
-  }, [course, accountId]);
+  }, [module]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,24 +38,26 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-     setError("");
+    setError("");
+    
     try {
       const response = await axios.put(
-        `${BASE_REST_API_URL}/training/v1/courses/${course.courseId}`,
+        `${BASE_REST_API_URL}/training/v1/modules/${module.moduleId}`,
         {
-          accountId: parseInt(accountId),
+          courseId: module.courseId,
           title: formData.title,
           description: formData.description,
           durationHours: parseInt(formData.durationHours),
           isActive: formData.isActive,
         },
       );
-      toast.success("course updated successfully");
-      onCourseUpdated();
+      
+      toast.success("Module updated successfully");
+      onModuleUpdated();
       onClose();
     } catch (err) {
-      console.error("Error updating course:", err);
-      toast.error("Failed to update course");
+     console.error("Error updating module:", err);
+      toast.error("Failed to update module");
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +69,7 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 shadow-lg w-[600px] rounded-lg">
         <h2 className="text-lg font-semibold mb-4">
-          Update Course: {course?.title}
+          Update Module: {module?.title}
         </h2>
 
         {error && (
@@ -82,14 +82,14 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
           {/* Title */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Course Title
+              Module Title
             </label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Enter course title"
+              placeholder="Enter module title"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100 rounded-md"
               required
             />
@@ -123,7 +123,7 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100 rounded-md"
               rows="4"
-              placeholder="Enter course description"
+              placeholder="Enter module description"
               required
             />
           </div>
@@ -144,13 +144,13 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
             </label>
             <p className="text-xs text-gray-500 mt-1">
               {formData.isActive
-                ? "Course status is active"
-                : "Course status is inactive"}
+                ? "Module status is active"
+                : "Module status is inactive"}
             </p>
           </div>
 
-          {/* Hidden accountId field for reference (optional) */}
-          <input type="hidden" name="accountId" value={accountId} />
+          {/* Hidden moduleId field */}
+          <input type="hidden" name="moduleId" value={module?.moduleId} />
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 mt-6">
@@ -187,4 +187,4 @@ const UpdateCourse = ({ isOpen, onClose, course, onCourseUpdated }) => {
   );
 };
 
-export default UpdateCourse;
+export default UpdateModule;

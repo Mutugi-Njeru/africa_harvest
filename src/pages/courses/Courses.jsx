@@ -23,7 +23,6 @@ const Courses = () => {
       const response = await axios.get(BASE_REST_API_URL + `/training/v1/courses?accountId=${accountId}`);
       
       if (response.data.isSuccess) {
-        console.log(response.data.message);
         setCourses(response.data.message);
       } else {
         toast.error('Failed to fetch courses');

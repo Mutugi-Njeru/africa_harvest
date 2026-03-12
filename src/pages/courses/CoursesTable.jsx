@@ -2,6 +2,8 @@ import { Edit, Eye, ChevronLeft, ChevronRight, SquarePen } from 'lucide-react';
 import React, { useState, useMemo, useEffect } from 'react';
 import CourseModuleModal from './CourseModuleModal'; // Adjust the import path as needed
 import UpdateCourse from './UpdateCourse';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
   // Pagination states
@@ -11,14 +13,11 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedCourseForUpdate, setSelectedCourseForUpdate] = useState(null);
+  const navigate=useNavigate();
 
   useEffect(() => { 
     setCurrentPage(1);
   }, [searchTerm]);
-
-  
-
-
   // Filter courses based on search term
   const filteredCourses = useMemo(() => {
     const coursesArray = Array.isArray(courses) ? courses : [];
@@ -91,6 +90,14 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
       onCourseUpdated();
     }
   };
+
+   const handleShowModules = async (courseId) => {
+        try {
+          navigate(`/courses/${courseId}/modules`);
+        } catch (error) {
+          console.error("Error navigating to modules:", error);
+        }
+      };
 
   // Generate page numbers to display
   const getPageNumbers = () => {
@@ -215,6 +222,9 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
                       </a>
                       
                       <a
+                       onClick={() =>
+                            handleShowModules(course.courseId)
+                          }
                         className="font-medium text-saveButton cursor-pointer hover:underline flex items-center"
                       >
                         <Eye className="h-4 w-4 mr-1" />

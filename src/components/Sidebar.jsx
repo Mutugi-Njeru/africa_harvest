@@ -207,7 +207,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const EducationDropdownItems = [
     {
       text: "Courses & Modules",
-      path: "/Courses",
+      path: "/courses",
     }
   ];
 

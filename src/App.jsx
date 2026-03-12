@@ -32,6 +32,8 @@ import WardEA from "./pages/agents/WardEA";
 import GroupMembersTable from "./pages/groups/GroupMembersTable";
 import TrainingAttendance from "./pages/training/TrainingAttendance";
 import Courses from "./pages/courses/Courses";
+import ModulesTable from "./pages/courses/ModulesTable";
+import TrainingResources from "./pages/training/TrainingResources";
 
 function App() {
   useEffect(() => {
@@ -168,6 +170,14 @@ function App() {
               </AuthenticatedRoute>
             }
           />
+           <Route
+            path="training/:trainingId/resources"
+            element={
+              <AuthenticatedRoute>
+                <TrainingResources />
+              </AuthenticatedRoute>
+            }
+          />
           <Route
             path="/groups/:groupId/members"
             element={
@@ -181,6 +191,14 @@ function App() {
             element={
               <AuthenticatedRoute>
                 <TrainingAttendance />
+              </AuthenticatedRoute>
+            }
+          />
+           <Route
+            path="/courses/:courseId/modules"
+            element={
+              <AuthenticatedRoute>
+                <ModulesTable />
               </AuthenticatedRoute>
             }
           />
