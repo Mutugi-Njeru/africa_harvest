@@ -28,7 +28,10 @@ const AccountTable = ({ refresh, openModal }) => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 25, 50, 100];
 
   const fetchAccounts = async () => {
     setLoading(true);
@@ -111,10 +114,10 @@ const AccountTable = ({ refresh, openModal }) => {
       account.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Reset to first page when search term changes
+  // Reset to first page when search term or items per page changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, itemsPerPage]);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -143,6 +146,10 @@ const AccountTable = ({ refresh, openModal }) => {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
   };
 
   // Generate page numbers to display
@@ -215,17 +222,17 @@ const AccountTable = ({ refresh, openModal }) => {
         </div>
       ) : (
         <>
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <table className="w-full text-xs text-left rtl:text-right text-gray-500">
             <thead className="text-xs text-gray-700 uppercase border-b bg-white">
               <tr>
-                <th className="px-4 py-4">ID</th>
-                <th className="px-4 py-4">Account Name</th>
-                <th className="px-4 py-4">Description</th>
-                <th className="px-4 py-4">Address</th>
-                <th className="px-4 py-4">Phone Number</th>
-                <th className="px-4 py-4">Email</th>
-                <th className="px-4 py-4">Status</th>
-                <th className="px-4 py-4">Action</th>
+                <th className="px-4 py-2">ID</th>
+                <th className="px-4 py-2">Account Name</th>
+                <th className="px-4 py-2">Description</th>
+                <th className="px-4 py-2">Address</th>
+                <th className="px-4 py-2">Phone Number</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -237,24 +244,24 @@ const AccountTable = ({ refresh, openModal }) => {
                   >
                     <th
                       scope="row"
-                      className="px-4 py-3 font-medium text-green-600 whitespace-nowrap "
+                      className="px-4 py-2 font-medium text-green-600 whitespace-nowrap "
                     >
                       {indexOfFirstItem + index + 1}
                     </th>
-                    <td className="px-3 py-3 max-w-[200px] truncate">
+                    <td className="px-3 py-2 max-w-[200px] truncate">
                       {account.accountName}
                     </td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">
+                    <td className="px-3 py-2 max-w-[200px] truncate">
                       {account.description}
                     </td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">
+                    <td className="px-3 py-2 max-w-[200px] truncate">
                       {account.address}
                     </td>
-                    <td className="px-3 py-3">{account.msisdn}</td>
-                    <td className="px-3 py-3 max-w-[200px] truncate">
+                    <td className="px-3 py-2">{account.msisdn}</td>
+                    <td className="px-3 py-2 max-w-[200px] truncate">
                       {account.email}
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-3 py-2">
                       <button
                         onClick={() => handleStatusToggle(account)}
                         className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
@@ -270,7 +277,7 @@ const AccountTable = ({ refresh, openModal }) => {
                         ></div>
                       </button>
                     </td>
-                    <td className="flex items-center px-3 py-3">
+                    <td className="flex items-center px-3 py-2">
                       <a
                         onClick={() => {
                           setSelectedAccount(account);
@@ -329,12 +336,33 @@ const AccountTable = ({ refresh, openModal }) => {
                 </button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                {/* Showing entries text moved to left side */}
-                <div className="text-sm text-gray-700">
-                  Showing {indexOfFirstItem + 1} to{" "}
-                  {Math.min(indexOfLastItem, filteredAccounts.length)} of{" "}
-                  {filteredAccounts.length} entries
+                {/* Left side - Showing entries and items per page selector */}
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-700">
+                    Showing {indexOfFirstItem + 1} to{" "}
+                    {Math.min(indexOfLastItem, filteredAccounts.length)} of{" "}
+                    {filteredAccounts.length} entries
+                  </div>
+                  
+                  {/* Items per page selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-700">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={handleItemsPerPageChange}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                    >
+                      {itemsPerPageOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-sm text-gray-700">entries</span>
+                  </div>
                 </div>
+
+                {/* Pagination buttons */}
                 <div>
                   <nav
                     className="isolate inline-flex -space-x-px rounded-md shadow-sm"

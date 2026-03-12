@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/ahlogo2.png";
 import smallLogo from "../assets/smallLogo.png";
+import leaf from "../assets/leaf.png";
 import liftonLogo from "../assets/1.png";
 import {
   LayoutDashboard,
@@ -279,7 +280,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             {isExpanded ? (
               <img src={logo} alt="Africa Harvest" className="h-20 " />
             ) : (
-              <img src={smallLogo} alt="Africa Harvest" className="h-12" />
+              <img src={leaf} alt="Africa Harvest" className="h-12" />
             )}
           </div>
           {/* Toggle Button */}
@@ -354,7 +355,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -389,7 +390,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                             : ""
                         }`}
                       >
-                        <span className="ml-3 font-medium">
+                        <span className="ml-3 font-normal">
                           {dropdownItem.text}
                         </span>
                       </div>
@@ -469,7 +470,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                             : ""
                         }`}
                       >
-                        <span className="ml-3 font-medium">
+                        <span className="ml-3 font-normal">
                           {dropdownItem.text}
                         </span>
                       </div>
@@ -498,7 +499,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                             : ""
                         }`}
                       >
-                        <span className="ml-3 font-medium">
+                        <span className="ml-3 font-normal">
                           {dropdownItem.text}
                         </span>
                       </div>
@@ -547,7 +548,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             {isExpanded ? (
               <>
                 <div className="flex items-center space-x-2">
-                  <img src={smallLogo} alt="Africa Harvest" className="h-8 w-8" />
+                  <img src={leaf} alt="Africa Harvest" className="h-8 w-8" />
                   <div className="flex flex-col">
                     <span className="text-xs text-gray-600 font-medium">Africa Harvest</span>
                     <span className="text-xs text-gray-400">© 2026 All rights reserved</span>
@@ -557,7 +558,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
               </>
             ) : (
               <div className="w-full flex justify-center">
-                <img src={smallLogo} alt="Africa Harvest" className="h-8 w-8" />
+                <img src={leaf} alt="Africa Harvest" className="h-8 w-8" />
               </div>
             )}
           </div>
