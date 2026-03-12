@@ -189,18 +189,18 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   ];
 
   const trainingsDropdownItems = [
-    {
-      text: "Engagements",
-      path: "/engagements",
-    },
+    // {
+    //   text: "Engagements",
+    //   path: "/engagements",
+    // },
     {
       text: "Training",
       path: "/training",
     },
-    {
-      text: "Trainers",
-      path: "/trainers",
-    },
+    // {
+    //   text: "Trainers",
+    //   path: "/trainers",
+    // },
   ];
 
   // New Education dropdown items
@@ -285,7 +285,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
           {/* Toggle Button */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="absolute -right-3 top-24 bg-green-800 rounded-full p-1.5 shadow-lg border border-gray-200 hover:bg-yellowOrange"
+            className="absolute -right-3 top-24 bg-green-700 rounded-full p-1.5 shadow-lg border border-gray-200 hover:bg-yellowOrange"
           >
             {isExpanded ? (
               <ChevronLeft size={20} className="text-white" />
@@ -308,7 +308,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             <div key={index}>
               <div
                 onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 text-sm hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
                   (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen) ||
                   (item.hasDropdown && item.text === "Education" && isEducationDropdownOpen)
@@ -317,7 +317,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 }`}
               >
                 <div className="flex items-center">
-                  <item.icon size={24} className="min-w-6" />
+                  <item.icon size={18} className="min-w-6" />
                   {isExpanded && (
                     <span className="ml-3 font-medium">{item.text}</span>
                   )}
@@ -354,13 +354,13 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
                         }`}
                       >
-                        <span className="ml-3 font-medium">
+                        <span className="ml-3 font-normal">
                           {dropdownItem.text}
                         </span>
                       </div>
@@ -383,7 +383,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -417,7 +417,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             <div key={`user-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
                   (!item.hasDropdown && location.pathname === item.path) ||
                   (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen) ||
                   (item.hasDropdown && item.text === "Geo-Structure" && isGeographicDropdownOpen)
@@ -426,7 +426,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 }`}
               >
                 <div className="flex items-center">
-                  <item.icon size={24} className="min-w-6" />
+                  <item.icon size={18} className="min-w-6" />
                   {isExpanded && (
                     <span className="ml-3 font-medium">{item.text}</span>
                   )}
@@ -463,7 +463,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -492,7 +492,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         onClick={() =>
                           handleDropdownItemClick(dropdownItem.path)
                         }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
                           location.pathname === dropdownItem.path
                             ? "bg-green-700 text-white"
                             : ""
@@ -526,12 +526,12 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
             <div key={`settings-${index}`}>
               <div
                 onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
+                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
                   location.pathname === item.path ? "bg-green-700 text-white" : ""
                 }`}
               >
                 <div className="flex items-center">
-                  <item.icon size={24} className="min-w-6" />
+                  <item.icon size={18} className="min-w-6" />
                   {isExpanded && (
                     <span className="ml-3 font-medium">{item.text}</span>
                   )}

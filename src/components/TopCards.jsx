@@ -1,16 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaGlobe, FaUsers, FaSeedling, FaDollarSign, FaChartLine } from "react-icons/fa";
+import { 
+  FaGlobe, 
+  FaUsers, 
+  FaSeedling, 
+  FaDollarSign, 
+  FaChartLine,
+  FaGraduationCap,
+} from "react-icons/fa";
+import { BASE_REST_API_URL } from "../service/AuthService";
+import axios from "axios";
 
 const TopCards = () => {
+  const [totalTrainings, setTotalTrainings] = useState(0);
+
+  useEffect(() => {
+    fetchTrainings();
+  }, []);
+
+  const fetchTrainings = async () => {
+    try {
+      let url = BASE_REST_API_URL + "/training/v1/trainings/";
+      const response = await axios.get(url);
+      setTotalTrainings(response.data.message.pagination.totalItems);
+    } catch (error) {
+      console.error("Error fetching trainings:", error);
+    } 
+  };
+
+  // Create cardData inside the component or as a function that accesses state
   const cardData = [
     { 
-      icon: FaGlobe, 
+      icon: FaGraduationCap,
       title: "Total Trainings", 
-      value: "76", 
+      value: totalTrainings.toLocaleString(),
       subtext: "Completed",
       color: "text-green-600", 
-      status: "green", // green circle for good status
+      status: "green",
       delay: 0 
     },
     { 
@@ -19,7 +45,7 @@ const TopCards = () => {
       value: "2,345", 
       subtext: '<span class="text-green-600 font-medium">Male: 937 (40%)</span> | <span class="text-yellow-500 font-medium">Female: 1,408 (60%)</span>',
       color: "text-blue-600", 
-      status: "green", // green circle for good status
+      status: "green",
       delay: 1 
     },
     { 
@@ -28,7 +54,7 @@ const TopCards = () => {
       value: "156", 
       subtext: '<span class="text-green-600 font-medium">Male: 94 (60%)</span> | <span class="text-yellow-500 font-medium">Female: 62 (40%)</span>',
       color: "text-yellow-600", 
-      status: "red", // red circle for alert status
+      status: "red",
       delay: 2 
     },
     { 

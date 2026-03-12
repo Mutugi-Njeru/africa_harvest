@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Smile, ChevronDown } from "lucide-react";
+import { Smile, ChevronDown, UserCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../service/AuthService";
 import { nav } from "framer-motion/client";
@@ -62,7 +62,7 @@ const Header = ({ sidebarWidth }) => {
               className="flex items-center cursor-pointer"
               onClick={toggleDropdown}
             >
-              <Smile
+              <UserCircle
                 size={30}
                 className="rounded-full mr-2 text-white bg-yellowOrange"
               />
@@ -79,14 +79,14 @@ const Header = ({ sidebarWidth }) => {
                 >
                   <button
                     onClick={handleProfile}
-                    className="block w-full px-4 py-2 text-sm text-gray-700  hover:bg-green-600 hover:text-white"
+                    className="block w-full px-4 py-2 text-sm text-gray-700  hover:bg-green-400 hover:text-white"
                     role="menuitem"
                   >
                     Profile
                   </button>
                   <button
                     onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-green-600 hover:text-white"
+                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-green-400 hover:text-white"
                     role="menuitem"
                   >
                     Logout

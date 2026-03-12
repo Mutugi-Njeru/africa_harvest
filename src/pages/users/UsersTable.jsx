@@ -279,15 +279,15 @@ const UsersTable = ({
           <div className="border border-gray-200 flex items-center justify-between p-1 rounded-lg bg-gray-50">
             <button
               onClick={() => setShowUsers(true)}
-              className={`mr-2 text-base font-bold rounded-md px-5 py-2 text-gray-700 hover:bg-gray-100 focus:text-white focus:bg-green-800 shadow-sm ${
-                showUsers ? "text-white bg-green-800" : "bg-transparent"
+              className={`mr-2 text-base font-bold rounded-md px-5 py-2 text-gray-700 hover:bg-gray-100 focus:text-white focus:bg-green-400 shadow-sm ${
+                showUsers ? "text-white bg-green-400" : "bg-transparent"
               }`}
             >
-              All Users
+              Users
             </button>
             <button
               onClick={() => setShowUsers(false)}
-              className="bg-transparent border text-base font-bold rounded-md px-5 py-2 text-gray-700 hover:bg-gray-100 focus:text-white focus:bg-green-800 transition-colors shadow-sm "
+              className="bg-transparent border text-base font-bold rounded-md px-5 py-2 text-gray-700 hover:bg-gray-100 focus:text-white focus:bg-green-400 transition-colors shadow-sm "
               disabled={!canCreateRole}
             >
               Roles
