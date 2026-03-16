@@ -120,7 +120,7 @@ const HorizontalBarChart = () => {
       {/* Header Section */}
       <div className="px-2 sm:px-3 pb-2">
         <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800">
-          Farmers Subactivities
+          Farmers Value Chains
         </h2>
         {isMobile && (
           <p className="text-xs text-gray-500 mt-1">
