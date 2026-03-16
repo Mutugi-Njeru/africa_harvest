@@ -1,10 +1,9 @@
 import axios from "axios";
-import { ClipboardEditIcon, Edit, ChevronLeft, ChevronRight, Eye, Check, X } from "lucide-react";
+import { Edit, ChevronLeft, ChevronRight, Eye, Check, X, UsersRound } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
 import UpdateGroupDetails from "./UpdateGroupDetails";
-import { FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
@@ -13,14 +12,18 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [groupToToggle, setGroupToToggle] = useState(null);
   const [toggleAction, setToggleAction] = useState(null); // 'activate' or 'deactivate'
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
 
   useEffect(() => { 
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, itemsPerPage]);
 
   // Filter groups based on search term
   const filteredGroups = useMemo(() => {
@@ -71,14 +74,15 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
     }
   };
 
-   const handleShowMembers = async (groupId) => {
-      try {
-        navigate(`/groups/${groupId}/members`);
-      } catch (error) {
-        console.error("Error navigating to members:", error);
-        toast.error("Failed to view members");
-      }
-    };
+  const handleShowMembers = async (groupId) => {
+    try {
+      navigate(`/groups/${groupId}/members`);
+    } catch (error) {
+      console.error("Error navigating to members:", error);
+      toast.error("Failed to view members");
+    }
+  };
+
   const handleToggleClick = (groupId, currentStatus) => {
     // Find the group details
     const group = groups.find(g => g.groupId === groupId);
@@ -141,6 +145,10 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
     }
   };
 
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+  };
+
   // Generate page numbers to display
   const getPageNumbers = () => {
     const pageNumbers = [];
@@ -179,110 +187,107 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
 
   return (
     <div>
-      <div className="relative overflow-x-auto shadow-md mt-3">
+      <div className="relative overflow-x-auto mt-3">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
           </div>
         ) : (
           <div className="relative overflow-x-auto min-h-[400px]">
-            <div>
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
-                <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                  <tr>
-                    <th className="px-6 py-4">ID</th>
-                    <th className="px-6 py-4">Group Name</th>
-                    <th className="px-6 py-4">Group Manager</th>
-                    <th className="px-6 py-4">Ward</th>
-                    <th className="px-6 py-4">Sub County</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.length > 0 ? (
-                    currentItems.map((group, index) => (
-                      <tr
-                        key={group.groupId}
-                        className="bg-white border-b hover:bg-gray-50"
+            <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+              <thead className="text-xs text-gray-500 border-b bg-white">
+                <tr>
+                  <th className="px-3 py-2">ID</th>
+                  <th className="px-3 py-2">Group Name</th>
+                  <th className="px-3 py-2">Group Manager</th>
+                  <th className="px-3 py-2">Ward</th>
+                  <th className="px-3 py-2">Sub County</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((group, index) => (
+                    <tr
+                      key={group.groupId}
+                      className="bg-white border-b hover:bg-gray-50"
+                    >
+                      <th
+                        scope="row"
+                        className="px-3 py-1 font-medium text-green-600 whitespace-nowrap"
                       >
-                        <th
-                          scope="row"
-                          className="px-6 py-3 font-medium text-green-600 whitespace-nowrap"
-                        >
-                          {indexOfFirstItem + index + 1}
-                        </th>
-                        <td className="px-6 py-3 truncate max-w-[200px]">
-                          {group.groupName}
-                        </td>
-                        <td className="px-6 py-3">{group.groupManager}</td>
-                        <td className="px-6 py-3">{group.wardTitle}</td>
-                        <td className="px-6 py-3 truncate max-w-[150px]">
-                          {group.subCountyTitle}
-                        </td>
-                        <td className="px-6 py-3 truncate max-w-[150px]">
-                          <button
-                            onClick={() =>
-                              handleToggleClick(
-                                group.groupId,
-                                !group.softDeleted
-                              )
-                            }
-                            className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
-                              group.softDeleted
-                                ? "bg-veryLightGreen"
-                                : "bg-green-300"
-                            }`}
-                          >
-                            <div
-                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                                group.softDeleted
-                                  ? "translate-x-0"
-                                  : "translate-x-4"
-                              }`}
-                            ></div>
-                          </button>
-                        </td>
-                        <td className="flex items-center px-6 py-3 relative">
-                          <a
-                            onClick={() => handleEditClick(group)}
-                            className="font-medium text-green-600 cursor-pointer hover:underline flex items-center pr-3"
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </a>
-                           <div className="relative">
-                          <a
-                            onClick={() =>
-                            handleShowMembers(group.groupId)
+                        {indexOfFirstItem + index + 1}
+                      </th>
+                      <td className="px-3 py-1 max-w-[200px] truncate">
+                        {group.groupName}
+                      </td>
+                      <td className="px-3 py-1 max-w-[150px] truncate">
+                        {group.groupManager}
+                      </td>
+                      <td className="px-3 py-1 max-w-[150px] truncate">
+                        {group.wardTitle}
+                      </td>
+                      <td className="px-3 py-1 max-w-[150px] truncate">
+                        {group.subCountyTitle}
+                      </td>
+                      <td className="px-3 py-1">
+                        <button
+                          onClick={() =>
+                            handleToggleClick(
+                              group.groupId,
+                              !group.softDeleted
+                            )
                           }
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View Members
-                          </a>
-                          </div>
-                          
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr className="bg-white border-b hover:bg-gray-50">
-                      <td
-                        colSpan="7"
-                        className="px-6 py-4 text-center text-gray-500"
-                      >
-                        {searchTerm ? "No groups match your search" : "No groups found"}
+                          className={`w-10 h-6 rounded-full p-1 flex items-center transition-colors ${
+                            group.softDeleted
+                              ? "bg-veryLightGreen"
+                              : "bg-green-300"
+                          }`}
+                        >
+                          <div
+                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                              group.softDeleted
+                                ? "translate-x-0"
+                                : "translate-x-4"
+                              }`}
+                          ></div>
+                        </button>
+                      </td>
+                      <td className="flex items-center px-3 py-1">
+                        <a
+                          onClick={() => handleEditClick(group)}
+                          className="font-medium text-green-600 hover:underline flex items-center cursor-pointer mr-4"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </a>
+                        <a
+                          onClick={() => handleShowMembers(group.groupId)}
+                          className="font-medium text-yellowOrange hover:underline flex items-center cursor-pointer"
+                        >
+                          <UsersRound className="w-4 h-4 mr-2" />
+                          Members
+                        </a>
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                ) : (
+                  <tr className="bg-white border-b hover:bg-gray-50">
+                    <td
+                      colSpan="7"
+                      className="px-3 py-8 text-center text-gray-500"
+                    >
+                      {searchTerm ? "No groups match your search" : "No groups found"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
 
             {/* Pagination Controls */}
             {filteredGroups.length > 0 && (
-              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     onClick={handlePreviousPage}
@@ -308,11 +313,33 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
                   </button>
                 </div>
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {indexOfFirstItem + 1} to{" "}
-                    {Math.min(indexOfLastItem, filteredGroups.length)} of{" "}
-                    {filteredGroups.length} entries
+                  {/* Left side - Showing entries and items per page selector */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-700">
+                      Showing {indexOfFirstItem + 1} to{" "}
+                      {Math.min(indexOfLastItem, filteredGroups.length)} of{" "}
+                      {filteredGroups.length} entries
+                    </div>
+                    
+                    {/* Items per page selector */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700">Show</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                      >
+                        {itemsPerPageOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-gray-700">entries</span>
+                    </div>
                   </div>
+
+                  {/* Pagination buttons */}
                   <div>
                     <nav
                       className="isolate inline-flex -space-x-px rounded-md shadow-sm"
@@ -373,66 +400,46 @@ const GroupsTable = ({ groups, isLoading, fetchGroups, searchTerm }) => {
       </div>
       
       {/* Confirmation Modal */}
-{isConfirmModalOpen && groupToToggle && (
-  <div className="fixed inset-0 z-50 overflow-y-auto">
-    {/* Backdrop */}
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
-      onClick={handleCancelToggle}
-    ></div>
-    
-    {/* Modal Container - Perfectly centered */}
-   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-  <div className="bg-white p-6 w-[400px] rounded-md">
-    <h2 className="text-lg font-semibold mb-4">
-      {toggleAction === 'deactivate' ? 'Deactivate Group' : 'Activate Group'}
-    </h2>
-    
-    <div className="mb-6">
-      <p className="text-xl text-gray-600">
-        {toggleAction === 'deactivate' 
-          ? `Are you sure you want to deactivate "${groupToToggle.name}"? This action cannot be reversed.`
-          : `Are you sure you want to activate "${groupToToggle.name}"? The group will become active again.`
-        }
-      </p>
-    </div>
+      {isConfirmModalOpen && groupToToggle && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-lg font-semibold mb-4">
+              {toggleAction === 'deactivate' ? 'Confirm Deactivation' : 'Confirm Activation'}
+            </h2>
+            
+            <p className="text-gray-600">
+              {toggleAction === 'deactivate' 
+                ? `Are you sure you want to deactivate "${groupToToggle.name}"?`
+                : `Are you sure you want to activate "${groupToToggle.name}"?`
+              }
+            </p>
 
-    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-      <button
-        type="button"
-        onClick={handleCancelToggle}
-        className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
-      >
-        <X size={20} />
-        Cancel
-      </button>
-      
-      <button
-        type="button"
-        onClick={handleConfirmToggle}
-        className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
-          toggleAction === 'deactivate'
-            ? 'bg-red-600 hover:bg-red-700'
-            : 'bg-saveButton hover:bg-yellowOrange'
-        }`}
-      >
-        {toggleAction === 'deactivate' ? (
-          <>
-            <X size={20} />
-            Deactivate
-          </>
-        ) : (
-          <>
-            <Check size={20} />
-            Activate
-          </>
-        )}
-      </button>
-    </div>
-  </div>
-</div>
-  </div>
-)}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={handleCancelToggle}
+                className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
+              >
+                <X size={20} />
+                Cancel
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleConfirmToggle}
+                className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] text-white ${
+                  toggleAction === 'deactivate'
+                    ? 'bg-saveButton hover:bg-yellowOrange'
+                    : 'bg-saveButton hover:bg-yellowOrange'
+                }`}
+              >
+                <Check size={20} />
+                {toggleAction === 'deactivate' ? 'Deactivate' : 'Activate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {isUpdateModalOpen && (
         <UpdateGroupDetails

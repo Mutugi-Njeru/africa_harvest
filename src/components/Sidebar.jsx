@@ -153,7 +153,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   // User Profiles dropdown items
   const userProfilesDropdownItems = [
     {
-      text: "User Profiles",
+      text: "Users",
       path: "/users",
     },
     { text: "Regional EA", path: "/regionalagents" },

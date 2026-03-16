@@ -223,16 +223,16 @@ const AccountTable = ({ refresh, openModal }) => {
       ) : (
         <>
           <table className="w-full text-xs text-left rtl:text-right text-gray-500">
-            <thead className="text-xs text-gray-500 uppercase border-b bg-white">
+            <thead className="text-xs text-gray-500 border-b bg-white">
               <tr>
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Account Name</th>
-                <th className="px-4 py-2">Description</th>
-                <th className="px-4 py-2">Address</th>
-                <th className="px-4 py-2">Phone Number</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Action</th>
+                <th className="px-3 py-2">ID</th>
+                <th className="px-3 py-2">Account Name</th>
+                <th className="px-3 py-2">Description</th>
+                <th className="px-3 py-2">Address</th>
+                <th className="px-3 py-2">Mobile</th>
+                <th className="px-3 py-2">Email</th>
+                <th className="px-3 py-2">Status</th>
+                <th className="px-3 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -244,14 +244,14 @@ const AccountTable = ({ refresh, openModal }) => {
                   >
                     <th
                       scope="row"
-                      className="px-4 py-1 font-medium text-green-600 whitespace-nowrap "
+                      className="px-3 py-1 font-medium text-green-600 whitespace-nowrap "
                     >
                       {indexOfFirstItem + index + 1}
                     </th>
                     <td className="px-3 py-1 max-w-[200px] truncate">
                       {account.accountName}
                     </td>
-                    <td className="px-3 py-1 max-w-[200px] truncate">
+                    <td className="px-3 py-1 max-w-[150px] truncate">
                       {account.description}
                     </td>
                     <td className="px-3 py-1 max-w-[200px] truncate">
@@ -310,7 +310,7 @@ const AccountTable = ({ refresh, openModal }) => {
 
           {/* Pagination Controls */}
           {filteredAccounts.length > 0 && (
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
                   onClick={handlePreviousPage}
