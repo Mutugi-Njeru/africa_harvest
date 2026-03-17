@@ -61,7 +61,7 @@ const UpdateGroupDetails = ({ handleCloseModal, group, fetchGroups }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-[800px] max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-1/3 max-w-[800px] max-h-[90vh] flex flex-col">
         {/* Fixed Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-lg font-semibold">

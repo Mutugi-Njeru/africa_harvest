@@ -14,7 +14,10 @@ const GroupMembersTable = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
 
   useEffect(() => {
     const fetchGroupMembers = async () => {
@@ -37,7 +40,7 @@ const GroupMembersTable = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, itemsPerPage]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -97,6 +100,10 @@ const GroupMembersTable = () => {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
   };
 
   // Generate page numbers to display
@@ -177,136 +184,136 @@ const GroupMembersTable = () => {
         ) : (
           <div className="relative overflow-x-auto min-h-[400px]">
             <div>
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase bg-white border-b">
+              <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+                <thead className="text-xs text-gray-500 border-b bg-white">
                   <tr>
-                    <th className="px-3 py-4">ID</th>
-                    <th className="px-2 py-4">Firstname</th>
-                    <th className="px-1 py-4">Lastname</th>
-                    <th className="px-2 py-4">Phone Number</th>
-                    <th className="px-6 py-4">Gender</th>
-                    <th className="px-6 py-4">Id Number</th>
-                    <th className="px-6 py-4">DOB</th>
-                    <th className="px-6 py-4">Ward</th>
-                    <th className="px-6 py-4">Value Chains</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Date Created</th>
+                    <th className="px-3 py-2">ID</th>
+                    <th className="px-3 py-2">Firstname</th>
+                    <th className="px-3 py-2">Lastname</th>
+                    <th className="px-3 py-2">Phone Number</th>
+                    <th className="px-3 py-2">Gender</th>
+                    <th className="px-3 py-2">Id Number</th>
+                    <th className="px-3 py-2">DOB</th>
+                    <th className="px-3 py-2">Ward</th>
+                    <th className="px-3 py-2">Value Chains</th>
+                    <th className="px-3 py-2">Status</th>
+                    <th className="px-3 py-2">Date Created</th>
                   </tr>
                 </thead>
                 <tbody>
-  {currentItems.length > 0 ? (
-    currentItems.map((member, index) => (
-      <tr
-        key={member.memberId}
-        className="bg-white border-b hover:bg-gray-50"
-      >
-        <th
-          scope="row"
-          className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
-        >
-          {indexOfFirstItem + index + 1}
-        </th>
-        <td className="px-1 py-3 truncate max-w-[150px]">
-          {member.firstName || "N/A"}
-        </td>
-        <td className="px-1 py-3 truncate max-w-[150px]">
-          {member.lastName || "N/A"}
-        </td>
-        <td className="px-2 py-3 whitespace-nowrap">
-          {member.msisdn || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap capitalize">
-          {member.gender || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {member.idNumber || "N/A"}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {formatDate(member.dob)}
-        </td>
-        <td
-          className="px-6 py-3 truncate max-w-[200px]"
-          title={member.wardTitle}
-        >
-          {member.wardTitle || "N/A"}
-        </td>
-       <td className="px-6 py-3 relative group">
-  {member.subActivities && member.subActivities.length > 0 ? (
-    <>
-      <div className="flex flex-wrap gap-1 max-w-[250px] cursor-help">
-        {member.subActivities.slice(0, 3).map((subActivity, idx) => (
-          <span
-            key={subActivity.subActivityId || idx}
-            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
-          >
-            {subActivity.subActivity.length > 15
-              ? `${subActivity.subActivity.substring(0, 15)}...`
-              : subActivity.subActivity}
-          </span>
-        ))}
-        {member.subActivities.length > 3 && (
-          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            +{member.subActivities.length - 3}
-          </span>
-        )}
-      </div>
-      
-      {/* Tooltip showing all subactivities */}
-      <div className="absolute hidden group-hover:block z-10 bg-gray-800 text-white text-xs rounded p-2 mt-1 min-w-[200px] shadow-lg">
-        <p className="font-semibold mb-1">Value Chains:</p>
-        <ul className="list-disc pl-4">
-          {member.subActivities.map((sa, idx) => (
-            <li key={idx} className="mb-1">
-              <span className="font-medium">{sa.subActivity}</span>
-              {sa.activityName && (
-                <span className="text-gray-300 text-xs block">
-                  ({sa.activityName})
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
-  ) : (
-    <span className="text-gray-400 text-sm">No value chains</span>
-  )}
-</td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {member.isActive ? (
-            <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-              Active
-            </span>
-          ) : (
-            <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
-              Inactive
-            </span>
-          )}
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap">
-          {formatDate(member.createdAt)}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr className="bg-white border-b">
-      <td
-        colSpan="11" // Updated from "10" to "11" since we now have 11 columns
-        className="px-6 py-8 text-center text-gray-500"
-      >
-        {searchTerm
-          ? "No members match your search"
-          : "No members found in this group"}
-      </td>
-    </tr>
-  )}
-</tbody>
+                  {currentItems.length > 0 ? (
+                    currentItems.map((member, index) => (
+                      <tr
+                        key={member.memberId}
+                        className="bg-white border-b hover:bg-gray-50"
+                      >
+                        <th
+                          scope="row"
+                          className="px-3 py-1 font-medium text-green-600 whitespace-nowrap"
+                        >
+                          {indexOfFirstItem + index + 1}
+                        </th>
+                        <td className="px-3 py-1 truncate max-w-[150px]">
+                          {member.firstName || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 truncate max-w-[150px]">
+                          {member.lastName || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {member.msisdn || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap capitalize">
+                          {member.gender || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {member.idNumber || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {formatDate(member.dob)}
+                        </td>
+                        <td
+                          className="px-3 py-1 truncate max-w-[200px]"
+                          title={member.wardTitle}
+                        >
+                          {member.wardTitle || "N/A"}
+                        </td>
+                        <td className="px-3 py-1 relative group">
+                          {member.subActivities && member.subActivities.length > 0 ? (
+                            <>
+                              <div className="flex flex-wrap gap-1 max-w-[250px] cursor-help">
+                                {member.subActivities.slice(0, 3).map((subActivity, idx) => (
+                                  <span
+                                    key={subActivity.subActivityId || idx}
+                                    className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                                  >
+                                    {subActivity.subActivity.length > 15
+                                      ? `${subActivity.subActivity.substring(0, 15)}...`
+                                      : subActivity.subActivity}
+                                  </span>
+                                ))}
+                                {member.subActivities.length > 3 && (
+                                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                                    +{member.subActivities.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {/* Tooltip showing all subactivities */}
+                              <div className="absolute hidden group-hover:block z-10 bg-gray-800 text-white text-xs rounded p-2 mt-1 min-w-[200px] shadow-lg">
+                                <p className="font-semibold mb-1">Value Chains:</p>
+                                <ul className="list-disc pl-4">
+                                  {member.subActivities.map((sa, idx) => (
+                                    <li key={idx} className="mb-1">
+                                      <span className="font-medium">{sa.subActivity}</span>
+                                      {sa.activityName && (
+                                        <span className="text-gray-300 text-xs block">
+                                          ({sa.activityName})
+                                        </span>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </>
+                          ) : (
+                            <span className="text-gray-400 text-sm">No value chains</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {member.isActive ? (
+                            <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                              Active
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
+                              Inactive
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {formatDate(member.createdAt)}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="bg-white border-b">
+                      <td
+                        colSpan="11"
+                        className="px-3 py-8 text-center text-gray-500"
+                      >
+                        {searchTerm
+                          ? "No members match your search"
+                          : "No members found in this group"}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
 
-            {/* Pagination Controls*/}
+            {/* Pagination Controls */}
             {filteredMembers.length > 0 && (
-              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     onClick={handlePreviousPage}
@@ -332,11 +339,33 @@ const GroupMembersTable = () => {
                   </button>
                 </div>
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {indexOfFirstItem + 1} to{" "}
-                    {Math.min(indexOfLastItem, filteredMembers.length)} of{" "}
-                    {filteredMembers.length} members
+                  {/* Left side - Showing entries and items per page selector */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-700">
+                      Showing {indexOfFirstItem + 1} to{" "}
+                      {Math.min(indexOfLastItem, filteredMembers.length)} of{" "}
+                      {filteredMembers.length} entries
+                    </div>
+                    
+                    {/* Items per page selector */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700">Show</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                      >
+                        {itemsPerPageOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-gray-700">entries</span>
+                    </div>
                   </div>
+
+                  {/* Pagination buttons */}
                   <div>
                     <nav
                       className="isolate inline-flex -space-x-px rounded-md shadow-sm"

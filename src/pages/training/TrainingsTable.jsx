@@ -13,7 +13,10 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
 
   const handleShowAttendance = async (trainingId) => {
     try {
@@ -46,13 +49,14 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
   }, [trainings, searchTerm]);
 
   const handleViewResources = (trainingId) => {
-  try {
-    navigate(`/training/${trainingId}/resources`);
-  } catch (error) {
-    console.error("Error navigating to resources:", error);
-    toast.error("Failed to view resources");
-  }
-};
+    try {
+      navigate(`/training/${trainingId}/resources`);
+    } catch (error) {
+      console.error("Error navigating to resources:", error);
+      toast.error("Failed to view resources");
+    }
+  };
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -79,6 +83,10 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
   };
 
   // Generate page numbers to display
@@ -119,116 +127,109 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
 
   return (
     <div>
-      <div className="relative overflow-x-auto shadow-md mt-3">
+      <div className="relative overflow-x-auto mt-3">
         <div className="relative overflow-x-auto min-h-[400px]">
-          <div>
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                <tr>
-                  <th className="px-4 py-4">ID</th>
-                  <th className="px-4 py-4">Title</th>
-                  <th className="px-4 py-4">Code</th>
-                  <th className="px-4 py-4">Value Chain</th>
-                  <th className="px-4 py-4">Module</th>
-                  <th className="px-4 py-4">Location</th>
-                  <th className="px-4 py-4">Start Time</th>
-                  <th className="px-4 py-4">End Time</th>
-                  <th className="px-4 py-4">Trainer</th>
-                  <th className="px-4 py-4">Description</th>
-                  <th className="px-4 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.length > 0 ? (
-                  currentItems.map((training, index) => (
-                    <tr
-                      key={training.trainingId || index}
-                      className="bg-white border-b hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3 font-medium text-green-600 whitespace-nowrap">
-                        {indexOfFirstItem + index + 1}
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.title || "-"}
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.trainingCode || "-"}
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.subActivity || "-"}
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.moduleTitle || "-"}
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.location || "-"}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {training.startTime
-                          ? new Date(
-                              `2000-01-01T${training.startTime}`,
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {training.endTime
-                          ? new Date(
-                              `2000-01-01T${training.endTime}`,
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                          {training.user?.name || "-"}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 truncate max-w-[200px]">
-                        {training.description || "-"}
-                      </td>
-                      <td className="px-4 py-3 flex gap-2">
-                        <button
-                          className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
-                          onClick={() =>
-                            handleViewResources(training.trainingId)
-                          }
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Resources
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleShowAttendance(training.trainingId)
-                          }
-                          className="font-medium text-yellow-600 cursor-pointer hover:underline flex items-center"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Attendance
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="9" className="text-center py-8 text-gray-500">
-                      {searchTerm
-                        ? "No trainings match your search criteria"
-                        : "No trainings found"}
+          <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+            <thead className="text-xs text-gray-500 border-b bg-white">
+              <tr>
+                <th className="px-3 py-2">ID</th>
+                <th className="px-3 py-2">Title</th>
+                <th className="px-3 py-2">Code</th>
+                <th className="px-3 py-2">Value Chain</th>
+                {/* <th className="px-3 py-2">Module</th> */}
+                <th className="px-3 py-2">Location</th>
+                <th className="px-3 py-2">Start</th>
+                <th className="px-3 py-2">End</th>
+                <th className="px-3 py-2">Trainer</th>
+                <th className="px-3 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length > 0 ? (
+                currentItems.map((training, index) => (
+                  <tr
+                    key={training.trainingId || index}
+                    className="bg-white border-b hover:bg-gray-50"
+                  >
+                    <td className="px-3 py-1 font-medium text-green-600 whitespace-nowrap">
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="px-3 py-1 truncate max-w-[150px]">
+                      {training.title || "-"}
+                    </td>
+                    <td className="px-3 py-1 truncate max-w-[120px]">
+                      {training.trainingCode || "-"}
+                    </td>
+                    <td className="px-3 py-1 truncate max-w-[120px]">
+                      {training.subActivity || "-"}
+                    </td>
+                    {/* <td className="px-3 py-1 truncate max-w-[120px]">
+                      {training.moduleTitle || "-"}
+                    </td> */}
+                    <td className="px-3 py-1 truncate max-w-[120px]">
+                      {training.location || "-"}
+                    </td>
+                    <td className="px-3 py-1 whitespace-nowrap">
+                      {training.startTime
+                        ? new Date(
+                            `2000-01-01T${training.startTime}`,
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "-"}
+                    </td>
+                    <td className="px-3 py-1 whitespace-nowrap">
+                      {training.endTime
+                        ? new Date(
+                            `2000-01-01T${training.endTime}`,
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "-"}
+                    </td>
+                    <td className="px-3 py-1 truncate max-w-[120px]">
+                      {training.user?.name || "-"}
+                    </td>
+                  
+                    <td className="flex items-center px-3 py-1 gap-3">
+                      <button
+                        className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                        onClick={() =>
+                          handleViewResources(training.trainingId)
+                        }
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Resources
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleShowAttendance(training.trainingId)
+                        }
+                        className="font-medium text-yellow-600 cursor-pointer hover:underline flex items-center"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Attendance
+                      </button>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr className="bg-white border-b hover:bg-gray-50">
+                  <td colSpan="11" className="px-3 py-8 text-center text-gray-500">
+                    {searchTerm
+                      ? "No trainings match your search criteria"
+                      : "No trainings found"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
           {/* Pagination Controls */}
           {filteredTrainings.length > 0 && (
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2">
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
                   onClick={handlePreviousPage}
@@ -254,11 +255,33 @@ const TrainingsTable = ({ trainings = [], searchTerm = "" }) => {
                 </button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing {indexOfFirstItem + 1} to{" "}
-                  {Math.min(indexOfLastItem, filteredTrainings.length)} of{" "}
-                  {filteredTrainings.length} training records
+                {/* Left side - Showing entries and items per page selector */}
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-700">
+                    Showing {indexOfFirstItem + 1} to{" "}
+                    {Math.min(indexOfLastItem, filteredTrainings.length)} of{" "}
+                    {filteredTrainings.length} entries
+                  </div>
+                  
+                  {/* Items per page selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-700">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={handleItemsPerPageChange}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                    >
+                      {itemsPerPageOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-gray-700">entries</span>
+                  </div>
                 </div>
+
+                {/* Pagination buttons */}
                 <div>
                   <nav
                     className="isolate inline-flex -space-x-px rounded-md shadow-sm"

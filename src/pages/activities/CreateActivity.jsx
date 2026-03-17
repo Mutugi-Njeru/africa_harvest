@@ -51,71 +51,86 @@ const CreateActivity = ({ isOpen, onClose, onActivityCreated }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 shadow-lg w-[600px]">
-        <h2 className="text-lg font-semibold mb-4">Create Value Chain Type</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Value Chain Type
-            </label>
-            <input
-              type="text"
-              name="activity"
-              value={formData.activity}
-              onChange={handleChange}
-              placeholder="Activity Name"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-              required
-            />
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-[600px] max-h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-6 border-b">
+          <h2 className="text-lg font-semibold">Create Value Chain Type</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-          {/* Description */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-              rows="3"
-              required
-            />
-          </div>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} id="create-activity-form">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Value Chain Type
+              </label>
+              <input
+                type="text"
+                name="activity"
+                value={formData.activity}
+                onChange={handleChange}
+                placeholder="Enter activity name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                required
+              />
+            </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
-            >
-              <X size={20} />
-              Cancel
-            </button>
+            {/* Description */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                rows="3"
+                placeholder="Enter activity description..."
+                required
+              />
+            </div>
+          </form>
+        </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-saveButton hover:bg-yellowOrange"
-              }`}
-            >
-              {isLoading ? (
-                "Creating..."
-              ) : (
-                <>
-                  <Check size={20} />
-                  Create
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+        {/* Fixed Footer with Buttons */}
+        <div className="flex justify-end gap-3 p-6 border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-white text-saveButton hover:bg-gray-50"
+          >
+            <X size={20} />
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            form="create-activity-form"
+            disabled={isLoading}
+            className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+              isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-saveButton hover:bg-yellowOrange"
+            } text-white`}
+          >
+            {isLoading ? (
+              "Creating..."
+            ) : (
+              <>
+                <Check size={20} />
+                Create
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

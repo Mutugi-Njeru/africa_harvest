@@ -17,7 +17,9 @@ const CreateSubactivity = ({ isOpen, onClose, onSubactivityCreated }) => {
   });
 
   useEffect(() => {
-    fetchActivities();
+    if (accountId) {
+      fetchActivities();
+    }
   }, [accountId]);
 
   const handleSubmit = async (e) => {
@@ -60,6 +62,7 @@ const CreateSubactivity = ({ isOpen, onClose, onSubactivityCreated }) => {
       setActivities(response.data.message);
     } catch (error) {
       console.error("Failed to fetch activities:", error);
+      toast.error("Failed to fetch activities");
     }
   };
 
@@ -83,72 +86,89 @@ const CreateSubactivity = ({ isOpen, onClose, onSubactivityCreated }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 shadow-lg w-[800px]">
-        <h2 className="text-lg font-semibold mb-4">Create Value Chain</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Value Chain
-              </label>
-              <input
-                type="text"
-                name="subActivity"
-                value={formData.subActivity}
-                onChange={handleInputChange}
-                placeholder="Subactivity Name"
-                className="block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-[600px] max-h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-6 border-b">
+          <h2 className="text-lg font-semibold">Create Value Chain</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-            <div className="">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Value Chain Type
-              </label>
-              <Select
-                name="activityId"
-                options={activityOptions}
-                value={selectedActivity}
-                onChange={handleActivityChange}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                styles={CustomFiltersStyles}
-                required
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
-            >
-              <X size={20} />
-              Cancel
-            </button>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} id="create-subactivity-form">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Value Chain
+                </label>
+                <input
+                  type="text"
+                  name="subActivity"
+                  value={formData.subActivity}
+                  onChange={handleInputChange}
+                  placeholder="Enter subactivity name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                  required
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-saveButton hover:bg-yellowOrange"
-              }`}
-            >
-              {isLoading ? (
-                "Creating..."
-              ) : (
-                <>
-                  <Check size={20} />
-                  Create
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Value Chain Type
+                </label>
+                <Select
+                  name="activityId"
+                  options={activityOptions}
+                  value={selectedActivity}
+                  onChange={handleActivityChange}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  styles={CustomFiltersStyles}
+                  placeholder="Select value chain type..."
+                  required
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Fixed Footer with Buttons */}
+        <div className="flex justify-end gap-3 p-6 border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-white text-saveButton hover:bg-gray-50"
+          >
+            <X size={20} />
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            form="create-subactivity-form"
+            disabled={isLoading}
+            className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+              isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-saveButton hover:bg-yellowOrange"
+            } text-white`}
+          >
+            {isLoading ? (
+              "Creating..."
+            ) : (
+              <>
+                <Check size={20} />
+                Create
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
