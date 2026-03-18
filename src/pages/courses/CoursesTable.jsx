@@ -1,6 +1,6 @@
-import { Edit, Eye, ChevronLeft, ChevronRight, SquarePen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit, Eye, SquarePen } from 'lucide-react';
 import React, { useState, useMemo, useEffect } from 'react';
-import CourseModuleModal from './CourseModuleModal'; // Adjust the import path as needed
+import CourseModuleModal from './CourseModuleModal';
 import UpdateCourse from './UpdateCourse';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -8,16 +8,20 @@ import { useNavigate } from 'react-router-dom';
 const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isModuleModalOpen, setIsModuleModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedCourseForUpdate, setSelectedCourseForUpdate] = useState(null);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
 
   useEffect(() => { 
     setCurrentPage(1);
   }, [searchTerm]);
+
   // Filter courses based on search term
   const filteredCourses = useMemo(() => {
     const coursesArray = Array.isArray(courses) ? courses : [];
@@ -59,6 +63,11 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
     }
   };
 
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
   // Modal handlers
   const handleOpenModuleModal = (course) => {
     setSelectedCourse(course);
@@ -75,12 +84,13 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
       onCourseUpdated();
     }
   };
+
   const handleOpenUpdateModal = (course) => {
     setSelectedCourseForUpdate(course);
     setIsUpdateModalOpen(true);
   };
 
-   const handleCloseUpdateModal = () => {
+  const handleCloseUpdateModal = () => {
     setIsUpdateModalOpen(false);
     setSelectedCourseForUpdate(null);
   };
@@ -91,13 +101,14 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
     }
   };
 
-   const handleShowModules = async (courseId) => {
-        try {
-          navigate(`/courses/${courseId}/modules`);
-        } catch (error) {
-          console.error("Error navigating to modules:", error);
-        }
-      };
+  const handleShowModules = async (courseId) => {
+    try {
+      navigate(`/courses/${courseId}/modules`);
+    } catch (error) {
+      console.error("Error navigating to modules:", error);
+      toast.error("Failed to view modules");
+    }
+  };
 
   // Generate page numbers to display
   const getPageNumbers = () => {
@@ -145,54 +156,43 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
     );
   }
 
-  if (!courses || courses.length === 0) {
-    return (
-      <div className="relative overflow-x-auto shadow-md mt-3">
-        <div className="relative overflow-x-auto min-h-[400px] flex items-center justify-center">
-          <p className="text-gray-500">No courses found</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="relative overflow-x-auto shadow-md mt-3">
         <div className="relative overflow-x-auto min-h-[400px]">
-          <div>
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                <tr>
-                  <th className="px-3 py-4">ID</th>
-                  <th className="px-2 py-4">Course Code</th>
-                  <th className="px-2 py-4">Title</th>
-                  <th className="px-2 py-4">Duration (Hours)</th>
-                  <th className="px-2 py-4">Description</th>
-                  <th className="px-2 py-4">Status</th>
-                  <th className="px-2 py-4">Date Created</th>
-                  <th className="px-2 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((course, index) => (
+          <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+            <thead className="text-xs text-gray-500 border-b bg-white">
+              <tr>
+                <th className="px-3 py-2">ID</th>
+                <th className="px-3 py-2">Course Code</th>
+                <th className="px-3 py-2">Title</th>
+                <th className="px-3 py-2">Hours</th>
+                <th className="px-3 py-2">Description</th>
+                <th className="px-3 py-2">Status</th>
+                <th className="px-3 py-2">Date</th>
+                <th className="px-3 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length > 0 ? (
+                currentItems.map((course, index) => (
                   <tr key={course.courseId} className="bg-white border-b hover:bg-gray-50">
-                    <td className="px-3 py-3 font-medium text-green-600 whitespace-nowrap">
+                    <td className="px-3 py-1 font-medium text-green-600 whitespace-nowrap">
                       {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="px-2 py-3 truncate max-w-[150px]">
-                      {course.courseCode}
+                    <td className="px-3 py-1 truncate max-w-[150px]">
+                      {course.courseCode || '-'}
                     </td>
-                    <td className="px-2 py-3 truncate max-w-[200px]">
-                      {course.title}
+                    <td className="px-3 py-1 truncate max-w-[200px]">
+                      {course.title || '-'}
                     </td>
-                    <td className="px-2 py-3 whitespace-nowrap">
-                      {course.durationHours}
+                    <td className="px-3 py-1 whitespace-nowrap">
+                      {course.durationHours || '-'}
                     </td>
-                    <td className="px-2 py-3 truncate max-w-[200px]">
+                    <td className="px-3 py-1 truncate max-w-[200px]">
                       {course.description || '-'}
                     </td>
-                    
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-1">
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         course.isActive 
                           ? 'bg-green-100 text-green-800' 
@@ -201,45 +201,51 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
                         {course.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-2 py-3 whitespace-nowrap">
-                      {new Date(course.createdAt).toLocaleDateString()}
+                    <td className="px-3 py-1 whitespace-nowrap">
+                      {course.createdAt ? new Date(course.createdAt).toLocaleDateString() : '-'}
                     </td>
-                    <td className="flex items-center px-2 py-3 relative">
-                      <a
-                      onClick={() => handleOpenUpdateModal(course)}
-                        className="font-medium text-green-600 cursor-pointer hover:underline flex items-center pr-3"
+                    <td className="flex items-center px-3 py-1 gap-3">
+                      <button
+                        onClick={() => handleOpenUpdateModal(course)}
+                        className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
                       >
                         <Edit className="h-4 w-4 mr-1" />
                         Edit
-                      </a>
+                      </button>
                       
-                      <a
+                      <button
                         onClick={() => handleOpenModuleModal(course)}
-                        className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center pr-3"
+                        className="font-medium text-yellow-600 cursor-pointer hover:underline flex items-center"
                       >
                         <SquarePen className="h-4 w-4 mr-1" />
-                        Create Module
-                      </a>
+                        Create
+                      </button>
                       
-                      <a
-                       onClick={() =>
-                            handleShowModules(course.courseId)
-                          }
+                      <button
+                        onClick={() => handleShowModules(course.courseId)}
                         className="font-medium text-saveButton cursor-pointer hover:underline flex items-center"
                       >
                         <Eye className="h-4 w-4 mr-1" />
-                        View Modules
-                      </a>
+                        Modules
+                      </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr className="bg-white border-b hover:bg-gray-50">
+                  <td colSpan="8" className="px-3 py-8 text-center text-gray-500">
+                    {searchTerm
+                      ? "No courses match your search criteria"
+                      : "No courses found"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
           {/* Pagination Controls */}
           {filteredCourses.length > 0 && (
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
               <div className="flex flex-1 justify-between sm:hidden">
                 <button
                   onClick={handlePreviousPage}
@@ -265,11 +271,33 @@ const CoursesTable = ({ courses, loading, searchTerm, onCourseUpdated }) => {
                 </button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div className="text-sm text-gray-700">
-                  Showing {indexOfFirstItem + 1} to{" "}
-                  {Math.min(indexOfLastItem, filteredCourses.length)} of{" "}
-                  {filteredCourses.length} entries
+                {/* Left side - Showing entries and items per page selector */}
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-700">
+                    Showing {indexOfFirstItem + 1} to{" "}
+                    {Math.min(indexOfLastItem, filteredCourses.length)} of{" "}
+                    {filteredCourses.length} entries
+                  </div>
+                  
+                  {/* Items per page selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-700">Show</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={handleItemsPerPageChange}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                    >
+                      {itemsPerPageOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-gray-700">entries</span>
+                  </div>
                 </div>
+
+                {/* Pagination buttons */}
                 <div>
                   <nav
                     className="isolate inline-flex -space-x-px rounded-md shadow-sm"

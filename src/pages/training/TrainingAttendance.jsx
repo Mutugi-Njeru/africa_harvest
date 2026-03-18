@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ArrowLeft, Download, Plus, Search, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Download, Plus, Search, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BASE_REST_API_URL } from "../../service/AuthService";
@@ -14,7 +14,10 @@ const TrainingAttendance = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
 
   useEffect(() => {
     const fetchTrainingAttendances = async () => {
@@ -111,6 +114,10 @@ const TrainingAttendance = () => {
     }
   };
 
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+  };
+
   // Generate page numbers to display
   const getPageNumbers = () => {
     const pageNumbers = [];
@@ -168,130 +175,119 @@ const TrainingAttendance = () => {
       <div className="mt-3 mb-4">
         <div className="text-xl font-bold text-gray-600">Training Attendance</div>
       </div>
-      <div className="flex justify-between">
-        <div className=" justify-between items-center gap-3 mb-3">
-          <div className="mb-2 relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="w-5 h-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by name, phone, email, status..."
-              className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+      
+      {/* Header with search and back button - matching TrainingsTable style */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search className="w-5 h-5 text-gray-400" />
           </div>
+          <input
+            type="text"
+            placeholder="Search by name, phone, email, status..."
+            className="w-96 px-4 py-2 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-transparent"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
         </div>
-        <div>
-          {" "}
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="flex items-center justify-center px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
-          >
-            <ArrowLeft size={20} />
-            Back
-          </button>
-        </div>
+        
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex items-center justify-center px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
+        >
+          <ArrowLeft size={20} />
+          Back
+        </button>
       </div>
 
-      {/* table */}
-      <div className="relative overflow-x-auto shadow-md mt-3">
+      {/* Table */}
+      <div className="relative overflow-x-auto mt-3">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
           </div>
         ) : (
           <div className="relative overflow-x-auto min-h-[400px]">
-            <div>
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                  <tr>
-                    <th className="px-3 py-4">#</th>
-                    <th className="px-2 py-4">Attendance Date</th>
-                    <th className="px-2 py-4">Status</th>
-                    <th className="px-2 py-4">First Name</th>
-                    <th className="px-2 py-4">Last Name</th>
-                    <th className="px-2 py-4">Phone Number</th>
-                    <th className="px-3 py-4">Email</th>
-                    <th className="px-2 py-4">Gender</th>
-                    <th className="px-2 py-4">ID Number</th>
-                    <th className="px-2 py-4">Check In</th>
-                    <th className="px-2 py-4">Check Out</th>
-                    <th className="px-4 py-4">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.length > 0 ? (
-                    currentItems.map((attendance, index) => {
-                      const member = attendance.member || {};
-                      return (
-                        <tr
-                          key={attendance.attendanceId}
-                          className="bg-white border-b hover:bg-gray-50"
-                        >
-                          <th
-                            scope="row"
-                            className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
-                          >
-                            {indexOfFirstItem + index + 1}
-                          </th>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {formatDate(attendance.attendanceDate)}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {getStatusBadge(attendance.status)}
-                          </td>
-                          <td className="px-2 py-3 truncate max-w-[120px]">
-                            {member.firstName || "N/A"}
-                          </td>
-                          <td className="px-2 py-3 truncate max-w-[120px]">
-                            {member.lastName || "N/A"}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {member.msisdn || "N/A"}
-                          </td>
-                          <td className="px-3 py-3 truncate max-w-[180px]" title={member.email}>
-                            {member.email || "N/A"}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap capitalize">
-                            {member.gender || "N/A"}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {member.idNumber || "N/A"}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {formatTime(attendance.checkInTime)}
-                          </td>
-                          <td className="px-2 py-3 whitespace-nowrap">
-                            {formatTime(attendance.checkOutTime)}
-                          </td>
-                          <td className="px-4 py-3 truncate max-w-[200px]" title={attendance.remarks}>
-                            {attendance.remarks || "N/A"}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr className="bg-white border-b">
-                      <td
-                        colSpan="12"
-                        className="px-6 py-8 text-center text-gray-500"
+            <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+              <thead className="text-xs text-gray-500 border-b bg-white">
+                <tr>
+                  <th className="px-3 py-2">ID</th>
+                  <th className="px-3 py-2">Date</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Full Name</th>
+                  <th className="px-3 py-2">Mobile</th>
+                  <th className="px-3 py-2">Email</th>
+                  <th className="px-3 py-2">Gender</th>
+                  <th className="px-3 py-2">ID</th>
+                  <th className="px-3 py-2">In</th>
+                  <th className="px-3 py-2">Out</th>
+                  <th className="px-3 py-2">Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((attendance, index) => {
+                    const member = attendance.member || {};
+                    return (
+                      <tr
+                        key={attendance.attendanceId}
+                        className="bg-white border-b hover:bg-gray-50"
                       >
-                        {searchTerm
-                          ? "No attendance records match your search"
-                          : "No attendance records found for this training"}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        <td className="px-3 py-2 font-medium text-green-600 whitespace-nowrap">
+                          {indexOfFirstItem + index + 1}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {formatDate(attendance.attendanceDate)}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {getStatusBadge(attendance.status)}
+                        </td>
+                        <td className="px-3 py-2 truncate max-w-[120px]">
+                          {member.firstName + " " + member.lastName || "N/A"}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {member.msisdn || "N/A"}
+                        </td>
+                        <td className="px-3 py-2 truncate max-w-[180px]" title={member.email}>
+                          {member.email || "N/A"}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap capitalize">
+                          {member.gender || "N/A"}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {member.idNumber || "N/A"}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {formatTime(attendance.checkInTime)}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {formatTime(attendance.checkOutTime)}
+                        </td>
+                        <td className="px-3 py-2 truncate max-w-[200px]" title={attendance.remarks}>
+                          {attendance.remarks || "N/A"}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr className="bg-white border-b">
+                    <td
+                      colSpan="12"
+                      className="px-3 py-8 text-center text-gray-500"
+                    >
+                      {searchTerm
+                        ? "No attendance records match your search"
+                        : "No attendance records found for this training"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
 
-            {/* Pagination Controls*/}
+            {/* Pagination Controls - matching TrainingsTable style */}
             {filteredAttendances.length > 0 && (
-              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     onClick={handlePreviousPage}
@@ -317,11 +313,33 @@ const TrainingAttendance = () => {
                   </button>
                 </div>
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {indexOfFirstItem + 1} to{" "}
-                    {Math.min(indexOfLastItem, filteredAttendances.length)} of{" "}
-                    {filteredAttendances.length} attendance records
+                  {/* Left side - Showing entries and items per page selector */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-700">
+                      Showing {indexOfFirstItem + 1} to{" "}
+                      {Math.min(indexOfLastItem, filteredAttendances.length)} of{" "}
+                      {filteredAttendances.length} entries
+                    </div>
+                    
+                    {/* Items per page selector */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700">Show</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                      >
+                        {itemsPerPageOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-gray-700">entries</span>
+                    </div>
                   </div>
+
+                  {/* Pagination buttons */}
                   <div>
                     <nav
                       className="isolate inline-flex -space-x-px rounded-md shadow-sm"

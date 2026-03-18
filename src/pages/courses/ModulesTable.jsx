@@ -58,7 +58,7 @@ const ModulesTable = () => {
 
   // Format date to readable format
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return "-";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -153,6 +153,16 @@ const ModulesTable = () => {
     return pageNumbers;
   };
 
+  if (isLoading) {
+    return (
+      <div className="relative overflow-x-auto shadow-md mt-3">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="pr-4 pl-3 relative">
@@ -188,189 +198,177 @@ const ModulesTable = () => {
 
         {/* table */}
         <div className="relative overflow-x-auto shadow-md mt-3">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
-            </div>
-          ) : (
-            <div className="relative overflow-x-auto min-h-[400px]">
-              <div>
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                    <tr>
-                      <th className="px-3 py-4">ID</th>
-                      <th className="px-2 py-4">Code</th>
-                      <th className="px-1 py-4">Module</th>
-                      <th className="px-2 py-4">Description</th>
-                      <th className="px-6 py-4">Duration (Hours)</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Date Created</th>
-                      <th className="px-6 py-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentItems.length > 0 ? (
-                      currentItems.map((module, index) => (
-                        <tr
-                          key={module.moduleId}
-                          className="bg-white border-b hover:bg-gray-50"
-                        >
-                          <th
-                            scope="row"
-                            className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
-                          >
-                            {indexOfFirstItem + index + 1}
-                          </th>
-                          <td className="px-1 py-3 truncate max-w-[150px]">
-                            {module.moduleCode || "N/A"}
-                          </td>
-                          <td className="px-1 py-3 truncate max-w-[150px]">
-                            {module.title || "N/A"}
-                          </td>
-                          <td
-                            className="px-2 py-3 truncate max-w-[250px]"
-                            title={module.description}
-                          >
-                            {module.description || "N/A"}
-                          </td>
-                          <td className="px-6 py-3 whitespace-nowrap">
-                            {module.durationHours || "N/A"}
-                          </td>
-                          <td className="px-6 py-3 whitespace-nowrap">
-                            {module.isActive ? (
-                              <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                                Active
-                              </span>
-                            ) : (
-                              <span className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
-                                Inactive
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-3 whitespace-nowrap">
-                            {formatDate(module.createdAt)}
-                          </td>
-                          <td className="px-6 py-3 whitespace-nowrap">
-                            <a
-                              onClick={() => handleOpenUpdateModal(module)}
-                              className="font-medium text-green-600 cursor-pointer hover:underline flex items-center pr-3"
-                            >
-                              <Edit className="h-4 w-4 mr-1" />
-                              Edit Module
-                            </a>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr className="bg-white border-b">
+          <div className="relative overflow-x-auto min-h-[400px]">
+            <div>
+              <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+                <thead className="text-xs text-gray-500 border-b bg-white">
+                  <tr>
+                    <th className="px-3 py-2">ID</th>
+                    <th className="px-3 py-2">Code</th>
+                    <th className="px-3 py-2">Module</th>
+                    <th className="px-3 py-2">Hours</th>
+                    <th className="px-3 py-2">Description</th>
+                    <th className="px-3 py-2">Status</th>
+                    <th className="px-3 py-2">Date Created</th>
+                    <th className="px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.length > 0 ? (
+                    currentItems.map((module, index) => (
+                      <tr
+                        key={module.moduleId}
+                        className="bg-white border-b hover:bg-gray-50"
+                      >
+                        <td className="px-3 py-1 font-medium text-green-600 whitespace-nowrap">
+                          {indexOfFirstItem + index + 1}
+                        </td>
+                        <td className="px-3 py-1 truncate max-w-[150px]">
+                          {module.moduleCode || "-"}
+                        </td>
+                        <td className="px-3 py-1 truncate max-w-[150px]">
+                          {module.title || "-"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {module.durationHours || "-"}
+                        </td>
                         <td
-                          colSpan="8"
-                          className="px-6 py-8 text-center text-gray-500"
+                          className="px-3 py-1 truncate max-w-[250px]"
+                          title={module.description}
                         >
-                          {searchTerm
-                            ? "No modules match your search"
-                            : "No modules found for this course"}
+                          {module.description || "-"}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            module.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {module.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          {formatDate(module.createdAt)}
+                        </td>
+                        <td className="px-3 py-1 whitespace-nowrap">
+                          <a
+                            onClick={() => handleOpenUpdateModal(module)}
+                            className="font-medium text-green-600 cursor-pointer hover:underline flex items-center"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </a>
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination Controls*/}
-              {filteredModules.length > 0 && (
-                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-2">
-                  <div className="flex flex-1 justify-between sm:hidden">
-                    <button
-                      onClick={handlePreviousPage}
-                      disabled={currentPage === 1}
-                      className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
-                        currentPage === 1
-                          ? "text-gray-300 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
-                      className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
-                        currentPage === totalPages
-                          ? "text-gray-300 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div className="text-sm text-gray-700">
-                      Showing {indexOfFirstItem + 1} to{" "}
-                      {Math.min(indexOfLastItem, filteredModules.length)} of{" "}
-                      {filteredModules.length} modules
-                    </div>
-                    <div>
-                      <nav
-                        className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                        aria-label="Pagination"
+                    ))
+                  ) : (
+                    <tr className="bg-white border-b">
+                      <td
+                        colSpan="8"
+                        className="px-3 py-8 text-center text-gray-500"
                       >
+                        {searchTerm
+                          ? "No modules match your search criteria"
+                          : "No modules found for this course"}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls*/}
+            {filteredModules.length > 0 && (
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
+                <div className="flex flex-1 justify-between sm:hidden">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                      currentPage === 1
+                        ? "text-gray-300 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${
+                      currentPage === totalPages
+                        ? "text-gray-300 cursor-not-allowed"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {indexOfFirstItem + 1} to{" "}
+                    {Math.min(indexOfLastItem, filteredModules.length)} of{" "}
+                    {filteredModules.length} entries
+                  </div>
+                  <div>
+                    <nav
+                      className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                      aria-label="Pagination"
+                    >
+                      <button
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                        className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                          currentPage === 1
+                            ? "cursor-not-allowed bg-gray-50"
+                            : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                        }`}
+                      >
+                        <span className="sr-only">Previous</span>
+                        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                      </button>
+
+                      {getPageNumbers().map((pageNumber, index) => (
                         <button
-                          onClick={handlePreviousPage}
-                          disabled={currentPage === 1}
-                          className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
-                            currentPage === 1
-                              ? "cursor-not-allowed bg-gray-50"
-                              : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                          key={index}
+                          onClick={() =>
+                            pageNumber !== "..." && handlePageChange(pageNumber)
+                          }
+                          disabled={pageNumber === "..."}
+                          aria-current="page"
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                            pageNumber === currentPage
+                              ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                              : pageNumber === "..."
+                              ? "text-gray-700 cursor-default"
+                              : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                           }`}
                         >
-                          <span className="sr-only">Previous</span>
-                          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                          {pageNumber}
                         </button>
+                      ))}
 
-                        {getPageNumbers().map((pageNumber, index) => (
-                          <button
-                            key={index}
-                            onClick={() =>
-                              pageNumber !== "..." &&
-                              handlePageChange(pageNumber)
-                            }
-                            disabled={pageNumber === "..."}
-                            aria-current="page"
-                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                              pageNumber === currentPage
-                                ? "z-10 bg-green-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                                : pageNumber === "..."
-                                ? "text-gray-700 cursor-default"
-                                : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                            }`}
-                          >
-                            {pageNumber}
-                          </button>
-                        ))}
-
-                        <button
-                          onClick={handleNextPage}
-                          disabled={currentPage === totalPages}
-                          className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
-                            currentPage === totalPages
-                              ? "cursor-not-allowed bg-gray-50"
-                              : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                          }`}
-                        >
-                          <span className="sr-only">Next</span>
-                          <ChevronRight
-                            className="h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </button>
-                      </nav>
-                    </div>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 ${
+                          currentPage === totalPages
+                            ? "cursor-not-allowed bg-gray-50"
+                            : "hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                        }`}
+                      >
+                        <span className="sr-only">Next</span>
+                        <ChevronRight
+                          className="h-5 w-5"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </nav>
                   </div>
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {selectedModuleForUpdate && (

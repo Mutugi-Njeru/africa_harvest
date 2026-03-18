@@ -23,7 +23,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
     msisdn: "",
     password: "",
     description: "",
-    gender: "", // Added gender field
+    gender: "",
     roles: [],
     permissions: [],
   });
@@ -85,7 +85,7 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
         msisdn: "",
         password: "",
         description: "",
-        gender: "", // Reset gender field
+        gender: "",
         roles: [],
         permissions: [],
       });
@@ -123,233 +123,247 @@ const CreateUser = ({ isOpen, onClose, onUserCreated }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 shadow-lg w-[800px]">
-        <h2 className="text-lg font-semibold mb-4">Create User</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="First Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Last Name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-[800px] max-h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-6 border-b">
+          <h2 className="text-lg font-semibold">Create User</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Username"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-              <button
-                type="button"
-                className="absolute top-8 right-3 flex items-center text-gray-600 hover:text-gray-800"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Phone Number
-              </label>
-              <input
-                type="text"
-                name="msisdn"
-                value={formData.msisdn}
-                onChange={handleChange}
-                placeholder="254712345678"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Gender Field - New Addition */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <div className="flex gap-6">
-              <label className="inline-flex items-center">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form onSubmit={handleSubmit} id="create-user-form">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name
+                </label>
                 <input
-                  type="radio"
-                  name="gender"
-                  value="MALE"
-                  checked={formData.gender === "MALE"}
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
-                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  placeholder="First Name"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                   required
                 />
-                <span className="ml-2 text-sm text-gray-700">Male</span>
-              </label>
-              <label className="inline-flex items-center">
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name
+                </label>
                 <input
-                  type="radio"
-                  name="gender"
-                  value="FEMALE"
-                  checked={formData.gender === "FEMALE"}
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
-                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  placeholder="Last Name"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                   required
                 />
-                <span className="ml-2 text-sm text-gray-700">Female</span>
-              </label>
-              <label className="inline-flex items-center">
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Username
+                </label>
                 <input
-                  type="radio"
-                  name="gender"
-                  value="OTHER"
-                  checked={formData.gender === "OTHER"}
+                  type="text"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                  placeholder="Username"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
                   required
                 />
-                <span className="ml-2 text-sm text-gray-700">Other</span>
-              </label>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute top-8 right-3 flex items-center text-gray-600 hover:text-gray-800"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Roles and Permissions Dropdowns */}
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Roles
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="johndoe@gmail.com"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  name="msisdn"
+                  value={formData.msisdn}
+                  onChange={handleChange}
+                  placeholder="254712345678"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Gender Field */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gender
               </label>
-              <Select
-                isMulti
-                name="roles"
-                options={roleOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={handleRolesChange}
-                styles={CustomFiltersStyles}
+              <div className="flex gap-6">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="MALE"
+                    checked={formData.gender === "MALE"}
+                    onChange={handleChange}
+                    className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                    required
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="FEMALE"
+                    checked={formData.gender === "FEMALE"}
+                    onChange={handleChange}
+                    className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                    required
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Female</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="OTHER"
+                    checked={formData.gender === "OTHER"}
+                    onChange={handleChange}
+                    className="form-radio h-4 w-4 text-saveButton focus:ring-saveButton border-gray-300"
+                    required
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Roles and Permissions Dropdowns */}
+            <div className="flex gap-4 mb-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Roles
+                </label>
+                <Select
+                  isMulti
+                  name="roles"
+                  options={roleOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={handleRolesChange}
+                  styles={CustomFiltersStyles}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Permissions
+                </label>
+                <Select
+                  isMulti
+                  name="permissions"
+                  options={permissionOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={handlePermissionsChange}
+                  styles={CustomFiltersStyles}
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                rows="3"
+                required
               />
             </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Permissions
-              </label>
-              <Select
-                isMulti
-                name="permissions"
-                options={permissionOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={handlePermissionsChange}
-                styles={CustomFiltersStyles}
-              />
-            </div>
-          </div>
+          </form>
+        </div>
 
-          {/* Description */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
-              rows="3"
-              required
-            />
-          </div>
+        {/* Fixed Footer with Buttons */}
+        <div className="flex gap-3 p-6 border-t flex-row-reverse">
+          <button
+            type="submit"
+            form="create-user-form"
+            disabled={isLoading}
+            className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+              isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-saveButton hover:bg-yellowOrange"
+            } text-white`}
+          >
+            {isLoading ? (
+              "Creating..."
+            ) : (
+              <>
+                <Check size={20} />
+                Create
+              </>
+            )}
+          </button>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 px-6 py-2 border-2 border-saveButton rounded-md bg-cancelButton text-saveButton hover:bg-gray-50 min-w-[100px]"
-            >
-              <X size={20} />
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`flex items-center justify-center gap-2 px-6 py-2 rounded-md text-white min-w-[100px] ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-saveButton hover:bg-yellowOrange"
-              }`}
-            >
-              {isLoading ? (
-                "Creating..."
-              ) : (
-                <>
-                  <Check size={20} />
-                  Create
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-cancelButton text-saveButton hover:bg-gray-50"
+          >
+            <X size={20} />
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );
