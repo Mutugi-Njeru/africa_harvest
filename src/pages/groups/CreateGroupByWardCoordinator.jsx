@@ -4,6 +4,7 @@ import CustomFiltersStyles from "../../styles/CustomFiltersStyles";
 import axios from "axios";
 import { BASE_REST_API_URL } from "../../service/AuthService";
 import { toast } from "react-toastify";
+import { Check, X } from "lucide-react";
 
 const CreateGroupByWardCoordinator = ({ handleCloseModal, fetchGroups }) => {
   const userId = Number(localStorage.getItem("userId"));
@@ -24,23 +25,22 @@ const CreateGroupByWardCoordinator = ({ handleCloseModal, fetchGroups }) => {
   const fetchWards = async () => {
     try {
       const response = await axios.get(
-        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
+        BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`,
       );
-      const wards = response.data.message.flatMap((region) =>
+      const wards = response.data.message.regions.flatMap((region) =>
         region.counties.flatMap((county) =>
-          county.subCounties.flatMap((subCounty) =>
+          county.subcounties.flatMap((subCounty) =>
             subCounty.wards.filter((ward) =>
               ward.coordinators.some(
-                (coordinator) => coordinator.userId === userId
-              )
-            )
-          )
-        )
+                (coordinator) => coordinator.userId === userId,
+              ),
+            ),
+          ),
+        ),
       );
       setWards(wards);
     } catch (error) {
       console.error("Error fetching wards:", error);
-      toast.error("Failed to fetch wards");
     }
   };
 
@@ -63,6 +63,13 @@ const CreateGroupByWardCoordinator = ({ handleCloseModal, fetchGroups }) => {
       toast.success("Group created successfully!");
       handleCloseModal();
       fetchGroups();
+      
+      // Reset form
+      setFormData({
+        groupName: "",
+        description: "",
+      });
+      setSelectedWard(null);
     } catch (error) {
       console.error("Error creating group:", error);
       toast.error(error.response?.data?.message || "Failed to create group");
@@ -85,77 +92,106 @@ const CreateGroupByWardCoordinator = ({ handleCloseModal, fetchGroups }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  if (!handleCloseModal) return null;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 shadow-lg w-[800px]">
-        <h2 className="text-lg font-semibold mb-4">
-          Create Group By Ward Coordinator
-        </h2>
-        <form onSubmit={createGroup}>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Group Name
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-[800px] max-h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-6 border-b">
+          <h2 className="text-lg font-semibold">Create Group By TOT</h2>
+          <button
+            onClick={handleCloseModal}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form onSubmit={createGroup} id="create-group-form">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Group Name
+                </label>
+                <input
+                  type="text"
+                  name="groupName"
+                  value={formData.groupName}
+                  onChange={handleInputChange}
+                  placeholder="Group Name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ward
+                </label>
+                <Select
+                  name="wardId"
+                  options={wardOptions}
+                  onChange={handleWardChange}
+                  value={selectedWard}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  styles={CustomFiltersStyles}
+                  placeholder="Select Ward..."
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
               </label>
-              <input
-                type="text"
-                name="groupName"
-                value={formData.groupName}
+              <textarea
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Group Name"
-                className="block w-full px-3 py-1.5 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
-                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-saveButton focus:outline-none focus:ring-1 focus:ring-gray-100"
+                rows="3"
+                placeholder="Enter group description..."
               />
             </div>
+          </form>
+        </div>
 
-            <div className="">
-              <label className="block text-sm font-medium text-gray-700">
-                Ward
-              </label>
-              <Select
-                name="wardId"
-                options={wardOptions}
-                onChange={handleWardChange}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                styles={CustomFiltersStyles}
-                required
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:border-yellow-300 focus:outline-none focus:ring-1 focus:ring-yellow-300"
-              rows="3"
-            />
-          </div>
-
-            <div className="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
-            <button
-              type="submit"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isCreating}
-            >
-              {isCreating ? "Creating..." : "Create"}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleCloseModal}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </form>
+        {/* Fixed Footer with Buttons */}
+        <div className="flex justify-end gap-3 p-6 border-t">
+          <button
+            type="button"
+            onClick={handleCloseModal}
+            className="flex items-center justify-center gap-2 border-2 border-saveButton rounded-md px-6 py-2 min-w-[120px] bg-white text-saveButton hover:bg-gray-50"
+          >
+            <X size={20} />
+            Cancel
+          </button>
+          
+          <button
+            type="submit"
+            form="create-group-form"
+            disabled={isCreating}
+            className={`flex items-center justify-center gap-2 border rounded-md px-6 py-2 min-w-[120px] ${
+              isCreating
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-saveButton hover:bg-yellowOrange"
+            } text-white`}
+          >
+            {isCreating ? (
+              "Creating..."
+            ) : (
+              <>
+                <Check size={20} />
+                Create
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ClipboardEditIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import CoordinatorsAndCountiesModal from "./CoordinatorsAndCountiesModal";
 
@@ -8,7 +8,14 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Items per page options
+  const itemsPerPageOptions = [5, 10, 15, 25, 50, 100];
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, itemsPerPage]);
 
   const handleCloseModal = () => {
     setIsCoordinatorsModalOpen(false);
@@ -39,11 +46,6 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
     });
   }, [regions, searchTerm]);
 
-  // Reset to first page when search term changes
-  useState(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -52,7 +54,6 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // Scroll to top of table when page changes
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -68,6 +69,10 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
   };
 
   // Generate page numbers to display
@@ -108,113 +113,111 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
 
   return (
     <div>
-      <div className="relative overflow-x-auto shadow-md mt-3">
+      <div className="relative overflow-x-auto mt-3">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellowOrange"></div>
           </div>
         ) : (
           <div className="relative overflow-x-auto min-h-[400px]">
-            <div>
-              <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
-                <thead className="text-xs text-gray-700 uppercase bg-white border-b">
-                  <tr>
-                    <th className="px-3 py-4">ID</th>
-                    <th className="px-2 py-4">Region</th>
-                    <th className="px-1 py-4">Description</th>
-                    <th className="px-2 py-4">Coordinator</th>
-                    <th className="px-6 py-4">Counties</th>
-                    <th className="px-6 py-4">Updated At</th>
-                    <th className="px-6 py-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.length > 0 ? (
-                    currentItems.map((region, index) => (
-                      <tr
-                        key={region.regionId || index}
-                        className="bg-white border-b hover:bg-gray-50"
+            <table className="w-full text-xs text-left rtl:text-right text-gray-500">
+              <thead className="text-xs text-gray-500 border-b bg-white">
+                <tr>
+                  <th className="px-3 py-2">ID</th>
+                  <th className="px-3 py-2">Region</th>
+                  <th className="px-3 py-2">Description</th>
+                  <th className="px-3 py-2">Coordinator</th>
+                  <th className="px-3 py-2">Counties</th>
+                  <th className="px-3 py-2">Updated At</th>
+                  <th className="px-3 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((region, index) => (
+                    <tr
+                      key={region.regionId || index}
+                      className="bg-white border-b hover:bg-gray-50"
+                    >
+                      <th
+                        scope="row"
+                        className="px-3 py-1 font-medium text-green-600 whitespace-nowrap"
                       >
-                        <th
-                          scope="row"
-                          className="px-3 py-3 font-medium text-green-600 whitespace-nowrap"
+                        {indexOfFirstItem + index + 1}
+                      </th>
+                      <td className="px-3 py-1 max-w-[200px] truncate">
+                        {region.region || "N/A"}
+                      </td>
+                      <td className="px-3 py-1 max-w-[200px] truncate">
+                        {region.description || "N/A"}
+                      </td>
+                      <td className="px-3 py-1 max-w-[200px]">
+                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                          {region.coordinators && region.coordinators.length > 0
+                            ? region.coordinators.map((coordinator, idx) => (
+                                <span
+                                  key={coordinator.userId}
+                                  className="truncate"
+                                >
+                                  {`${coordinator.firstName} ${coordinator.lastName}`}
+                                  {idx < region.coordinators.length - 1
+                                    ? ","
+                                    : ""}
+                                </span>
+                              ))
+                            : "No coordinator assigned"}
+                        </div>
+                      </td>
+                      <td className="px-3 py-1 max-w-[200px]">
+                        <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
+                          {region.counties && region.counties.length > 0
+                            ? region.counties.map((county, idx) => (
+                                <span
+                                  key={county.countyId}
+                                  className="truncate"
+                                >
+                                  {county.title}
+                                  {idx < region.counties.length - 1
+                                    ? ","
+                                    : ""}
+                                </span>
+                              ))
+                            : "No county assigned"}
+                        </div>
+                      </td>
+                      <td className="px-3 py-1 max-w-[150px] truncate">
+                        {region.updatedAt || "N/A"}
+                      </td>
+                      <td className="px-3 py-1">
+                        <a
+                          onClick={() => {
+                            setSelectedRegion(region);
+                            setIsCoordinatorsModalOpen(true);
+                          }}
+                          className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
                         >
-                          {indexOfFirstItem + index + 1}
-                        </th>
-                        <td className="px-1 py-3 truncate max-w-[200px]">
-                          {region.region || "N/A"}
-                        </td>
-                        <td className="px-1 py-3 truncate max-w-[200px]">
-                          {region.description || "N/A"}
-                        </td>
-                        <td className="px-2 py-3 whitespace-nowrap">
-                          <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                            {region.coordinators && region.coordinators.length > 0
-                              ? region.coordinators.map((coordinator, idx) => (
-                                  <span
-                                    key={coordinator.userId}
-                                    className="truncate"
-                                  >
-                                    {`${coordinator.firstName} ${coordinator.lastName}`}
-                                    {idx < region.coordinators.length - 1
-                                      ? ","
-                                      : ""}
-                                  </span>
-                                ))
-                              : "No coordinator assigned"}
-                          </div>
-                        </td>
-                        <td className="px-6 py-3 whitespace-nowrap">
-                          <div className="flex flex-wrap gap-1 truncate max-w-[200px]">
-                            {region.counties && region.counties.length > 0
-                              ? region.counties.map((county, idx) => (
-                                  <span
-                                    key={county.countyId}
-                                    className="truncate"
-                                  >
-                                    {county.title}
-                                    {idx < region.counties.length - 1
-                                      ? ","
-                                      : ""}
-                                  </span>
-                                ))
-                              : "No county assigned"}
-                          </div>
-                        </td>
-                        <td className="px-6 py-3">
-                          {region.updatedAt || "N/A"}
-                        </td>
-                        <td className="px-6 py-3">
-                          <a
-                            onClick={() => {
-                              setSelectedRegion(region);
-                              setIsCoordinatorsModalOpen(true);
-                            }}
-                            className="font-medium text-yellowOrange cursor-pointer hover:underline flex items-center"
-                          >
-                            <ClipboardEditIcon className="h-4 w-4 mr-1" />
-                            Assign
-                          </a>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr className="bg-white border-b hover:bg-gray-50">
-                      <td
-                        colSpan="7"
-                        className="px-6 py-4 text-center text-gray-500"
-                      >
-                        {searchTerm ? "No regions match your search" : "No regions found"}
+                          <ClipboardEditIcon className="h-4 w-4 mr-2" />
+                          Assign
+                        </a>
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                ) : (
+                  <tr className="bg-white border-b hover:bg-gray-50">
+                    <td
+                      colSpan="7"
+                      className="px-3 py-8 text-center text-gray-500"
+                    >
+                      {searchTerm ? "No regions match your search" : "No regions found"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
 
             {/* Pagination Controls */}
             {filteredRegions.length > 0 && (
-              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-2 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     onClick={handlePreviousPage}
@@ -240,12 +243,33 @@ const RegionsTable = ({ regions = [], isLoading, fetchRegions, searchTerm }) => 
                   </button>
                 </div>
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                  {/* Showing entries text moved to left side */}
-                  <div className="text-sm text-gray-700">
-                    Showing {indexOfFirstItem + 1} to{" "}
-                    {Math.min(indexOfLastItem, filteredRegions.length)} of{" "}
-                    {filteredRegions.length} entries
+                  {/* Left side - Showing entries and items per page selector */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-700">
+                      Showing {indexOfFirstItem + 1} to{" "}
+                      {Math.min(indexOfLastItem, filteredRegions.length)} of{" "}
+                      {filteredRegions.length} entries
+                    </div>
+                    
+                    {/* Items per page selector */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-700">Show</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={handleItemsPerPageChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-saveButton focus:ring-1 focus:ring-gray-100 bg-white"
+                      >
+                        {itemsPerPageOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-gray-700">entries</span>
+                    </div>
                   </div>
+
+                  {/* Pagination buttons */}
                   <div>
                     <nav
                       className="isolate inline-flex -space-x-px rounded-md shadow-sm"

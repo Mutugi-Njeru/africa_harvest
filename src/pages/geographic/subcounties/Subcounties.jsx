@@ -104,7 +104,7 @@ const fetchsubCounties = async () => {
             onClick={() => {
               setIsAssignModalOpen(true);
             }}
-            className="flex items-center border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange cursor-pointer text-white"
+            className="flex items-center rounded-md border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange cursor-pointer text-white"
           >
             <Plus className="w-4 h-4" />
             <span className="ml-2 mr-2">Assign SCEA</span>

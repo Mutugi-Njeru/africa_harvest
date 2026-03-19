@@ -19,7 +19,6 @@ const PieChart = () => {
       setAccounts(response.data.message);
     } catch (error) {
       console.error("Error fetching members:", error);
-      toast.error("Failed to fetch members");
     } finally {
       setLoading(false);
     }

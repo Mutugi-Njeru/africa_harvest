@@ -31,9 +31,9 @@ const Groups = () => {
       const response = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`
       );
-      const wards = response.data.message.flatMap((region) =>
+      const wards = response.data.message.regions.flatMap((region) =>
         region.counties.flatMap((county) =>
-          county.subCounties.flatMap((subCounty) =>
+          county.subcounties.flatMap((subCounty) =>
             subCounty.wards.filter((ward) =>
               ward.coordinators.some(
                 (coordinator) => coordinator.userId === userId

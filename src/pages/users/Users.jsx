@@ -82,7 +82,7 @@ const Users = () => {
             <>
               {showUsers ? (
                 <button
-                  className="flex items-center cursor-pointer border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange text-white"
+                  className="flex items-center rounded-md cursor-pointer border pl-3 pr-3 p-2 bg-createButton hover:bg-yellowOrange text-white"
                   onClick={() => setShowCreateUserModal(true)}
                 >
                   <Plus className="w-4 h-4" />
@@ -90,7 +90,7 @@ const Users = () => {
                 </button>
               ) : (
                 <button
-                  className={`flex items-center border pl-3 pr-3 p-2 ${
+                  className={`flex items-center rounded-md border pl-3 pr-3 p-2 ${
                     !canCreateRole
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-createButton hover:bg-yellowOrange cursor-pointer"

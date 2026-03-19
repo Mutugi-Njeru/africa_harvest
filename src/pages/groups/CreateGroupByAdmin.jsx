@@ -31,15 +31,14 @@ const CreateGroupByAdmin = ({ handleCloseModal, fetchGroups }) => {
       const response = await axios.get(
         BASE_REST_API_URL + `/coordinatorsx/v1/hierarchy/${accountId}`,
       );
-      const wards = response.data.message.flatMap((region) =>
+      const wards = response.data.message.regions.flatMap((region) =>
         region.counties.flatMap((county) =>
-          county.subCounties.flatMap((subCounty) => subCounty.wards),
+          county.subcounties.flatMap((subCounty) => subCounty.wards),
         ),
       );
       setWards(wards);
     } catch (error) {
       console.error("Error fetching wards:", error);
-      toast.error("Failed to fetch wards");
     }
   };
   
