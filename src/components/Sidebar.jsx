@@ -125,7 +125,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
     setGeoLocationDropdownOpen(false);
   };
 
-  // Main menu items (including Trainings and Education)
+  // Main menu items in new order: Overview, Accounts, User Management, Trainings, Education, Groups, Value Chains
   const mainMenuItems = [
     { icon: LayoutDashboard, text: "Overview", path: "/overview" },
     {
@@ -134,15 +134,11 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       path: "/accounts",
       showOnlyForSuperAdmin: true,
     },
-    { icon: Network, text: "Groups", path: "/groups" },
-    { icon: FileText, text: "Value Chains", path: "/activity" },
+    { icon: Users, text: "User Management", hasDropdown: true },
     { icon: GraduationCap, text: "Trainings", hasDropdown: true },
     { icon: BookOpen, text: "Education", hasDropdown: true },
-  ];
-
-  // User management section
-  const userSectionItems = [
-    { icon: Users, text: "User Management", hasDropdown: true },
+    { icon: Network, text: "Groups", path: "/groups" },
+    { icon: FileText, text: "Value Chains", path: "/activity" },
   ];
 
   // Settings section items
@@ -206,10 +202,6 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   ];
 
   const filteredMainMenuItems = mainMenuItems.filter(
-    (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
-  );
-
-  const filteredUserSectionItems = userSectionItems.filter(
     (item) => !item.showOnlyForSuperAdmin || isSuperAdmin
   );
 
@@ -312,6 +304,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 onClick={() => handleMenuItemClick(item)}
                 className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 text-sm hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors ${
                   (!item.hasDropdown && location.pathname === item.path) ||
+                  (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen) ||
                   (item.hasDropdown && item.text === "Trainings" && isTrainingsDropdownOpen) ||
                   (item.hasDropdown && item.text === "Education" && isEducationDropdownOpen)
                     ? "bg-green-800 text-white"
@@ -326,115 +319,9 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                 </div>
                 {item.hasDropdown && isExpanded && (
                   <div>
-                    {(item.text === "Trainings" && isTrainingsDropdownOpen) ||
+                    {(item.text === "User Management" && isUsersDropdownOpen) ||
+                     (item.text === "Trainings" && isTrainingsDropdownOpen) ||
                      (item.text === "Education" && isEducationDropdownOpen) ? (
-                      <ChevronUp
-                        size={18}
-                        className="text-gray-500 hover:text-white"
-                      />
-                    ) : (
-                      <ChevronDown
-                        size={18}
-                        className="text-gray-500 hover:text-white"
-                      />
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              {/* Trainings Dropdown Items */}
-              {item.hasDropdown && item.text === "Trainings" && isExpanded && (
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isTrainingsDropdownOpen ? "max-h-[500px]" : "max-h-0"
-                  }`}
-                >
-                  <div className="ml-8">
-                    {filteredTrainingsDropdownItems.map((dropdownItem, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() =>
-                          handleDropdownItemClick(dropdownItem.path)
-                        }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
-                          location.pathname === dropdownItem.path
-                            ? "bg-green-700 text-white"
-                            : ""
-                        }`}
-                      >
-                        <span className="ml-3 font-normal">
-                          {dropdownItem.text}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Education Dropdown Items */}
-              {item.hasDropdown && item.text === "Education" && isExpanded && (
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isEducationDropdownOpen ? "max-h-[500px]" : "max-h-0"
-                  }`}
-                >
-                  <div className="ml-8">
-                    {filteredEducationDropdownItems.map((dropdownItem, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() =>
-                          handleDropdownItemClick(dropdownItem.path)
-                        }
-                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
-                          location.pathname === dropdownItem.path
-                            ? "bg-green-700 text-white"
-                            : ""
-                        }`}
-                      >
-                        <span className="ml-3 font-normal">
-                          {dropdownItem.text}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Divider with spacing - Configurations Section */}
-          {isExpanded && (
-            <>
-              <div className="my-6 border-t border-gray-300"></div>
-              <div className="px-3 mb-2">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Configurations
-                </span>
-              </div>
-            </>
-          )}
-          
-          {/* User Management Section */}
-          {filteredUserSectionItems.map((item, index) => (
-            <div key={`user-${index}`}>
-              <div
-                onClick={() => handleMenuItemClick(item)}
-                className={`flex items-center justify-between py-3 px-3 mb-2 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
-                  (!item.hasDropdown && location.pathname === item.path) ||
-                  (item.hasDropdown && item.text === "User Management" && isUsersDropdownOpen)
-                    ? "bg-green-700 text-white"
-                    : ""
-                }`}
-              >
-                <div className="flex items-center">
-                  <item.icon size={18} className="min-w-6" />
-                  {isExpanded && (
-                    <span className="ml-3 font-medium">{item.text}</span>
-                  )}
-                </div>
-                {item.hasDropdown && isExpanded && (
-                  <div>
-                    {isUsersDropdownOpen ? (
                       <ChevronUp
                         size={18}
                         className="text-gray-500 hover:text-white"
@@ -550,6 +437,64 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Trainings Dropdown Items */}
+              {item.hasDropdown && item.text === "Trainings" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isTrainingsDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredTrainingsDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-sm ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-normal">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education Dropdown Items */}
+              {item.hasDropdown && item.text === "Education" && isExpanded && (
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    isEducationDropdownOpen ? "max-h-[500px]" : "max-h-0"
+                  }`}
+                >
+                  <div className="ml-8">
+                    {filteredEducationDropdownItems.map((dropdownItem, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          handleDropdownItemClick(dropdownItem.path)
+                        }
+                        className={`flex items-center py-2 px-3 mb-1 text-gray-700 hover:bg-[#eadf99] hover:text-white rounded-lg cursor-pointer group transition-colors text-xs ${
+                          location.pathname === dropdownItem.path
+                            ? "bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        <span className="ml-3 font-normal">
+                          {dropdownItem.text}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
